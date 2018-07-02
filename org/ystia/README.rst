@@ -602,6 +602,6 @@ Alien4Cloud documentation
   https://alien4cloud.github.io/#/documentation/2.0.0/index.html
 
 Ystia Orchestrator documentation
-  https://TODO_to_be_completed
+  http://yorc.readthedocs.io/en/latest/
 
 
