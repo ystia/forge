@@ -32,7 +32,9 @@ can be used to construct different application categories :
 
 - Data science development and execution environments (RStudio_, Jupyter_)
 
-- Moreover, technical components such as *Java* and Consul_ (Consensus Systems), allow detailed application architectures to be designed.
+- Containers as a Service (CaaS) with Kubernetes_ 
+
+- Moreover, technical components such as *Java*, Træfik_ (loadbalancer/reverse proxy) and Consul_ (Consensus Systems), allow detailed application architectures to be designed.
 
 The components are connected together in application topologies.
 To simplify topology creation, Ystia Forge provides **topology templates** that can be extended by your applications.
@@ -45,12 +47,14 @@ To simplify topology creation, Ystia Forge provides **topology templates** that 
 .. _Hortonworks: https://hortonworks.com/
 .. _Jupyter: http://jupyter.org/
 .. _Kafka: https://kafka.apache.org/
+.. _Kubernetes: https://kubernetes.io/
 .. _MapR: https://mapr.com/
 .. _MongoDB: https://www.mongodb.com/
 .. _MySQL: http://www.mysql.com/
 .. _NiFi: https://nifi.apache.org/
 .. _PostgreSQL: https://www.postgresql.org/
 .. _RStudio: https://www.rstudio.com/
+.. _Træfik: https://traefik.io/
 
 
 The current version of **Ystia Forge** is **2.0.0**.
@@ -275,6 +279,12 @@ Database Servers
 | **MySQL** | *org/ystia/mysql* | version 5.6 |
 +-----------+-------------------+-------------+
 
+Containers as a Service
+=======================
+
++----------------+------------------------+--------------+
+| **Kubernetes** | *org/ystia/kubernetes* | version 1.10 |
++----------------+------------------------+--------------+
 
 Utilities
 =========
@@ -288,7 +298,8 @@ Utilities
 +-------------+---------------------+-----------------------------------+
 | **XFS**     | *org/ystia/xfs*     |                                   |
 +-------------+---------------------+-----------------------------------+
-
+| **Træfik**  | *org/ystia/traefik* |                                   |
++-------------+---------------------+-----------------------------------+
 
 .. *********************************************************************************************************************
 
