@@ -1,0 +1,48 @@
+#
+# Ystia Forge
+# Copyright (C) 2018 Bull S. A. S. - Bull, Rue Jean Jaures, B.P.68, 78340, Les Clayes-sous-Bois, France.
+# Use of this source code is governed by Apache 2 LICENSE that can be found in the LICENSE file.
+#
+
+
+- name: Install Traefik
+  hosts: all
+  strategy: free
+  become: true
+  tasks:
+
+    - name: Delete Traefik files
+      file:
+        path: "{{ item }}"
+        state: absent
+      with_items:
+        - "{{ INSTALL_DIR }}/traefik"
+        - "/etc/systemd/system/traefik.service"
+        - "{{ CONFIG_DIR }}/traefik.d"
+        - "{{ CONFIG_DIR }}/traefik.toml"
+    
+
+    - name: Ensure traefik service is stopped
+      service:
+        name: traefik
+        enabled: false
+        daemon_reload: yes
+
+    - name: Download Traefik binary
+      get_url:
+        url: "{{ DOWNLOAD_URL }}"
+        dest: "{{ INSTALL_DIR }}/traefik"
+        owner: root
+        group: root
+        mode: 0755
+        
+    - name: Create traefik systemd unit
+      template:
+        src: "traefik.service.j2"
+        dest: "/etc/systemd/system/traefik.service"
+        owner: root
+        group: root
+        mode: 0644
+
+    
+    
