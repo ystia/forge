@@ -1,0 +1,76 @@
+tosca_definitions_version: alien_dsl_2_0_0
+
+metadata:
+  template_name: org.ystia.yorc.alien4cloud
+  template_version: 2.0.0-SNAPSHOT
+  template_author: alien4cloud
+
+imports:
+  - org.alien4cloud.alien4cloud.pub:2.0.0-SNAPSHOT
+  - org.alien4cloud.alien4cloud.config.pub:2.0.0-SNAPSHOT
+  - tosca-normative-types:1.0.0-ALIEN20
+  - yorc-types:1.0.0
+  - org.ystia.yorc.pub:1.0.0-SNAPSHOT
+
+node_types:
+
+  org.ystia.yorc.alien4cloud.nodes.YorcPlugin:
+    description: |
+      Upload Yorc orchestrator plugin
+    derived_from: org.alien4cloud.alien4cloud.pub.nodes.AlienConfigurator
+    requirements:
+      - yorc:
+          capability: org.ystia.yorc.yorc.pub.capabilities.YorcRestAPI
+          relationship: org.ystia.yorc.alien4cloud.relationships.ConnectsToYorc
+          occurrences: [1, 1]
+    attributes:
+      orchestratorId: { get_operation_output: [ SELF, Standard, start, orchestratorId ] }
+    properties:
+      orchestrator_name:
+        type: string
+        required: true
+        default: Yorc
+      discriminator:
+        type: string
+        description: a prefix for all deployments
+        required: true
+        default: YourInitials
+      pluginId:
+        type: string
+        required: true
+        default: alien4cloud-yorc-plugin
+      pluginBean:
+        type: string
+        required: true
+        default: yorc-orchestrator-factory
+    interfaces:
+      Standard:
+        start:
+          inputs:
+            alien_user: { get_property: [HOST, rest, user] }
+            alien_password: { get_property: [HOST, rest, password] }
+            alien_url: { get_attribute: [HOST, alien_url] }
+            orchestrator_name: { get_property: [SELF, orchestrator_name] }
+            pluginId: { get_property: [SELF, pluginId] }
+            pluginBean: { get_property: [SELF, pluginBean] }
+            discriminator: { get_property: [SELF, discriminator] }
+          implementation: playbook/start.yml
+    artifacts:
+      - plugin_artifact:
+          type: tosca.artifacts.File
+
+capability_types:
+  org.ystia.yorc.alien4cloud.capabilities.YorcPlugin:
+    derived_from: tosca.capabilities.Endpoint
+
+relationship_types:
+
+  org.ystia.yorc.alien4cloud.relationships.ConnectsToYorc:
+    derived_from: tosca.relationships.ConnectsTo
+    valid_target_types: [ org.ystia.yorc.yorc.pub.capabilities.YorcRestAPI ]
+    interfaces:
+      Configure:
+        pre_configure_source:
+          inputs:
+            yorc_url: { concat: [get_property: [TARGET, rest, protocol], "://", get_attribute: [TARGET, rest, ip_address], ":", get_property: [TARGET, rest, port]] }
+          implementation: playbook/connect_yorc.yml
