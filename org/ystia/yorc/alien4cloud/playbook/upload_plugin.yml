@@ -20,15 +20,16 @@
 
     # if a file is given as an artifact, upload it as a plugin for alien
     - name: "Ensure the file {{ plugin_artifact }} exists"
-      local_action: "stat path={{ plugin_artifact }}"
+      stat: path="{{ plugin_artifact }}"
       register: stat_plugin_artifact
 
     - name: "copy plugin artifact"
       copy:
         src: "{{ plugin_artifact }}"
         dest: "/tmp/plugin_artifact_{{ INSTANCE }}.zip"
-      # when: stat_plugin_artifact.stat.exists
+        remote_src: yes
+      when: stat_plugin_artifact.stat.exists
 
     - name: Upload plugin archive to A4C
       shell: "curl -k -X POST -H 'cookie: {{ session_id }}' -F file=@/tmp/plugin_artifact_{{ INSTANCE }}.zip '{{ alien_url }}/rest/latest/plugins'"
-      # when: stat_plugin_artifact.stat.exists
+      when: stat_plugin_artifact.stat.exists
