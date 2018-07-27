@@ -29,7 +29,7 @@ node_types:
   org.ystia.yorc.pub.nodes.YorcServer:
     derived_from: tosca.nodes.SoftwareComponent
     metadata:
-      icon: "yorc.png"
+      icon: "yorcicon.png"
     abstract: true
     properties:
       download_url:

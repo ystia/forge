@@ -31,6 +31,8 @@ imports:
 node_types:
   org.ystia.yorc.linux.ansible.nodes.YorcServer:
     derived_from: org.ystia.yorc.pub.nodes.YorcServer
+    metadata:
+      icon: "yorcicon.png"
     interfaces:
       Standard:
         inputs:
