@@ -52,6 +52,14 @@ node_types:
         type: string
         required: true
         default: /var/yorc
+    requirements:
+    - consul:
+        capability: org.ystia.yorc.samples.consul.pub.capabilities.ConsulAgent
+        occurrences: [ 1, 1 ]
+    - ansible:
+        capability: org.ystia.ansible.pub.capabilities.AnsibleRuntime
+        relationship: tosca.relationships.DependsOn
+        occurrences: [ 1, 1 ]
     capabilities:
       rest:
         type: org.ystia.yorc.yorc.pub.capabilities.YorcRestAPI
