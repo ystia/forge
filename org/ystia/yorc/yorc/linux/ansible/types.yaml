@@ -42,7 +42,7 @@ node_types:
         create:
           inputs:
             DOWNLOAD_URL: { get_property: [SELF, download_url] }
-          implementation: playbooks/create.yml    
+          implementation: playbooks/create.yml
         configure: playbooks/configure.yml
         start: playbooks/start.yml
         stop: playbooks/stop.yml
