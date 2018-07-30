@@ -25,6 +25,7 @@ Restart=on-failure
 ExecStart={{INSTALL_DIR}}/yorc server -c {{CONFIG_DIR}}/config.yorc.yaml
 KillSignal=SIGINT
 TimeoutStopSec=360
+WorkingDirectory=/var/yorc
 
 [Install]
 WantedBy=multi-user.target
