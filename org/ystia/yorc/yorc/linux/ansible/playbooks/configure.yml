@@ -33,7 +33,7 @@
     - name: Assemble config file
       assemble:
         src: /tmp/yorc.d/
-        dest: /etc/yorc/config.yorc.yaml
+        dest: '{{CONFIG_DIR}}/config.yorc.yaml'
         owner: yorc
         group: yorc
         mode: "u=rw,g=rw,o=r"
