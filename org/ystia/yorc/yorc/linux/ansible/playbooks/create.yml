@@ -87,6 +87,12 @@
         creates: "{{INSTALL_DIR}}/yorc"
         mode: "u=rx,g=rx,o=rx"
 
+    - name: Setup Yorc proxies
+      template:
+        src: proxies.j2
+        dest: "{{CONFIG_DIR}}/proxies.env"
+        mode: "u=rw,g=rw,o=r"
+
     - name: Install Yorc systemd unit
       template: 
         src: yorc.service.j2

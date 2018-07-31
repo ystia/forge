@@ -13,20 +13,8 @@ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 See the License for the specific language governing permissions and
 limitations under the License.
 #}
-[Unit]
-Description=Yorc service discovery agent
-Requires=network-online.target
-After=network.target
+HTTP_PROXY={% if ansible_env['HTTP_PROXY'] is defined %}{{ansible_env['HTTP_PROXY']}}{%elif ansible_env['http_proxy'] is defined %}{{ansible_env['http_proxy']}}{%endif%}
 
-[Service]
-User=yorc
-Group=yorc
-Restart=on-failure
-ExecStart={{INSTALL_DIR}}/yorc server -c {{CONFIG_DIR}}/config.yorc.yaml
-KillSignal=SIGINT
-TimeoutStopSec=360
-WorkingDirectory=/var/yorc
-EnvironmentFile={{CONFIG_DIR}}/proxies.env
+HTTPS_PROXY={% if ansible_env['HTTPS_PROXY'] is defined %}{{ansible_env['HTTPS_PROXY']}}{%elif ansible_env['https_proxy'] is defined %}{{ansible_env['https_proxy']}}{%endif%}
 
-[Install]
-WantedBy=multi-user.target
+NO_PROXY={% if ansible_env['NO_PROXY'] is defined %}{{ansible_env['NO_PROXY']}}{%elif ansible_env['no_proxy'] is defined %}{{ansible_env['no_proxy']}}{%endif%}
