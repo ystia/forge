@@ -26,6 +26,38 @@ imports:
   - org.ystia.ansible.pub:1.0.0-SNAPSHOT
 
 node_types:
+  org.ystia.yorc.pub.infrastructure.OpenStackConfig:
+    derived_from: tosca.nodes.Root
+    description: |
+      Openstack Infrastructure configuration for Yorc
+    abstract: true
+    properties:
+      auth_url:
+        type: string
+        required: true
+      tenant_name:
+        type: string
+        required: true
+      user_name:
+        type: string
+        required: true
+      password:
+        type: string
+        required: true
+      private_network_name:
+        type: string
+        required: true
+      default_security_groups:
+        type: list
+        required: true
+        entry_schema:
+          type: string
+    requirements:
+    - host:
+        capability: org.ystia.yorc.pub.capabilities.YorcConfigContainer
+        relationship: org.ystia.yorc.pub.relationships.YorcConfigHostedOnYorc
+        occurrences: [ 1, 1 ]
+
   org.ystia.yorc.pub.nodes.YorcServer:
     derived_from: tosca.nodes.SoftwareComponent
     metadata:
@@ -62,10 +94,12 @@ node_types:
         occurrences: [ 1, 1 ]
     capabilities:
       rest:
-        type: org.ystia.yorc.yorc.pub.capabilities.YorcRestAPI
+        type: org.ystia.yorc.pub.capabilities.YorcRestAPI
+      config:
+        type: org.ystia.yorc.pub.capabilities.YorcConfigContainer
 
 capability_types:
-  org.ystia.yorc.yorc.pub.capabilities.YorcRestAPI:
+  org.ystia.yorc.pub.capabilities.YorcRestAPI:
     derived_from: tosca.capabilities.Endpoint
     description: >
       A ConsulAgent capability allows to binds to the Consul HTTP API.
@@ -84,4 +118,9 @@ capability_types:
         default: http
         constraints:
           - valid_values: ["http", "https"]
-      
+  org.ystia.yorc.pub.capabilities.YorcConfigContainer:
+    derived_from: tosca.capabilities.Container
+
+relationship_types:
+  org.ystia.yorc.pub.relationships.YorcConfigHostedOnYorc:
+    derived_from: tosca.relationships.HostedOn

@@ -29,8 +29,24 @@ imports:
 
 
 node_types:
+  org.ystia.yorc.infrastructure.OpenStackConfig:
+    derived_from: org.ystia.yorc.pub.infrastructure.OpenStackConfig
+    interfaces:
+      Standard:
+        inputs:
+          CONFIG_DIR: { get_property: [HOST, config_dir] }
+          AUTH_URL: { get_property: [SELF, auth_url] }
+          TENANT_NAME: { get_property: [SELF, tenant_name] }
+          USER_NAME: { get_property: [SELF, user_name] }
+          PASSWORD: { get_property: [SELF, password] }
+          PRIVATE_NETWORK_NAME: { get_property: [SELF, private_network_name] }
+          DEFAULT_SECURITY_GROUPS: { get_property: [SELF, default_security_groups] }
+        configure:
+          implementation: playbooks/configure_openstack.yml
+
   org.ystia.yorc.linux.ansible.nodes.YorcServer:
     derived_from: org.ystia.yorc.pub.nodes.YorcServer
+    description: Yorc server instance
     metadata:
       icon: "yorcicon.png"
     interfaces:

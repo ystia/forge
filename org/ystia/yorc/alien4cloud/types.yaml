@@ -20,7 +20,7 @@ node_types:
     derived_from: org.alien4cloud.alien4cloud.pub.nodes.AlienConfigurator
     requirements:
       - yorc:
-          capability: org.ystia.yorc.yorc.pub.capabilities.YorcRestAPI
+          capability: org.ystia.yorc.pub.capabilities.YorcRestAPI
           relationship: org.ystia.yorc.alien4cloud.relationships.ConnectsToYorc
           occurrences: [1, 1]
     attributes:
@@ -67,7 +67,7 @@ relationship_types:
 
   org.ystia.yorc.alien4cloud.relationships.ConnectsToYorc:
     derived_from: tosca.relationships.ConnectsTo
-    valid_target_types: [ org.ystia.yorc.yorc.pub.capabilities.YorcRestAPI ]
+    valid_target_types: [ org.ystia.yorc.pub.capabilities.YorcRestAPI ]
     interfaces:
       Configure:
         pre_configure_source:
