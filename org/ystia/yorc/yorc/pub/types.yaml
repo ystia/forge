@@ -68,7 +68,7 @@ node_types:
         description: The URL used to download the Yorc archive.
         type: string
         required: true
-        default: https://github.com/ystia/yorc/releases/download/v3.0.0-M3/yorc.tgz
+        default: https://github.com/ystia/yorc/releases/download/v3.0.0/yorc.tgz
       install_dir:
         description: Installation directory for the Yorc binary
         type: string
