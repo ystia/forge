@@ -57,6 +57,9 @@ node_types:
         capability: org.ystia.yorc.pub.capabilities.YorcConfigContainer
         relationship: org.ystia.yorc.pub.relationships.YorcConfigHostedOnYorc
         occurrences: [ 1, 1 ]
+    artifacts:
+    - key_pair:
+        type: tosca.artifacts.File
 
   org.ystia.yorc.pub.nodes.YorcServer:
     derived_from: tosca.nodes.SoftwareComponent

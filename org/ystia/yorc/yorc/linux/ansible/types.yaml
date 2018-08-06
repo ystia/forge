@@ -43,6 +43,9 @@ node_types:
           DEFAULT_SECURITY_GROUPS: { get_property: [SELF, default_security_groups] }
         configure:
           implementation: playbooks/configure_openstack.yml
+    artifacts:
+      - key_pair:
+          type: tosca.artifacts.File
 
   org.ystia.yorc.linux.ansible.nodes.YorcServer:
     derived_from: org.ystia.yorc.pub.nodes.YorcServer
