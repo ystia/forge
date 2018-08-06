@@ -130,7 +130,7 @@ For the second method:
 
   - Repository URL: https://github.com/ystia/forge.git
   - Credentials: *none*
-  - Tag: **develop**
+  - Branch: **develop**
   - Archive to import: **org/ystia**
 
 - and then execute the import operation.
