@@ -57,7 +57,7 @@ To simplify topology creation, Ystia Forge provides **topology templates** that 
 .. _Træfik: https://traefik.io/
 
 
-The current version of **Ystia Forge** is **2.0.0**.
+The current version of **Ystia Forge** is **1.4.0**.
 
 
 .. *********************************************************************************************************************
@@ -110,7 +110,7 @@ To create and run application using Ystia Forge components require:
 
 - A running instance of **Alien4Cloud**, version **2.0.0**.
 - A running instance of **Ystia Orchestrator**, version **3.0.0**.
-- The components and topology templates from **Ystia Forge**, version **2.0.0**, must be imported to the Alien4Cloud catalog.
+- The components and topology templates from **Ystia Forge**, version **1.4.1**, must be imported to the Alien4Cloud catalog.
 
 .. _getting_started_build_section:
 
@@ -128,7 +128,7 @@ For the second method:
 
 - you need to configure a Git Location corresponding to the Ystia Forge in Alien4Cloud.
 
-  - Repository URL: https://github.com/alien4cloud/csar-public-library.git
+  - Repository URL: https://github.com/ystia/forge.git
   - Credentials: *none*
   - Tag: **v2.0.0**
   - Archive to import: **org/ystia**
