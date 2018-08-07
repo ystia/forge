@@ -77,3 +77,8 @@
         dest: "{{ DATA_DIR }}/.ssh/{{ key_pair | basename }}"
         remote_src: yes
       when: stat_key_pair.stat.exists
+
+    - name: restart Yorc
+      systemd:
+        name: yorc
+        state: restarted

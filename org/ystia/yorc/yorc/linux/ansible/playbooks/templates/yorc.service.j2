@@ -26,7 +26,6 @@ ExecStart={{INSTALL_DIR}}/yorc server -c {{CONFIG_DIR}}/config.yorc.yaml
 KillSignal=SIGINT
 TimeoutStopSec=360
 WorkingDirectory=/var/yorc
-EnvironmentFile={{CONFIG_DIR}}/proxies.env
 
 [Install]
 WantedBy=multi-user.target
