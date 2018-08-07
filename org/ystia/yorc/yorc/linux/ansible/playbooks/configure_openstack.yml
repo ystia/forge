@@ -65,9 +65,15 @@
       stat: path="{{ key_pair }}"
       register: stat_key_pair
 
+    - name: "Ensures {{ DATA_DIR }}/.ssh dir exists"
+      file:
+        path: "{{ DATA_DIR }}/.ssh"
+        state: directory
+      when: stat_key_pair.stat.exists
+
     - name: "copy key pair artifact"
       copy:
         src: "{{ key_pair }}"
-        dest: "{{ DATA_DIR}}/.ssh/{{ key_pair | basename }}"
+        dest: "{{ DATA_DIR }}/.ssh/{{ key_pair | basename }}"
         remote_src: yes
       when: stat_key_pair.stat.exists

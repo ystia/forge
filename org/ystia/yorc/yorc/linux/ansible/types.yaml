@@ -35,6 +35,7 @@ node_types:
       Standard:
         inputs:
           CONFIG_DIR: { get_property: [HOST, config_dir] }
+          DATA_DIR: { get_property: [SELF, data_dir] }
           AUTH_URL: { get_property: [SELF, auth_url] }
           TENANT_NAME: { get_property: [SELF, tenant_name] }
           USER_NAME: { get_property: [SELF, user_name] }
