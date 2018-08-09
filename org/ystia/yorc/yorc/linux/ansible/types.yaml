@@ -88,4 +88,5 @@ relationship_types:
             CONSUL_SCHEME: "http"
             CONSUL_IP: { get_attribute: [TARGET, ip_address] }
             CONSUL_PORT: { get_property: [TARGET, consul_agent, api_port] }
+            REST_API_PORT: { get_property: [SOURCE, rest, port] }
           implementation: playbooks/join_consul.yml
