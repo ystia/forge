@@ -96,6 +96,8 @@
 
     - set_fact:
         tmp: '{ "urlYorc": "{{ yorc_url }}" }'
+    - set_fact:
+        orchestratorConfiguration: "{{ orchestratorConfiguration | combine(tmp) }}"
 
     # - set_fact:
     #     tmp: '{ "disableDiamondMonitorAgent": "{{ disableDiamondMonitorAgent }}" }'
