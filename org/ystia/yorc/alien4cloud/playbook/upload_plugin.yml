@@ -4,6 +4,11 @@
   strategy: linear
   become: true
   tasks:
+    - name: Download plugin archive
+      get_url:
+        url: "{{ download_url }}"
+        dest: "/tmp/alien4cloud-yorc-plugin_{{ INSTANCE }}.zip"
+
     - name: "Login onto A4C using {{ alien_url }}/login?username={{ alien_user }}&password={{ alien_password }}&submit=Login"
       uri:
         url: "{{ alien_url }}/login?username={{ alien_user }}&password={{ alien_password }}&submit=Login"
@@ -18,18 +23,5 @@
     - set_fact:
         session_id: "{{ login.set_cookie.split(';')[0] }}"
 
-    # if a file is given as an artifact, upload it as a plugin for alien
-    - name: "Ensure the file {{ plugin_artifact }} exists"
-      stat: path="{{ plugin_artifact }}"
-      register: stat_plugin_artifact
-
-    - name: "copy plugin artifact"
-      copy:
-        src: "{{ plugin_artifact }}"
-        dest: "/tmp/plugin_artifact_{{ INSTANCE }}.zip"
-        remote_src: yes
-      when: stat_plugin_artifact.stat.exists
-
     - name: Upload plugin archive to A4C
-      shell: "curl -k -X POST -H 'cookie: {{ session_id }}' -F file=@/tmp/plugin_artifact_{{ INSTANCE }}.zip '{{ alien_url }}/rest/latest/plugins'"
-      when: stat_plugin_artifact.stat.exists
+      shell: "curl -k -X POST -H 'cookie: {{ session_id }}' -F file=@/tmp/alien4cloud-yorc-plugin_{{ INSTANCE }}.zip '{{ alien_url }}/rest/latest/plugins'"
