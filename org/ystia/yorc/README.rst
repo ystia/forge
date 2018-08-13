@@ -39,7 +39,9 @@ Requirements
 
 - **host**: Yorc should be hosted on a Compute component.
 
-- **ansible**: Yorc needs ansible to be installed on the host
+- **ansible**: Yorc needs ansible to be installed on the host (node AnsibleRuntime)
+
+- **terraform**: Yorc needs terraform to be installed on the host (node TerraformRuntime)
 
 - **consul**: Yorc needs a consulServer or a consulAgent
 

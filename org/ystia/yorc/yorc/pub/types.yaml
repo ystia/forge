@@ -24,6 +24,7 @@ imports:
   - tosca-normative-types:1.0.0-ALIEN20
   - org.ystia.yorc.samples.consul.pub:1.0.0-SNAPSHOT
   - org.ystia.ansible.pub:1.0.0-SNAPSHOT
+  - org.ystia.terraform.pub:1.0.0-SNAPSHOT
 
 node_types:
   org.ystia.yorc.pub.infrastructure.OpenStackConfig:
@@ -97,6 +98,10 @@ node_types:
         occurrences: [ 1, 1 ]
     - ansible:
         capability: org.ystia.ansible.pub.capabilities.AnsibleRuntime
+        relationship: tosca.relationships.DependsOn
+        occurrences: [ 1, 1 ]
+    - terraform:
+        capability: org.ystia.terraform.pub.capabilities.TerraformRuntime
         relationship: tosca.relationships.DependsOn
         occurrences: [ 1, 1 ]
     capabilities:
