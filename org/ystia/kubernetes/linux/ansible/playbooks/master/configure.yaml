@@ -80,7 +80,10 @@
 
     - name: Pregenerate SA keypair
       shell: >
-        kubeadm alpha phase certs sa --config=/etc/kubernetes/config.yaml 2>&1 | tee /root/kubeadm-gensa.log 
+        exec > >(tee -a "/root/kubeadm-gensa.log") 2>&1
+        kubeadm alpha phase certs sa --config=/etc/kubernetes/config.yaml 2>&1
+      args:
+        executable: /bin/bash
       when: inventory_hostname == ansible_play_hosts[0]
 
     - name: slurp SA certs
@@ -121,7 +124,10 @@
 
     - name: Run kubeadm init
       shell: > 
-        kubeadm init --ignore-preflight-errors=FileAvailable--etc-kubernetes-manifests-etcd.yaml,ExternalEtcdVersion --config=/etc/kubernetes/config.yaml 2>&1 | tee /root/kubeinit.log
+        exec > >(tee -a "/root/kubeinit.log") 2>&1
+        kubeadm init --ignore-preflight-errors=FileAvailable--etc-kubernetes-manifests-etcd.yaml,ExternalEtcdVersion --config=/etc/kubernetes/config.yaml 2>&1
+      args:
+        executable: /bin/bash
       environment:
         NO_PROXY: "{{NO_PROXY}}"
         no_proxy: "{{no_proxy}}"

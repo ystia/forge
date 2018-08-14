@@ -30,7 +30,7 @@ topology_template:
         hosts_pods: false
         kube_yum_repo: "https://packages.cloud.google.com/yum/repos/kubernetes-el7-x86_64"
         kube_yum_repo_gpg_keys: "https://packages.cloud.google.com/yum/doc/yum-key.gpg https://packages.cloud.google.com/yum/doc/rpm-package-key.gpg"
-        component_version: "1.10-stable"
+        component_version: "1.10"
       requirements:
         - hostedOnComputeHost:
             type_requirement: host
@@ -114,7 +114,7 @@ topology_template:
       properties:
         kube_yum_repo: "https://packages.cloud.google.com/yum/repos/kubernetes-el7-x86_64"
         kube_yum_repo_gpg_keys: "https://packages.cloud.google.com/yum/doc/yum-key.gpg https://packages.cloud.google.com/yum/doc/rpm-package-key.gpg"
-        component_version: "1.10-stable"
+        component_version: "1.10"
       requirements:
         - hostedOnComputeKubeWorkerHost:
             type_requirement: host

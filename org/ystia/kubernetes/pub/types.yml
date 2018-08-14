@@ -28,9 +28,9 @@ node_types:
       component_version:
         type: version
         required: false
-        default: 1.10-stable
+        default: "1.10"
         constraints:
-          - greater_or_equal: 1.10-stable
+          - greater_or_equal: "1.10"
     capabilities:
       api_server: org.ystia.kubernetes.pub.capabilities.KubernetesAPIServer
       app_host: org.ystia.kubernetes.pub.capabilities.AppHosting
@@ -47,9 +47,9 @@ node_types:
       component_version:
         type: version
         required: false
-        default: 1.10-stable
+        default: "1.10"
         constraints:
-          - greater_or_equal: 1.10-stable
+          - greater_or_equal: "1.10"
     requirements:
       - api_server:   
           capability: org.ystia.kubernetes.pub.capabilities.KubernetesAPIServer
