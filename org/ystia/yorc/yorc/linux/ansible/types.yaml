@@ -63,7 +63,10 @@ node_types:
           inputs:
             DOWNLOAD_URL: { get_property: [SELF, download_url] }
           implementation: playbooks/create.yml
-        configure: playbooks/configure.yml
+        configure:
+          inputs:
+            REST_API_PORT: { get_property: [SELF, rest, port] }
+          implementation: playbooks/configure.yml
         start: playbooks/start.yml
         stop: playbooks/stop.yml
         delete: playbooks/delete.yml
@@ -88,5 +91,4 @@ relationship_types:
             CONSUL_SCHEME: "http"
             CONSUL_IP: { get_attribute: [TARGET, ip_address] }
             CONSUL_PORT: { get_property: [TARGET, consul_agent, api_port] }
-            REST_API_PORT: { get_property: [SOURCE, rest, port] }
           implementation: playbooks/join_consul.yml
