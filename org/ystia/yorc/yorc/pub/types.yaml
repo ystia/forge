@@ -57,14 +57,67 @@ node_types:
         type: list
         entry_schema:
           type: string
+      key_pair:
+        description: "Content of the key pair used to connect on the OpenStack computes. Stored as ~/.ssh/yorc.pem"
+        type: string
     requirements:
     - host:
         capability: org.ystia.yorc.pub.capabilities.YorcConfigContainer
         relationship: org.ystia.yorc.pub.relationships.YorcConfigHostedOnYorc
         occurrences: [ 1, 1 ]
-    artifacts:
-    - key_pair:
-        type: tosca.artifacts.File
+
+  org.ystia.yorc.pub.infrastructure.AWSConfig:
+    derived_from: tosca.nodes.Root
+    description: |
+      AWS Infrastructure configuration for Yorc
+    abstract: true
+    properties:
+      access_key:
+        description: "The AWS access key credential."
+        type: string
+        required: true
+      secret_key:
+        description: "The AWS secret key credential."
+        type: string
+        required: true
+      region:
+        description: "The AWS region to use."
+        type: string
+        required: true
+    requirements:
+    - host:
+        capability: org.ystia.yorc.pub.capabilities.YorcConfigContainer
+        relationship: org.ystia.yorc.pub.relationships.YorcConfigHostedOnYorc
+        occurrences: [ 1, 1 ]
+
+  org.ystia.yorc.pub.infrastructure.KubernetesConfig:
+    derived_from: tosca.nodes.Root
+    description: |
+      Kubernetes Infrastructure configuration for Yorc
+    abstract: true
+    properties:
+      master_url:
+        description: "URL of the HTTP API of Kubernetes is exposed. Format: https://<host>:<port>"
+        type: string
+        required: true
+      ca:
+        description: "Trusted root certificates for server"
+        type: string
+      cert:
+        description: "The TLS client certificate used for authentication"
+        type: string
+      key:
+        description: "The TLS client key used for authentication"
+        type: string
+      insecure:
+        description: "Server should be accessed without verifying the TLS certificate (testing only)"
+        type: boolean
+        default: false
+    requirements:
+    - host:
+        capability: org.ystia.yorc.pub.capabilities.YorcConfigContainer
+        relationship: org.ystia.yorc.pub.relationships.YorcConfigHostedOnYorc
+        occurrences: [ 1, 1 ]
 
   org.ystia.yorc.pub.nodes.YorcServer:
     derived_from: tosca.nodes.SoftwareComponent

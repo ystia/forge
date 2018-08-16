@@ -15,7 +15,7 @@
 #
 
 
-- name: Setup Openstack config
+- name: Setup AWS config
   hosts: all
   strategy: free
   tasks:
@@ -27,32 +27,17 @@
         yorcConfig: "{{ result.stdout | from_yaml }}"
 
     - set_fact:
-        tmp: '{ "infrastructures": { "openstack": { "auth_url": "{{ AUTH_URL }}" } } }'
+        tmp: '{ "infrastructures": { "aws": { "access_key": "{{ ACCESS_KEY }}" } } }'
     - set_fact:
         yorcConfig: "{{ yorcConfig | combine(tmp, recursive=True) }}"
 
     - set_fact:
-        tmp: '{ "infrastructures": { "openstack": { "tenant_name": "{{ TENANT_NAME }}" } } }'
+        tmp: '{ "infrastructures": { "aws": { "secret_key": "{{ SECRET_KEY }}" } } }'
     - set_fact:
         yorcConfig: "{{ yorcConfig | combine(tmp, recursive=True) }}"
 
     - set_fact:
-        tmp: '{ "infrastructures": { "openstack": { "user_name": "{{ USER_NAME }}" } } }'
-    - set_fact:
-        yorcConfig: "{{ yorcConfig | combine(tmp, recursive=True) }}"
-
-    - set_fact:
-        tmp: '{ "infrastructures": { "openstack": { "password": "{{ PASSWORD }}" } } }'
-    - set_fact:
-        yorcConfig: "{{ yorcConfig | combine(tmp, recursive=True) }}"
-
-    - set_fact:
-        tmp: '{ "infrastructures": { "openstack": { "private_network_name": "{{ PRIVATE_NETWORK_NAME }}" } } }'
-    - set_fact:
-        yorcConfig: "{{ yorcConfig | combine(tmp, recursive=True) }}"
-
-    - set_fact:
-        tmp: '{ "infrastructures": { "openstack": { "default_security_groups": {{ DEFAULT_SECURITY_GROUPS }} } } }'
+        tmp: '{ "infrastructures": { "aws": { "region": "{{ REGION }}" } } }'
     - set_fact:
         yorcConfig: "{{ yorcConfig | combine(tmp, recursive=True) }}"
 
@@ -60,16 +45,6 @@
       copy:
         content: "{{ yorcConfig | to_yaml }}"
         dest: "{{ CONFIG_DIR }}/config.yorc.yaml"
-
-    - name: "Ensures {{ DATA_DIR }}/.ssh dir exists"
-      file:
-        path: "{{ DATA_DIR }}/.ssh"
-        state: directory
-
-    - name: "Copy key pair"
-      copy:
-        content: "{{ KEY_PAIR }}"
-        dest: "{{ DATA_DIR }}/.ssh/yorc.pem"
 
     - name: restart Yorc
       systemd:

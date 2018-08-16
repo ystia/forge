@@ -15,10 +15,30 @@
 #
 
 
-- name: Setup Openstack config
+- name: Setup Kubernetes config
   hosts: all
   strategy: free
   tasks:
+    - name: "Ensures {{ CONFIG_DIR }}/kubernetes dir exists"
+      file:
+        path: "{{ CONFIG_DIR }}/kubernetes"
+        state: directory
+
+    - name: "Copy ca.pem"
+      copy:
+        content: "{{ CA }}"
+        dest: "{{ CONFIG_DIR }}/kubernetes/ca.pem"
+
+    - name: "Copy client.crt"
+      copy:
+        content: "{{ CERT }}"
+        dest: "{{ CONFIG_DIR }}/kubernetes/client.crt"
+
+    - name: "Copy client.key"
+      copy:
+        content: "{{ KEY }}"
+        dest: "{{ CONFIG_DIR }}/kubernetes/client.key"
+
     - name: "get current config of Yorc"
       shell: "cat {{ CONFIG_DIR }}/config.yorc.yaml"
       register: result
@@ -27,32 +47,27 @@
         yorcConfig: "{{ result.stdout | from_yaml }}"
 
     - set_fact:
-        tmp: '{ "infrastructures": { "openstack": { "auth_url": "{{ AUTH_URL }}" } } }'
+        tmp: '{ "infrastructures": { "kubernetes": { "master_url": "{{ MASTER_URL }}" } } }'
     - set_fact:
         yorcConfig: "{{ yorcConfig | combine(tmp, recursive=True) }}"
 
     - set_fact:
-        tmp: '{ "infrastructures": { "openstack": { "tenant_name": "{{ TENANT_NAME }}" } } }'
+        tmp: '{ "infrastructures": { "kubernetes": { "ca_file": "{{ CONFIG_DIR }}/kubernetes/ca.pem" } } }'
     - set_fact:
         yorcConfig: "{{ yorcConfig | combine(tmp, recursive=True) }}"
 
     - set_fact:
-        tmp: '{ "infrastructures": { "openstack": { "user_name": "{{ USER_NAME }}" } } }'
+        tmp: '{ "infrastructures": { "kubernetes": { "cert_file": "{{ CONFIG_DIR }}/kubernetes/client.crt" } } }'
     - set_fact:
         yorcConfig: "{{ yorcConfig | combine(tmp, recursive=True) }}"
 
     - set_fact:
-        tmp: '{ "infrastructures": { "openstack": { "password": "{{ PASSWORD }}" } } }'
+        tmp: '{ "infrastructures": { "kubernetes": { "key_file": "{{ CONFIG_DIR }}/kubernetes/client.key" } } }'
     - set_fact:
         yorcConfig: "{{ yorcConfig | combine(tmp, recursive=True) }}"
 
     - set_fact:
-        tmp: '{ "infrastructures": { "openstack": { "private_network_name": "{{ PRIVATE_NETWORK_NAME }}" } } }'
-    - set_fact:
-        yorcConfig: "{{ yorcConfig | combine(tmp, recursive=True) }}"
-
-    - set_fact:
-        tmp: '{ "infrastructures": { "openstack": { "default_security_groups": {{ DEFAULT_SECURITY_GROUPS }} } } }'
+        tmp: '{ "infrastructures": { "kubernetes": { "insecure": "{{ INSECURE }}" } } }'
     - set_fact:
         yorcConfig: "{{ yorcConfig | combine(tmp, recursive=True) }}"
 
@@ -60,16 +75,6 @@
       copy:
         content: "{{ yorcConfig | to_yaml }}"
         dest: "{{ CONFIG_DIR }}/config.yorc.yaml"
-
-    - name: "Ensures {{ DATA_DIR }}/.ssh dir exists"
-      file:
-        path: "{{ DATA_DIR }}/.ssh"
-        state: directory
-
-    - name: "Copy key pair"
-      copy:
-        content: "{{ KEY_PAIR }}"
-        dest: "{{ DATA_DIR }}/.ssh/yorc.pem"
 
     - name: restart Yorc
       systemd:
