@@ -11,6 +11,23 @@
           path: "{{ file_dir }}"
           state: directory
 
+      - name: "Echo <{{ yorc_url_ha }}> in file <{{ file_dir }}/yorc_url>"
+        shell: "echo '{{ yorc_url_ha }}' > {{ file_dir }}/yorc_url"
+        when:  not(
+          (yorc_url_ha is undefined)
+          or
+          (yorc_url_ha is none)
+          or
+          (yorc_url_ha | trim == '')
+          )
+
       - name: "Echo <{{ yorc_url }}> in file <{{ file_dir }}/yorc_url>"
         shell: "echo '{{ yorc_url }}' > {{ file_dir }}/yorc_url"
-        when: yorc_url is defined
+        when:  (
+          (yorc_url_ha is undefined)
+          or
+          (yorc_url_ha is none)
+          or
+          (yorc_url_ha | trim == '')
+          )
+

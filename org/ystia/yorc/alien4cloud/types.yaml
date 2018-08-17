@@ -48,6 +48,9 @@ node_types:
         type: string
         required: true
         default: yorc-orchestrator-factory
+      yorc_address_ha:
+        type: string
+        required: false
     interfaces:
       Standard:
         start:
@@ -75,5 +78,6 @@ relationship_types:
       Configure:
         pre_configure_source:
           inputs:
+            yorc_url_ha: { concat: [get_property: [TARGET, rest, protocol], "://", get_property: [SOURCE, yorc_address_ha ], ":", get_property: [TARGET, rest, port]] }
             yorc_url: { concat: [get_property: [TARGET, rest, protocol], "://", get_attribute: [TARGET, rest, ip_address], ":", get_property: [TARGET, rest, port]] }
           implementation: playbook/connect_yorc.yml
