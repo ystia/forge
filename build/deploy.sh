@@ -24,14 +24,14 @@
 ##
 
 
-#set -x
-#set -e
+set -x
+set -e
 
 script_dir="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 root_dir="$(readlink -f "${script_dir}/..")"
 
 # Version without snapshot for bintray
-version="$(cat ${root_dir}/versions.yaml | grep forge_version | awk '{print $2}' | sed -e 's/-SNAPSHOT//')"
+version="$(cat ${root_dir}/versions.yaml | grep forge_version | awk '{print $2}' | /bin/sed -e 's/-SNAPSHOT//')"
 
 #### Test variables
 #TRAVIS_TAG="3.0.0-RC1"
