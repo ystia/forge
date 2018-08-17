@@ -1,0 +1,56 @@
+tosca_definitions_version: alien_dsl_2_0_0
+#
+# Copyright 2018 Bull S.A.S. Atos Technologies - Bull, Rue Jean Jaures, B.P.68, 78340, Les Clayes-sous-Bois, France.
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+#
+
+metadata:
+  template_name: org.ystia.nfs.pub
+  template_version: 1.0.0-SNAPSHOT
+  template_author: yorc
+
+imports:
+  - tosca-normative-types:1.0.0-ALIEN20
+
+node_types:
+  org.ystia.nfs.pub.nodes.NFSServer:
+    derived_from: tosca.nodes.SoftwareComponent
+    abstract: true
+    capabilities:
+      nfs_server:
+        type: org.ystia.nfs.pub.capabilities.NFSServer
+
+  org.ystia.nfs.pub.nodes.NFSClient:
+    derived_from: tosca.nodes.SoftwareComponent
+    abstract: true
+    properties:
+      directory:
+        type: string
+        description: "Path of the shared directory to mount"
+        default: "/var/nfs"
+    requirements:
+      - nfs_server:
+          capability: org.ystia.nfs.pub.capabilities.NFSServer
+          occurrences: [1, 1]
+
+capability_types:
+  org.ystia.nfs.pub.capabilities.NFSServer:
+    derived_from: tosca.capabilities.Endpoint
+
+relationship_types:
+  org.ystia.nfs.pub.relationships.JoinNFSServer:
+    derived_from: tosca.relationships.ConnectsTo
+    description: >
+      Joins to a NFS Server
+    valid_target_types: [ org.ystia.nfs.pub.capabilities.NFSServer ]
