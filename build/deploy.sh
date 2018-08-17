@@ -40,7 +40,7 @@ version="$(cat ${root_dir}/versions.yaml | grep forge_version | awk '{print $2}'
 
 #### Bintray Variables
 bintray_base_url="https://api.bintray.com/content"
-bintray_api_user="stebenoist"
+bintray_api_user="loicalbertin"
 bintray_repo_distrib="ystia/forge/distributions"
 
 bintray_releases_path="releases"
