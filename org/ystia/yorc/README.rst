@@ -12,7 +12,7 @@ Yorc
 YorcServer Component
 --------------------
 
-The Yorc component is responsible of the installation and configuration of Yorc itself.
+The Yorc component is responsible of the installation and configuration of Yorc itself. The ConsulAgent linked to the YorcServer has to be on the same host as the YorcServer.
 
 Properties
 ^^^^^^^^^^
