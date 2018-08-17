@@ -1,0 +1,30 @@
+language: python
+python:
+  - "2.7"
+
+sudo: required
+
+env:
+  global:
+    - secure: gXwZlcsYZtbp4P/xABkXeBRHawfoUoBosS65s2fahC7xXJB3JPNsDNvvKMPz2sT4UIQ7bwsu2fJIUG3mFH2YjxvZsdKiQwNe+ghj+YpGPL6HPe08ZuxR+E84khK8zoSBtb80NdhxJvYVRJm0IaZK2dQx+BUtsSRTHNR859EdOL/MdVc0fgBRluar4jfq1MlVZH26AYZlZIdD40ZUmJXI18dsG+YSEXB+W4re5bpz5C++qdC3EiCghOPG1SOQRnMTG+6iyb3sWlyUlDfOa20uf3NPWc/pQCPRsKITenWuxd86DRYvhoknzGM4oxUtNymHv7n3fNZ/K49WDMzAhEd/kfNjOMc+CpLWtugqnSPpYIjKzDA8rMuvaIWjjgNcg6u5DV3uxohyJw/bIv23BB7i4b9C5mifymFMhkRqK01JbCMjIxRgzBspf3v3wvZrFntt2M/ic3A8BLxRLnaz76eKANlPejwhKkbvAYHqZQKQEywRyV6iKlfQjB2sbSty8bJW/vxXbigjFydIT4Af2CLzhU2XyT1vMXw8HPV1bKqJW1acpxlVDHrINcmKRhA//zEg0Z7a0fBlhmK/m5e7omrMDxxKFGDkDyKNy90WQZ+vh5Cxi2TWMs113ug/R91svAmAhUnUZV6dwx7dfxTbXVdiSxGnNbunNHNr4Pnbvdogyhk=
+
+script:
+  - bash build/zip_csar.sh
+
+deploy:
+  - provider: script
+    script: bash build/deploy.sh
+    on:
+      all_branches: true
+    skip_cleanup: true
+
+  - provider: releases
+    overwrite: true
+    file_glob: true
+    api_key:
+      secure: N4G6gM4QaEUNn0DqgLazDeUh99VZzoKhbUF/v3sqvQLBLAQqL7k6pCfocuv8lLjhP4W1Xp+KpvUPC3jm8cWVApyuw0Ye9N4RBmpMNueujBO16beXXQf9oRWSCK7l9gcT++RjgIZNErcImQ99qObNB22XWzgVxvgRrqrsom+48qW/Vznh03Euv20xDBp96fvBkoTWKWW4nWZWg6sNx26c23vNZRPv49/sxa5brVdod7HD5x0QB3ZjeiChUQV7nOVfGJRtHiQuBZYGNOzStYUiLXClTB4xO5dywJ31pwLMJaOk2qLosHw+Kng5z1BghwzCfPhzMmJwVXdhUDqaVoXDRYMIHRyQFP48l3mYq0pw66JyoWyS82TnVjF4xvhbvUh7VW76kJWA15tyyM6kQ12o/14YG6GNgKp/qwRaTl5OiyH7G+8mt6ifHH/SIMkfpWQp4kTx4fHgrC6OYTuQe0YIvHt7SxRBAEXfj2wlosK7aLLzQ8OrVga/FDri85LfONE4U7anxpoDjAn8IzZrp2hFDyvZd6S7v7f6IusE0QJhSqDT1hsP9OTeKyrZSHYy9pVaZbmPKvmoz/xhx2hSEaa5gVACuPNMEfcy401SLunvrQqWQQq+qFdpTFRwCNtldWOJZeJlECZmJfz8CKbvYtJFixp+YvyjXzviO9RV83ZcY1U=
+    file:
+      - build/csars/*.zip
+    skip_cleanup: true
+    on:
+      tags: true
