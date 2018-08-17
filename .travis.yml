@@ -30,8 +30,3 @@ deploy:
     on:
       tags: true
       repo: ystia/forge
-
-addons:
-  apt:
-    packages:
-      - sed
