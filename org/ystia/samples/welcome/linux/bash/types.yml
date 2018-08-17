@@ -24,7 +24,7 @@ node_types:
     tags:
       icon: /images/welcome-icon.png
     attributes:
-      url: { concat: ["http://", get_attribute: [HOST, public_ip_address], ":", get_property: [SELF, port] ] }
+      url: { concat: ["http://", get_attribute: [HOST, public_ip_address], ":", get_property: [SELF, endpoint, port] ] }
     properties:
       component_version:
         type: version
@@ -32,20 +32,32 @@ node_types:
         default: 1.4.0
         constraints:
           - equal: 1.4.0
-      port:
-        type: integer
-        description: |
-          Port number of the Welcome HTTP server.
-        required: true
-        default: 8111
+    capabilities:
+      endpoint: org.ystia.samples.welcome.capabilities.Endpoint
     interfaces:
       Standard:
         start:
           inputs:
-            PORT: { get_property: [SELF, port] }
+            PORT: { get_property: [SELF, endpoint, port] }
           implementation: scripts/welcome_start.sh
         stop: scripts/welcome_stop.sh
     artifacts:
       - scripts:
           file: scripts
           type: tosca.artifacts.File
+
+capability_types:
+  org.ystia.samples.welcome.capabilities.Endpoint:
+    derived_from: tosca.capabilities.Endpoint
+    properties:
+      port:
+        type: integer
+        default: 8111
+        required: true
+        constraints:
+          - in_range: [ 1, 65535 ]
+      protocol:
+        type: string
+        default: http
+        constraints:
+          - equal: "http"
