@@ -148,7 +148,9 @@
     - name: Create Calico Network
       shell: >
         kubectl apply -f https://docs.projectcalico.org/v3.0/getting-started/kubernetes/installation/hosted/kubeadm/1.7/calico.yaml
-      when: pod_network == "calico"  
+      when: 
+        - inventory_hostname == ansible_play_hosts[0]
+        - pod_network == "calico"  
       environment:
         NO_PROXY: "{{NO_PROXY}}"
         no_proxy: "{{no_proxy}}"
@@ -158,7 +160,9 @@
       shell: >
         kubectl apply -f https://raw.githubusercontent.com/projectcalico/canal/master/k8s-install/1.7/rbac.yaml;
         kubectl apply -f https://raw.githubusercontent.com/projectcalico/canal/master/k8s-install/1.7/canal.yaml
-      when: pod_network == "canal"    
+      when:  
+        - inventory_hostname == ansible_play_hosts[0]
+        - pod_network == "canal"    
       environment:
         NO_PROXY: "{{NO_PROXY}}"
         no_proxy: "{{no_proxy}}"
@@ -167,7 +171,9 @@
     - name: Create Flannel Network
       shell: >
         kubectl apply -f https://raw.githubusercontent.com/coreos/flannel/v0.10.0/Documentation/kube-flannel.yml
-      when: pod_network == "flannel"    
+      when:  
+        - inventory_hostname == ansible_play_hosts[0]
+        - pod_network == "flannel"    
       environment:
         NO_PROXY: "{{NO_PROXY}}"
         no_proxy: "{{no_proxy}}"
@@ -175,7 +181,9 @@
     - name: Create Romana Network
       shell: >
         kubectl apply -f https://raw.githubusercontent.com/romana/romana/master/containerize/specs/romana-kubeadm.yml
-      when: pod_network == "romana"    
+      when:  
+        - inventory_hostname == ansible_play_hosts[0]
+        - pod_network == "romana"    
       environment:
         NO_PROXY: "{{NO_PROXY}}"
         no_proxy: "{{no_proxy}}"
@@ -184,7 +192,9 @@
       shell: >
         export kubever=$(kubectl version | base64 | tr -d '\n');
         kubectl apply -f "https://cloud.weave.works/k8s/net?k8s-version=$kubever"
-      when: pod_network == "weave"    
+      when:  
+        - inventory_hostname == ansible_play_hosts[0]
+        - pod_network == "weave"    
       environment:
         NO_PROXY: "{{NO_PROXY}}"
         no_proxy: "{{no_proxy}}"
@@ -192,7 +202,8 @@
     - name: Allow to schedule containers on master nodes
       shell: >
         kubectl taint nodes --all node-role.kubernetes.io/master-
-      when: 
+      when:  
+        - inventory_hostname == ansible_play_hosts[0]
         - hosts_pods is defined
         - hosts_pods == "true"    
       environment:
