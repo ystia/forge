@@ -32,4 +32,4 @@
       file:
         path: "{{ DIRECTORY }}"
         state: directory
-        mode: "u=rwx,g=rx,o=rx"
+        mode: "u=rwx,g=rwx,o=rwx"
