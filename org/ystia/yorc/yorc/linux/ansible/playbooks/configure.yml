@@ -25,6 +25,11 @@
         path: "/tmp/yorc.d"
         state: directory
         mode: "u=rwx,g=rwx,o=rx"
+    - name: Get hostname
+      shell: echo $HOSTNAME
+      register: result
+    - set_fact:
+        server_id: "{{ result.stdout }}"
     - name: Yorc config
       template: 
         src: config.yorc.yaml.j2
