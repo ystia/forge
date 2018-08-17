@@ -78,6 +78,7 @@ relationship_types:
       Configure:
         pre_configure_source:
           inputs:
+            yorc_address_ha: { get_property: [SOURCE, yorc_address_ha ] }
             yorc_url_ha: { concat: [get_property: [TARGET, rest, protocol], "://", get_property: [SOURCE, yorc_address_ha ], ":", get_property: [TARGET, rest, port]] }
             yorc_url: { concat: [get_property: [TARGET, rest, protocol], "://", get_attribute: [TARGET, rest, ip_address], ":", get_property: [TARGET, rest, port]] }
           implementation: playbook/connect_yorc.yml
