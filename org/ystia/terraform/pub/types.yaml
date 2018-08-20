@@ -27,6 +27,8 @@ node_types:
   org.ystia.terraform.pub.nodes.TerraformRuntime:
     derived_from: tosca.nodes.SoftwareComponent
     abstract: true
+    tags:
+      icon: terraform.jpg
     properties:
       component_version:
         type: version

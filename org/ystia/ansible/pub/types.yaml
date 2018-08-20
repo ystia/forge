@@ -27,6 +27,8 @@ node_types:
   org.ystia.ansible.pub.nodes.AnsibleRuntime:
     derived_from: tosca.nodes.SoftwareComponent
     abstract: true
+    tags:
+      icon: ansible.png
     properties:
       component_version:
         type: version
