@@ -26,6 +26,11 @@ python -c "import semantic_version" > /dev/null 2>&1 || {
     exit 1
 }
 
+if [[ ! -e versions.yaml ]]; then
+    echo -e "versions.yaml file describing the current version is missing.\nCan't proceed!" >&2
+    exit 1
+fi
+
 dryRun=false
 version=
 PUSH_URL=
@@ -61,6 +66,13 @@ if [[ "$(python -c "import semantic_version; print semantic_version.validate('${
     exit 1
 fi
 
+update_types () {
+    # $1 is current types version
+    # $2 is new types version
+    find . -type f \( -name 'types.yml' -o -name 'types.yaml' \) -exec sed -i -e "s/template_version: ${1}/template_version: ${2}/g" -e "s/^\(  - org\.ystia\..\+:\)${1}/\1${2}/g" {} \;
+    git add */types.yml */types.yaml
+}
+
 # read version
 read -r major minor patch prerelease build <<< $(python -c "import semantic_version; v = semantic_version.Version('${version}'); print v.major, v.minor, v.patch, '.'.join(v.prerelease), '.'.join(v.build);")
 
@@ -74,15 +86,13 @@ echo "Switching to branch ${branch}..."
 releaseBranch=${branch}
 git checkout ${branch} 
 
-if [[ -e versions.yaml ]]; then
-    # Check that current version is lower than the release version
-    currentVersion=$(grep  "${componentVersionName}:" versions.yaml | head -1 | sed -e 's/^[^:]\+:\s*\(.*\)\s*$/\1/')
-    # Change -SNAPSHOT into -0 for comparaison as a snapshot is never revelant
-    checkVers=$(echo ${currentVersion} | sed -e "s/-SNAPSHOT/-0/")
-    if [[ "True" != "$(python -c "import semantic_version; print  semantic_version.Version('${version}') >= semantic_version.Version('${checkVers}')" )" ]]; then
-        echo "Can't release version ${version} on top of branch ${branch} as its current version is ${currentVersion}" >&2
-        exit 1
-    fi
+# Check that current version is lower than the release version
+currentVersion=$(grep  "${componentVersionName}:" versions.yaml | head -1 | sed -e 's/^[^:]\+:\s*\(.*\)\s*$/\1/')
+# Change -SNAPSHOT into -0 for comparaison as a snapshot is never revelant
+checkVers=$(echo ${currentVersion} | sed -e "s/-SNAPSHOT/-0/")
+if [[ "True" != "$(python -c "import semantic_version; print  semantic_version.Version('${version}') >= semantic_version.Version('${checkVers}')" )" ]]; then
+    echo "Can't release version ${version} on top of branch ${branch} as its current version is ${currentVersion}" >&2
+    exit 1
 fi
 
 # Check branch tags
@@ -102,42 +112,54 @@ if [[ "develop" == "${branch}" ]] && [[ -z "${prerelease}" ]]; then
     git checkout -b "${releaseBranch}"
 fi
 
-# Now checks are passed then tag, build, release and cleanup :)
-if [[ -e versions.yaml ]]; then
-    # Update version
-    sed -i -e "/${componentVersionName}: /c${componentVersionName}: ${version}" versions.yaml
-    git commit -m "Prepare release ${version}" versions.yaml
-fi
+# Now checks are passed then update version, tag and cleanup :)
+# Update version
+sed -i -e "/${componentVersionName}: /c${componentVersionName}: ${version}" versions.yaml
+git add versions.yaml
+
+# Update current version 
+update_types "${currentVersion}" "${version}"
+
+git commit -m "Prepare release ${version}"
+
 
 git tag -a v${version} -m "Release tag v${version}"
 
-if [[ -e versions.yaml ]]; then
-    # Update version
-    nextDevelopmentVersion=""
-    if [[ -z "${prerelease}" ]]; then 
-        # We are releasing a final version
-        nextDevelopmentVersion=$(python -c "import semantic_version; v=semantic_version.Version('${version}'); print v.next_patch()" )
-        nextDevelopmentVersion="${nextDevelopmentVersion}-SNAPSHOT"
-    else
-        # in prerelease revert to version minus prerelease plus -SNAPSHOT
-        nextDevelopmentVersion="${major}.${minor}.${patch}-SNAPSHOT"
-    fi
-
-    sed -i -e "/${componentVersionName}: /c${componentVersionName}: ${nextDevelopmentVersion}" versions.yaml
-    git commit -m "Prepare for next development cycle ${nextDevelopmentVersion}" versions.yaml
+# Update version
+nextDevelopmentVersion=""
+if [[ -z "${prerelease}" ]]; then 
+    # We are releasing a final version
+    nextDevelopmentVersion=$(python -c "import semantic_version; v=semantic_version.Version('${version}'); print v.next_patch()" )
+    nextDevelopmentVersion="${nextDevelopmentVersion}-SNAPSHOT"
+else
+    # in prerelease revert to version minus prerelease plus -SNAPSHOT
+    nextDevelopmentVersion="${major}.${minor}.${patch}-SNAPSHOT"
 fi
 
+sed -i -e "/${componentVersionName}: /c${componentVersionName}: ${nextDevelopmentVersion}" versions.yaml
+git add versions.yaml
+
+update_types "${version}" "${nextDevelopmentVersion}"
+
+git commit -m "Prepare for next development cycle ${nextDevelopmentVersion}"
 
 if [[ "develop" == "${branch}" ]] && [[ -z "${prerelease}" ]]; then
     # merge back to develop
     git checkout develop
-    if [[ -e versions.yaml ]]; then
-        # Update version
-        nextDevelopmentVersion=$(python -c "import semantic_version; v=semantic_version.Version('${version}'); print v.next_minor()" )
-        nextDevelopmentVersion="${nextDevelopmentVersion}-SNAPSHOT"
-        sed -i -e "/${componentVersionName}: /c${componentVersionName}: ${nextDevelopmentVersion}" versions.yaml
-        git commit -m "Prepare for next development cycle ${nextDevelopmentVersion}" versions.yaml
+    if [[ ! -e versions.yaml ]]; then
+        # Force creation of versions.yaml
+        echo "${componentVersionName}: 0.0.0" > versions.yaml
     fi
+    # Update version
+    nextDevelopmentVersion=$(python -c "import semantic_version; v=semantic_version.Version('${version}'); print v.next_minor()" )
+    nextDevelopmentVersion="${nextDevelopmentVersion}-SNAPSHOT"
+    sed -i -e "/${componentVersionName}: /c${componentVersionName}: ${nextDevelopmentVersion}" versions.yaml
+    git add versions.yaml
+    
+    update_types "${currentVersion}" "${nextDevelopmentVersion}"
+
+    git commit -m "Prepare for next development cycle ${nextDevelopmentVersion}" 
+
 fi
 
 if [[ -z "${prerelease}" ]]; then
