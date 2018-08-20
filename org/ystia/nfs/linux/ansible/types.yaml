@@ -50,7 +50,7 @@ relationship_types:
     interfaces:
       Configure:
         inputs:
-          DIRECTORY: { get_property: [SELF, directory] }
+          DIRECTORY: { get_property: [SOURCE, directory] }
           SERVER_IP: { get_attribute: [TARGET, ip_address ] }
         pre_configure_source:
           implementation: playbooks/join_server.yml

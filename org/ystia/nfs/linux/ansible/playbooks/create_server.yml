@@ -41,7 +41,7 @@
         state: directory
         owner: nfsnobody
         group: nfsnobody
-        mode: "u=rwx,g=rx,o=rx"
+        mode: "u=rwx,g=rwx,o=rwx"
 
     - lineinfile:
         path: /etc/exports
