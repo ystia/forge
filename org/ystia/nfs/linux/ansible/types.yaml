@@ -40,9 +40,14 @@ node_types:
     interfaces:
       Standard:
         inputs:
-          DIRECTORY: { get_property: [SELF, directory] }
+          DIRECTORY: { get_property: [SELF, location] }
         create:
           implementation: playbooks/create_client.yml
+    requirements:
+    - partition:
+        capability: org.ystia.nfs.pub.capabilities.NFSServer
+        relationship: org.ystia.nfs.linux.ansible.relationships.JoinNFSServer
+        occurrences: [1, 1]
 
 relationship_types:
   org.ystia.nfs.linux.ansible.relationships.JoinNFSServer:
@@ -50,7 +55,7 @@ relationship_types:
     interfaces:
       Configure:
         inputs:
-          DIRECTORY: { get_property: [SOURCE, directory] }
+          DIRECTORY: { get_property: [SOURCE, location] }
           SERVER_IP: { get_attribute: [TARGET, ip_address ] }
         pre_configure_source:
           implementation: playbooks/join_server.yml

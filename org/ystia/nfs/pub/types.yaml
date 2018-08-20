@@ -22,25 +22,25 @@ metadata:
 
 imports:
   - tosca-normative-types:1.0.0-ALIEN20
+  - alien-extended-storage-types:2.0.0
 
 node_types:
   org.ystia.nfs.pub.nodes.NFSServer:
     derived_from: tosca.nodes.SoftwareComponent
+    tags:
+      icon: nfs.png
     abstract: true
     capabilities:
       nfs_server:
         type: org.ystia.nfs.pub.capabilities.NFSServer
 
   org.ystia.nfs.pub.nodes.NFSClient:
-    derived_from: tosca.nodes.SoftwareComponent
+    derived_from: alien.nodes.LinuxFileSystem
+    tags:
+      icon: nfs.png
     abstract: true
-    properties:
-      directory:
-        type: string
-        description: "Path of the shared directory to mount"
-        default: "/var/nfs"
     requirements:
-      - nfs_server:
+      - partition:
           capability: org.ystia.nfs.pub.capabilities.NFSServer
           occurrences: [1, 1]
 

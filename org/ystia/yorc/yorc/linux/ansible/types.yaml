@@ -104,6 +104,10 @@ node_types:
           capability: org.ystia.ansible.pub.capabilities.AnsibleRuntime
           relationship: tosca.relationships.DependsOn
           occurrences: [ 1, 1 ]
+      - filesystem_endpoint:
+          capability: tosca.capabilities.Node
+          relationship: org.ystia.yorc.linux.ansible.relationships.DependsOnFilessystem
+          occurrences: [0,1]
 
 relationship_types:
   org.ystia.yorc.linux.ansible.relationships.JoinConsulAgent:
@@ -115,3 +119,15 @@ relationship_types:
             CONSUL_SCHEME: "http"
             CONSUL_PORT: { get_property: [TARGET, consul_agent, api_port] }
           implementation: playbooks/join_consul.yml
+  org.ystia.yorc.linux.ansible.relationships.DependsOnFilessystem:
+    derived_from: tosca.relationships.DependsOn
+    description: >
+      Connects Elasticsearch to Block Storage File System
+    valid_target_types: [ alien.nodes.LinuxFileSystem ]
+    interfaces:
+      Configure:
+        post_configure_source:
+          inputs:
+            CONFIG_DIR: { get_property: [SOURCE, config_dir] }
+            DIRECTORY: { get_property: [TARGET, location] }
+          implementation: playbooks/configure_filesystem.yml
