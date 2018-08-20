@@ -1,0 +1,11 @@
+[Unit]
+Description=Traefik
+
+[Service]
+Type=notify
+ExecStart={{INSTALL_DIR}}/traefik --configFile={{CONFIG_DIR}}/traefik.toml
+Restart=on-failure
+WatchdogSec=1s
+
+[Install]
+WantedBy=multi-user.target
