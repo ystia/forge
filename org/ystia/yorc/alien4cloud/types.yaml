@@ -6,8 +6,8 @@ metadata:
   template_author: alien4cloud
 
 imports:
-  - org.alien4cloud.alien4cloud.pub:2.0.0-SNAPSHOT
-  - org.alien4cloud.alien4cloud.config.pub:2.0.0-SNAPSHOT
+  - org.alien4cloud.alien4cloud.pub:2.0.0
+  - org.alien4cloud.alien4cloud.config.pub:2.0.0
   - tosca-normative-types:1.0.0-ALIEN20
   - yorc-types:1.0.0
   - org.ystia.yorc.pub:1.0.0-SNAPSHOT
