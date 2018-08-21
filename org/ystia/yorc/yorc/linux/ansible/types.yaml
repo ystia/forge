@@ -118,7 +118,7 @@ relationship_types:
   org.ystia.yorc.linux.ansible.relationships.DependsOnFilessystem:
     derived_from: tosca.relationships.DependsOn
     description: >
-      Connects Elasticsearch to Block Storage File System
+      Connects Yorc to a FileSystem (BlockStorage, NFS...)
     valid_target_types: [ alien.nodes.LinuxFileSystem ]
     interfaces:
       Configure:

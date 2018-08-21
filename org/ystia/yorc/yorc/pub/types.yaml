@@ -195,4 +195,6 @@ relationship_types:
     derived_from: tosca.relationships.HostedOn
   org.ystia.yorc.pub.relationships.DependsOnFilessystem:
     derived_from: tosca.relationships.DependsOn
+    description: >
+      Connects Yorc to a FileSystem (BlockStorage, NFS...)
     valid_target_types: [ alien.nodes.LinuxFileSystem ]
