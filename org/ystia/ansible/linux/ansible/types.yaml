@@ -35,4 +35,3 @@ node_types:
             ANSIBLE_VERSION: { get_property: [SELF, component_version] }
           implementation: playbooks/create.yml
         delete: playbooks/delete.yml
-          

@@ -150,12 +150,12 @@ node_types:
         capability: org.ystia.yorc.samples.consul.pub.capabilities.ConsulAgent
         occurrences: [ 1, 1 ]
     - ansible:
-        capability: org.ystia.ansible.pub.capabilities.AnsibleRuntime
-        relationship: tosca.relationships.DependsOn
+        capability: tosca.capabilities.Node
+        relationship: org.ystia.ansible.pub.relationships.DependsOnAnsibleRuntime
         occurrences: [ 1, 1 ]
     - terraform:
-        capability: org.ystia.terraform.pub.capabilities.TerraformRuntime
-        relationship: tosca.relationships.DependsOn
+        capability: tosca.capabilities.Node
+        relationship: org.ystia.terraform.pub.relationships.DependsOnTerraformRuntime
         occurrences: [ 1, 1 ]
     - filesystem_endpoint:
         capability: tosca.capabilities.Node
@@ -195,6 +195,4 @@ relationship_types:
     derived_from: tosca.relationships.HostedOn
   org.ystia.yorc.pub.relationships.DependsOnFilessystem:
     derived_from: tosca.relationships.DependsOn
-    description: >
-      Connects Elasticsearch to Block Storage File System
     valid_target_types: [ alien.nodes.LinuxFileSystem ]

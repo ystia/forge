@@ -34,10 +34,8 @@ node_types:
         type: version
         required: true
         default: 2.4.1.0
-    capabilities:
-      runtime:  
-        type: org.ystia.ansible.pub.capabilities.AnsibleRuntime
 
-capability_types:
-  org.ystia.ansible.pub.capabilities.AnsibleRuntime:
-    derived_from: tosca.capabilities.Node
+relationship_types:
+  org.ystia.ansible.pub.relationships.DependsOnAnsibleRuntime:
+    derived_from: tosca.relationships.DependsOn
+    valid_target_types: [ org.ystia.ansible.pub.nodes.AnsibleRuntime ]

@@ -39,10 +39,8 @@ node_types:
         type: string
         required: true
         default: /usr/local/bin
-    capabilities:
-      runtime:  
-        type: org.ystia.terraform.pub.capabilities.TerraformRuntime
 
-capability_types:
-  org.ystia.terraform.pub.capabilities.TerraformRuntime:
-    derived_from: tosca.capabilities.Node
+relationship_types:
+  org.ystia.terraform.pub.relationships.DependsOnTerraformRuntime:
+    derived_from: tosca.relationships.DependsOn
+    valid_target_types: [ org.ystia.terraform.pub.nodes.TerraformRuntime ]
