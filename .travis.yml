@@ -1,0 +1,32 @@
+language: python
+python:
+  - "2.7"
+
+sudo: required
+
+env:
+  global:
+    # BINTRAY API KEY
+    - secure: "pPBh4VDtMgP5R6e0sFVUx1Jg+ytip36kWxQ+Na5uqZW9Z6MEbeuUQ6fcc+6ayVXkyJOCJRvO8ohoJSM64qbpThzaHKdf8xCbmRIbFpLkgyWIuByASjR4no/ZnEp5FRYrIX9vvgFI4ky6C59/JOf4XnnQbMZMk7ovGigIMwD15VHcO5iAQJ69Ktz1aur4fCABNcYqUT1k6Px+KkvQs5hVdCr4C7OtT4OR2AVC5DE+Fx7eOdhmIXhvMmTW0TDVnP5LrVDePEDgKabTQZsTd0UKfO/ngegmnrvh3ZKluRtqnzOLCOy7KODnKEXs26yQNVdpAQu/PNp7M7RTWIebZtz4xfOTRGV7U+Qq9s7TgpbPMxOume4dhIhM9pUWTpmheYJiQJiDaYzpGV8+yfyKQm4DSNYf5HxFpdsa5jy/fwe+mzUNWTB/BgnwlI+84kB8sJ/HHtEdpWa3BSGMC3/OWb061Fyda6iMU/5AGK5C9WuGly4EmhsKf9GgG+i+woYw2oHVBcCiHbHRMtNs/gNJ2R6Qa1IbqwlfCJdLlobnHKD+C57dZFHgaW59o9bDdikrUkyNMvIqpV/iXTrsnSuScVhN07QVqwNOebkN2x8eml7EGddXKAMJxOSEXPM3uZHch+in6UuGYvSfqqOtECu3trUyTgPsvc/41X3/SF7jxskCDcQ="
+
+script:
+  - bash build/zip_csar.sh
+
+deploy:
+  - provider: script
+    script: bash build/deploy.sh
+    on:
+      all_branches: true
+    skip_cleanup: true
+
+  - provider: releases
+    overwrite: true
+    file_glob: true
+    api_key:
+      secure: "3z/GkHklOED0NonznmEARjOgLfx0YOOP6kU4N0gifkqe6U+sHvvRjOchT6bJI1XkG541cv4yzm4CoIotmzUmWNJmgqiXVfoQNW7Sy3t+tC3q3T0n9YIvX3JEvy05IqM3e60R2Xbcgz04/RQP76li3zvu3dJ4ev/9Vl4T59qFyP2OiKwr3IGCpo553yhRcwP5hssPiIKZFJqxxLDEXzVW8gX22HwsMZn1nrkvshcKc6fbKwmNjDYy3PuX2Tzk3+6VajTjZfCqirBkWofLPxiTd1jRVTDEhEAb7F2C6XeLVKreN0v7AKoWnopibGmI8eCq3NO21U2BbkVjA4kw1p+gk3HXlYYSZSIqnLeTqjnFy+lyN1qjP5+jqPOzhYCX1v29uhAsbM4fbI2XM24oetLltQbFh4HhGO9egzGA+CdJmJPQoh39+YXzAJNM+Dns6bgK9juJjNGNIJq+z3yGABepT4IdnhUZjG1Nw25GgI+o4YNbklARNEbFWd1dr8H+r1cBdLikDzF3FZuyyIY/fNC2WjiMgGB4fibw4/7POTLDPI9CUmhPN0dFMDVeW+sveWsgpBbLuQ/cvHxNkdJKcCoMiigDo9QMu689h+85kVP7sH/bMiC1BfU4VEoH+QEss9MOekLO549swTMfXv+fVvdjSaBPSlJUProv5YSFNNtw6UA="
+    file:
+      - build/csars/*.zip
+    skip_cleanup: true
+    on:
+      tags: true
+      repo: ystia/forge

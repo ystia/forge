@@ -8,7 +8,7 @@ tosca_definitions_version: alien_dsl_2_0_0
 
 metadata:
   template_name: org.ystia.kubernetes.linux.ansible
-  template_version: 2.0.0-SNAPSHOT
+  template_version: 2.1.0-SNAPSHOT
   template_author: Ystia
 
 description: |
@@ -17,7 +17,7 @@ description: |
 imports:
   - tosca-normative-types:1.0.0-ALIEN20
   - yorc-types:1.0.0
-  - org.ystia.kubernetes.pub:2.0.0-SNAPSHOT
+  - org.ystia.kubernetes.pub:2.1.0-SNAPSHOT
 
 
 node_types:
@@ -68,6 +68,7 @@ node_types:
         default: "https://packages.cloud.google.com/yum/doc/yum-key.gpg https://packages.cloud.google.com/yum/doc/rpm-package-key.gpg"
         required: true
     attributes:
+      kubernetes_selected_version: {get_operation_output: [SELF, Standard, create, KUBERNETES_SELECTED_VERSION]}
       api_url: {get_operation_output: [SELF, Standard, configure, API_URL]}
       admin_token: { get_operation_output: [SELF, Standard, configure, ADMIN_TOKEN]}
       ca_cert_hash: { get_operation_output: [SELF, Standard, configure, CA_CERT_HASH]}
@@ -99,12 +100,14 @@ node_types:
             CA_KEY: {get_property: [SELF, ca_key]}
             KUBE_YUM_REPO: {get_property: [SELF, kube_yum_repo]}
             KUBE_YUM_REPO_GPG_KEYS: {get_property: [SELF, kube_yum_repo_gpg_keys]}
+            KUBE_VERSION: {get_property: [SELF, component_version]}
           implementation: playbooks/master/create.yaml
         configure: 
           inputs:
             API_SERVER_PORT: {get_property: [SELF, api_server, port]}
             pod_network: {get_property: [SELF, pod_network]}
             hosts_pods: {get_property: [SELF, hosts_pods]}
+            KUBERNETES_SELECTED_VERSION: {get_attribute: [SELF, kubernetes_selected_version]}
           implementation: playbooks/master/configure.yaml
         start: 
           implementation: playbooks/master/start.yaml
@@ -155,6 +158,7 @@ node_types:
           inputs:
             KUBE_YUM_REPO: {get_property: [SELF, kube_yum_repo]}
             KUBE_YUM_REPO_GPG_KEYS: {get_property: [SELF, kube_yum_repo_gpg_keys]}
+            KUBE_VERSION: {get_property: [SELF, component_version]}
           implementation: playbooks/worker/create.yaml
         start: 
           implementation: playbooks/commons/kubeadm/start.yaml

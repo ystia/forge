@@ -8,7 +8,7 @@ tosca_definitions_version: alien_dsl_2_0_0
 
 metadata:
   template_name: org.ystia.kubernetes.pub
-  template_version: 2.0.0-SNAPSHOT
+  template_version: 2.1.0-SNAPSHOT
   template_author: Ystia
 
 description: Public interface types for Kubernetes support.
@@ -28,9 +28,9 @@ node_types:
       component_version:
         type: version
         required: false
-        default: 1.10-stable
+        default: "1.10"
         constraints:
-          - greater_or_equal: 1.10-stable
+          - greater_or_equal: "1.10"
     capabilities:
       api_server: org.ystia.kubernetes.pub.capabilities.KubernetesAPIServer
       app_host: org.ystia.kubernetes.pub.capabilities.AppHosting
@@ -47,9 +47,9 @@ node_types:
       component_version:
         type: version
         required: false
-        default: 1.10-stable
+        default: "1.10"
         constraints:
-          - greater_or_equal: 1.10-stable
+          - greater_or_equal: "1.10"
     requirements:
       - api_server:   
           capability: org.ystia.kubernetes.pub.capabilities.KubernetesAPIServer

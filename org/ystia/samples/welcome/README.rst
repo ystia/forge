@@ -29,12 +29,17 @@ Properties
 
 - **component_version**: Version of the component.
 
-- **port**: Port number of the Welcome HTTP server.
-
 Attributes
 ^^^^^^^^^^
 
 - **url**: The URL to access the Welcome home page.
+
+Capabilities
+^^^^^^^^^^^^
+
+- **endpoint**: Expose the HTTP endpoint with the following properties:
+
+  - **port**: Port number of the Welcome HTTP server.
 
 Requirements
 ^^^^^^^^^^^^
