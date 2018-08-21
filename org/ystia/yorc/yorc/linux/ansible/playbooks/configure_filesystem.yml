@@ -18,6 +18,8 @@
 - name: Setup Work directory
   hosts: all
   strategy: free
+  become_user: yorc
+  become: true
   tasks:
     - name: "get current config of Yorc"
       shell: "cat {{ CONFIG_DIR }}/config.yorc.yaml"

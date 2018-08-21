@@ -18,6 +18,8 @@
 - name: Setup AWS config
   hosts: all
   strategy: free
+  become_user: yorc
+  become: true
   tasks:
     - name: "get current config of Yorc"
       shell: "cat {{ CONFIG_DIR }}/config.yorc.yaml"
@@ -46,6 +48,11 @@
         content: "{{ yorcConfig | to_yaml }}"
         dest: "{{ CONFIG_DIR }}/config.yorc.yaml"
 
+- name: Restart Yorc
+  hosts: all
+  strategy: free
+  become: true
+  tasks:
     - name: restart Yorc
       systemd:
         name: yorc

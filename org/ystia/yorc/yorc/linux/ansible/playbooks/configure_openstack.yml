@@ -18,6 +18,8 @@
 - name: Setup Openstack config
   hosts: all
   strategy: free
+  become_user: yorc
+  become: true
   tasks:
     - name: "get current config of Yorc"
       shell: "cat {{ CONFIG_DIR }}/config.yorc.yaml"
@@ -71,6 +73,11 @@
         content: "{{ KEY_PAIR }}"
         dest: "{{ DATA_DIR }}/.ssh/yorc.pem"
 
+- name: Restart Yorc
+  hosts: all
+  strategy: free
+  become: true
+  tasks:
     - name: restart Yorc
       systemd:
         name: yorc
