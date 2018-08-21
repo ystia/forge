@@ -22,8 +22,3 @@ Properties
   - Default : /usr/local/bin
 
 - **component_version**: Version of Terraform to install.
-
-Capabilities
-^^^^^^^^^^^^
-
-- **runtime**: Allows to connect to ensure that terraform is intalled

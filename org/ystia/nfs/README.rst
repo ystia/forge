@@ -22,16 +22,16 @@ Capabilities
 NFSClient Component
 -------------------
 
-The NFSClient component install and start a nfs client
+The NFSClient component install and start a nfs client. It is a derived of `alien.nodes.LinuxFileSystem`
 
 Properties
 ^^^^^^^^^^
 
-- **directory**: Path to mount
+- **location**: Path to mount
 
   - Default : /var/nfs
 
 Requirements
 ^^^^^^^^^^^^
 
-- **nfs_server**: Connects to a NFSServer component
+- **partition**: Connects to a NFSServer component

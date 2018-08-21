@@ -45,6 +45,8 @@ Requirements
 
 - **consul**: Yorc needs a consulServer or a consulAgent
 
+- **work_direcotry**: Yorc can be connected to a FileSystem (BlockStorage, NFS...) for the `work/` directory.
+
 Capabilities
 ^^^^^^^^^^^^
 
