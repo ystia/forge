@@ -1,0 +1,497 @@
+tosca_definitions_version: alien_dsl_2_0_0
+
+metadata:
+  template_name: org.ystia.topologies.a4c_yorc_ha
+  template_version: 2.1.0-SNAPSHOT
+  template_author: Ystia
+
+description: ""
+
+imports:
+  - tosca-normative-types:1.0.0-ALIEN20
+  - alien-extended-storage-types:2.0.0
+
+  - org.alien4cloud.java.pub:2.0.0
+  - org.alien4cloud.alien4cloud.pub:2.0.0
+  - org.alien4cloud.alien4cloud.webapp:2.0.0
+  - org.alien4cloud.java.jdk.linux:2.0.0
+  - org.alien4cloud.alien4cloud.config.pub:2.0.0
+#  - org.alien4cloud.consul.pub:2.0.0-SNAPSHOT
+#  - org.alien4cloud.elasticsearch.pub:2.0.0-SNAPSHOT
+#  - org.alien4cloud.java.jmx.jolokia:2.0.0-SNAPSHOT
+
+  - org.ystia.terraform.linux.terraform:2.1.0-SNAPSHOT
+  - org.ystia.yorc.alien4cloud:2.1.0-SNAPSHOT
+  - org.ystia.ansible.linux.ansible:2.1.0-SNAPSHOT
+  - org.ystia.terraform.pub:2.1.0-SNAPSHOT
+  - org.ystia.yorc.linux.ansible:2.1.0-SNAPSHOT
+  - org.ystia.yorc.experimental.consul.linux.ansible:2.1.0-SNAPSHOT
+  - org.ystia.ansible.pub:2.1.0-SNAPSHOT
+  - org.ystia.yorc.pub:2.1.0-SNAPSHOT
+  - org.ystia.nfs.pub:2.1.0-SNAPSHOT
+  - org.ystia.nfs.linux.ansible:2.1.0-SNAPSHOT
+  - org.ystia.yorc.experimental.consul.pub:2.1.0-SNAPSHOT
+
+repositories:
+  Pulp:
+    url: http://10.197.135.244/starlings/alien4cloud
+    type: http
+
+topology_template:
+  description: A topology template to connect A4C, Yorc, Consul, in High Avaibilty mode
+
+  node_templates:
+    ComputeAlien:
+      metadata:
+        a4c_edit_x: 88
+        a4c_edit_y: "-32"
+      type: tosca.nodes.Compute
+      requirements:
+      - networkNetworkConnection:
+          type_requirement: network
+          node: Network
+          capability: tosca.capabilities.Connectivity
+          relationship: tosca.relationships.Network
+      capabilities:
+        scalable:
+          properties:
+            min_instances: 1
+            max_instances: 1
+            default_instances: 1
+        endpoint:
+          properties:
+            secure: true
+            protocol: tcp
+            network_name: PRIVATE
+            initiator: source
+    ComputeYorc:
+      metadata:
+        a4c_edit_x: 385
+        a4c_edit_y: "-43"
+      type: tosca.nodes.Compute
+      capabilities:
+        os:
+          properties:
+            type: linux
+        scalable:
+          properties:
+            min_instances: 1
+            max_instances: 5
+            default_instances: 3
+        endpoint:
+          properties:
+            secure: true
+            protocol: tcp
+            network_name: PRIVATE
+            initiator: source
+    ComputeConsul:
+      metadata:
+        a4c_edit_x: 693
+        a4c_edit_y: "-42"
+      type: tosca.nodes.Compute
+      capabilities:
+        scalable:
+          properties:
+            min_instances: 1
+            max_instances: 1
+            default_instances: 1
+        endpoint:
+          properties:
+            secure: true
+            protocol: tcp
+            network_name: PRIVATE
+            initiator: source
+    ConsulServer:
+      type: org.ystia.yorc.experimental.consul.linux.ansible.nodes.ConsulServer
+      properties:
+        install_dnsmasq: true
+        mode: server
+        download_url: "https://releases.hashicorp.com/consul/1.0.2/consul_1.0.2_linux_amd64.zip"
+        install_dir: "/usr/local/bin"
+        data_dir: "/var/consul"
+        config_dir: "/etc/consul.d"
+        datacenter: dc1
+        domain: consul
+      requirements:
+      - hostedOnComputeConsulHost:
+          type_requirement: host
+          node: ComputeConsul
+          capability: tosca.capabilities.Container
+          relationship: tosca.relationships.HostedOn
+      capabilities:
+        consul_agent:
+          properties:
+            api_port: 8500
+            protocol: tcp
+            secure: false
+            network_name: PRIVATE
+            initiator: source
+    AnsibleRuntime:
+      type: org.ystia.ansible.linux.ansible.nodes.AnsibleRuntime
+      properties:
+        component_version: "2.4.1.0"
+      requirements:
+      - hostedOnComputeYorcHost:
+          type_requirement: host
+          node: ComputeYorc
+          capability: tosca.capabilities.Container
+          relationship: tosca.relationships.HostedOn
+    OracleJDK:
+      type: org.alien4cloud.java.jdk.linux.nodes.OracleJDK
+      properties:
+        java_url: "https://edelivery.oracle.com/otn-pub/java/jdk/8u131-b11/d54c1d3a095b4ff2b6607d096fa80163/jdk-8u131-linux-x64.tar.gz"
+        java_home: "/opt/java"
+        component_version: "1.8.0-131-b11"
+      requirements:
+      - hostedOnComputeAlienHost:
+          type_requirement: host
+          node: ComputeAlien
+          capability: tosca.capabilities.Container
+          relationship: tosca.relationships.HostedOn
+    Alien4Cloud:
+      type: org.alien4cloud.alien4cloud.webapp.nodes.Alien4Cloud
+      properties:
+        context_root: "/"
+        component_version: "2.0.0"
+        data_dir: "/opt/alien4cloud/data"
+      requirements:
+      - javaSoftwareHostedOnJdkOracleJdkJdk:
+          type_requirement: java
+          node: OracleJDK
+          capability: org.alien4cloud.java.pub.capabilities.JDK
+          relationship: org.alien4cloud.java.pub.relationships.JavaSoftwareHostedOnJDK
+      capabilities:
+        consul:
+          properties:
+            tls_enabled: false
+            protocol: tcp
+            secure: false
+            network_name: PRIVATE
+            initiator: source
+        jolokia:
+          properties:
+            port: 8778
+        http:
+          properties:
+            port: 9200
+            protocol: http
+            secure: false
+            network_name: PRIVATE
+            initiator: source
+        rest:
+          properties:
+            user: admin
+            password: admin
+            port: 8080
+            protocol: http
+            secure: false
+            network_name: PRIVATE
+            initiator: source
+      artifacts:
+        alien_dist:
+          file: alien4cloud-premium-dist-2.0.0-dist.tar.gz
+          type: tosca.artifacts.File
+          repository: Pulp
+    YorcPlugin:
+      type: org.ystia.yorc.alien4cloud.nodes.YorcPlugin
+      properties:
+        download_url: "https://github.com/ystia/yorc-a4c-plugin/releases/download/v3.0.0/alien4cloud-yorc-plugin-3.0.0.zip"
+        orchestrator_name: Yorc
+        discriminator: bertrand
+        pluginId: "alien4cloud-yorc-plugin"
+        pluginBean: "yorc-orchestrator-factory"
+        yorc_address_ha: "yorc.service.consul"
+      requirements:
+      - connectsToYorcYorcServerRest:
+          type_requirement: yorc
+          node: YorcServer
+          capability: org.ystia.yorc.pub.capabilities.YorcRestAPI
+          relationship: org.ystia.yorc.alien4cloud.relationships.ConnectsToYorc
+      - alienConfiguratorHostedOnAlienAlien4CloudConfig:
+          type_requirement: host
+          node: Alien4Cloud
+          capability: org.alien4cloud.alien4cloud.pub.capabilities.AlienConfigContainer
+          relationship: org.alien4cloud.alien4cloud.pub.relationships.AlienConfiguratorHostedOnAlien
+    Network:
+      metadata:
+        a4c_edit_x: 255
+        a4c_edit_y: "-148"
+      type: tosca.nodes.Network
+      properties:
+        ip_version: 4
+    NFSServer:
+      type: org.ystia.nfs.linux.ansible.nodes.NFSServer
+      requirements:
+      - hostedOnComputeConsulHost:
+          type_requirement: host
+          node: ComputeConsul
+          capability: tosca.capabilities.Container
+          relationship: tosca.relationships.HostedOn
+      capabilities:
+        nfs_server:
+          properties:
+            protocol: tcp
+            secure: false
+            network_name: PRIVATE
+            initiator: source
+    TerraformRuntime:
+      type: org.ystia.terraform.linux.terraform.nodes.TerraformRuntime
+      properties:
+        component_version: "0.9.11"
+        install_dir: "/usr/local/bin"
+      requirements:
+      - hostedOnComputeYorcHost:
+          type_requirement: host
+          node: ComputeYorc
+          capability: tosca.capabilities.Container
+          relationship: tosca.relationships.HostedOn
+    OpenStackConfig:
+      type: org.ystia.yorc.infrastructure.OpenStackConfig
+      properties:
+        auth_url: "http://10.197.135.201:5000/v2.0"
+        tenant_name: starlings
+        user_name: starlings
+        password: "Star16.gs"
+        private_network_name: "lpa-janus-network"
+        default_security_groups:
+        - default
+        - openbar
+        key_pair: |
+          -----BEGIN RSA PRIVATE KEY-----
+          MIIEpQIBAAKCAQEAs4Zw4G5yy5wquGwfBE7iHNNQu5ZmkyHWtijvFLbcgVtRvIzs
+          RuUNavqnAN6EgKkBido9RieYwZSgkqWsUhYAVdD3TTggx+UBFEeKcsfGgl+IyRxH
+          9VqtNUNrWeFlJU6xPqU7wNBwHPEOWOtg4WlhrVbmvURYPherxi0bDO2NRxJwSPZ8
+          MlUVdz/uJ7ejUGGC61yNzfPYhuD9zlWKoKKIlHbh8pKWrVxWE0RvhZ77vH7ztbxF
+          aDB8cGG/9nUAOW1gT7629gW+19ZuXZYXhVcC/MFDSLzdYu2iniVCiDG1Ywq8fCbm
+          tmEVBsBox5FYEVaQ2nPvfRNswOTbteNVgTL8jQIDAQABAoIBAEsVhYw4ZYbHEA8G
+          GYrhuyw3LWLnqosK8hRJ1oShXmQz32Guxvt3vT7rCoIQjvaIuP4A6vO2h+se0HHF
+          HOdQEF/UADqpqPwxyVvD+CG9cEcC0eDbFTWG8T5/rhxvarBJ01PSI8Wm590S7N8/
+          wstEGfg3ilXKieWeXNeL8e5cRGRenEKZ5PtZeS00o8GBV8B3cWhlhhbGnK8Mma6x
+          xRag91VXnywvhV3o1Dg+tnK32b9sKqrbA2JZKkvxk2FW2sfXyO71g8WjbCE00WFv
+          C7MqTKy7t3YV8+k5gJ50ciF50kmurQOyCWe1sT35SqW2vgc96Mkow3bCOjORJOIN
+          90m4y7kCgYEA4on68J6ypvrd7RUFTSl0/u6N866K3FtB5qCUUX4awHDePz9Y3SUA
+          AlcuXW92oRFPQya9xJ7sdApL40TKXEzZZa4LvG9jmwSuPbOEGliwh5wT9QPXb2Yn
+          PAZxUDWfUWkn/YdNpozwOPuLJNBlDzJgdtjL0JYaVq1Qpt9wlF2VPBsCgYEAyt9C
+          Tm18scf2B13aF9IqKJKM5wEDJoUCNv8GNToowq6K8FVH3oEceuBj3Q+xGeB/cxNN
+          fuMJv1CfwlQ2Ngb3dTLG9Wpqm8cLQBdSVB/pOYE2covTuL/sW8vdQn6xXPBLUyxf
+          VtJ/QJ3Hl+tt7RmAvTwqH3eSi+hS4XEpPSKk5HcCgYEApo476V1EjHA1anHiC/FH
+          C4fo5hiWD50ovp+hbKkCkippvKaedzkU4KOoexnQZmuLkxuQulb+EfLgCKAzB9mY
+          nKFyD4D2AqtWUBcEMTqzz4B5S9MfOdApWICEHyzNjdV6iXRJKwLEO6D1lIODScEI
+          G1kZwKobg0651XbCFtMXPbECgYEAnrhxnf6XEliJqlXJLd3l0fxmdM0b8+UYSILa
+          DobEIRyB42o1YmXNLG2mc+u0+bPkwtmVRfLHS4D+nQFZsIdez7i8ZIGvitT9flVA
+          ukSFKdJoENJJAUBW4bLsFvwcM8Rkilwq8ziZCqrm33r4dAoB6QvLQPdCFmfbgDoS
+          s5wJOh0CgYEAiyzJJuwaSAN7XVSpOPGqXNhnRwGuxAMXjQpdkKOIdQf4fSLkgsFq
+          bBPHTWAR2+OQUOirSo/9Jw3uekQ9/7ov+V1ltBnwZT8JTdvp++v/6qtFXTeaop67
+          Zvs+bNbOcKsnQQny5VXHN9MR7Glhk5bMJliEScbRW/VjWhn8LFSU7tk=
+          -----END RSA PRIVATE KEY-----
+
+      requirements:
+      - yorcConfigHostedOnYorcYorcServerConfig:
+          type_requirement: host
+          node: YorcServer
+          capability: org.ystia.yorc.pub.capabilities.YorcConfigContainer
+          relationship: org.ystia.yorc.pub.relationships.YorcConfigHostedOnYorc
+    KubernetesConfig:
+      type: org.ystia.yorc.infrastructure.KubernetesConfig
+      properties:
+        master_url: "https://10.197.138.78:6443"
+        ca: |
+          -----BEGIN CERTIFICATE-----
+          MIIEETCCAvmgAwIBAgIJAJH6bIUpOIekMA0GCSqGSIb3DQEBCwUAMIGeMQswCQYD
+          VQQGEwJGUjEOMAwGA1UECAwFSVNFUkUxEzARBgNVBAcMCkVDSElST0xMRVMxETAP
+          BgNVBAoMCEJVTEwgU0FTMQwwCgYDVQQLDANKSU0xGDAWBgNVBAMMD1JPT1QgQ0Eg
+          Rk9SIEpJTTEvMC0GCSqGSIb3DQEJARYgc3RhcmxpbmdzLWRldkBub3ZhZm9yZ2Uu
+          YnVsbC5jb20wHhcNMTQwOTIyMDc0NjAwWhcNMjAwNTAxMDc0NjAwWjCBnjELMAkG
+          A1UEBhMCRlIxDjAMBgNVBAgMBUlTRVJFMRMwEQYDVQQHDApFQ0hJUk9MTEVTMREw
+          DwYDVQQKDAhCVUxMIFNBUzEMMAoGA1UECwwDSklNMRgwFgYDVQQDDA9ST09UIENB
+          IEZPUiBKSU0xLzAtBgkqhkiG9w0BCQEWIHN0YXJsaW5ncy1kZXZAbm92YWZvcmdl
+          LmJ1bGwuY29tMIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAzYNSW81m
+          pD7vNK2Xcj4APh/Un3u4ZoACtlbvoSxGvgJhqkNI0k9vzWEfayHtZdJW/Nz+b/8f
+          orjKqHS/QJ839REllyvZlM7KFoieqTVTHlya4VZkcGXPRiUq3zhKXiwJIurW5tja
+          1GI66mPhblrOukPxZ6t5Zz4B6tl3FI0F4Fk5uqGn+NmxY3uTWJ1mqXcQaV3w8ItZ
+          cf5qemPMVCoDbNef+FvO1MAyPZF2dnzhocdBNnxVNM5Odz5gB5ESEOH8dRi30pJH
+          gC5S/Hu3FXGum4s1V8+JEDxWPGGqjouhJqnY4MGk/cll21Aj/svXNp831BE+g9+S
+          aQE86Rh6NUuSBwIDAQABo1AwTjAdBgNVHQ4EFgQUSWFeVi5CgRrQf4FrDN0aZrIg
+          jQAwHwYDVR0jBBgwFoAUSWFeVi5CgRrQf4FrDN0aZrIgjQAwDAYDVR0TBAUwAwEB
+          /zANBgkqhkiG9w0BAQsFAAOCAQEAYUbP5ywXeR8Hh02db/2ie0P791I5wm2iHzgs
+          3AH8czJLF4atJ3wpLAkFf5kIBhyqAsgf3q1nfj2WRzChhNrOrx3HaJxBKPFMgpZ5
+          D4ud5M89t2e33GuK3cFZdjnnnGYLFk6WFsqsSHJGASEMV4mBODnwmeal1V84XQDY
+          p9vMqwUKJcNBLPtoGHrqJ5BbGGBl2r/ziNRlkS3YxwfEGm4J/Ljw1uI7lu1KDG51
+          oFg61pUt0asNjCSJ3RQZZ4mSjt4VuzU0B9VWE09plLhbJ6ra2PhOI0iaB9cUf3Rr
+          y2HkoCF5TtQNkFK2yULP4EpdPiilvSt6I2TArpGvFNmc7uwM7w==
+          -----END CERTIFICATE-----
+
+        cert: |
+          -----BEGIN CERTIFICATE-----
+          MIIDKjCCAhICCQDrI4aYxeipdTANBgkqhkiG9w0BAQsFADCBnjELMAkGA1UEBhMC
+          RlIxDjAMBgNVBAgMBUlTRVJFMRMwEQYDVQQHDApFQ0hJUk9MTEVTMREwDwYDVQQK
+          DAhCVUxMIFNBUzEMMAoGA1UECwwDSklNMRgwFgYDVQQDDA9ST09UIENBIEZPUiBK
+          SU0xLzAtBgkqhkiG9w0BCQEWIHN0YXJsaW5ncy1kZXZAbm92YWZvcmdlLmJ1bGwu
+          Y29tMB4XDTE4MDYwNTE0NDYyNloXDTQ1MTAyMTE0NDYyNlowDzENMAsGA1UEAwwE
+          eW9yYzCCASIwDQYJKoZIhvcNAQEBBQADggEPADCCAQoCggEBAOog+jgSqwh9Mh/g
+          cm/zXc/gsVT29vKb7+ua7y/UEoFQ7aq1Qz/x0dZnjRxp8xg9Ut8P/+9GeFgWhfDf
+          lbTiuFrUy58WMBI/8DUDoVAfxEVss5x/jFWLph5CaYMPc33q5u0WN8pAhrBxm+qp
+          u4WiY09IMlLP4/Yanqqx0/HLC5x2/2ke6v5pFeIuY5HXfIr8Jn10xVDAb83OxC5O
+          WqyBHLSdepziqXflK8/H1HUTn94MrVrponPwBAFzDfP901nw2u7qO9X4Q9WiNAZ/
+          NzbOXw4c9CiyS7K98vLIS7fctwR6kxpkJOukqWft2HFeKng7StXw9leZtmBj0UKe
+          J7+ck1cCAwEAATANBgkqhkiG9w0BAQsFAAOCAQEAXetu4vQ3ERQj1EdOW1M9eoZ3
+          oTcsNJsBON4fxdabxEVLB2e3joz2H3zeQVrmjTJMJEeoFL91UfevDU8CiePMRh/9
+          5CtA3nBSc89bPnkGqsifkfBfm+PExvmvkLoItyzkKG5pG2MnegOx55bOhKHKuiVv
+          dD4xb+WmLJf9JIgY8y7miBq/iu6DruxQ8nNpgHKWnBg2u0W8h9B6kCD7Q5eb9Ti3
+          MYUAStA+iV5tUjARazmSt1YiR7XE8fhgjPjlolw6hLLqFA6RtCosBP7EIuScvG+V
+          J5DmO2apM0Ygi2Rzn4HClJFeMFOfwHtXVotAdFF9J0jUA3S4z03z7t4NoVgarQ==
+          -----END CERTIFICATE-----
+
+        key: |
+          -----BEGIN RSA PRIVATE KEY-----
+          MIIEpQIBAAKCAQEA6iD6OBKrCH0yH+Byb/Ndz+CxVPb28pvv65rvL9QSgVDtqrVD
+          P/HR1meNHGnzGD1S3w//70Z4WBaF8N+VtOK4WtTLnxYwEj/wNQOhUB/ERWyznH+M
+          VYumHkJpgw9zferm7RY3ykCGsHGb6qm7haJjT0gyUs/j9hqeqrHT8csLnHb/aR7q
+          /mkV4i5jkdd8ivwmfXTFUMBvzc7ELk5arIEctJ16nOKpd+Urz8fUdROf3gytWumi
+          c/AEAXMN8/3TWfDa7uo71fhD1aI0Bn83Ns5fDhz0KLJLsr3y8shLt9y3BHqTGmQk
+          66SpZ+3YcV4qeDtK1fD2V5m2YGPRQp4nv5yTVwIDAQABAoIBAQCIIBRbdb8reF8k
+          WYMvw/fPXXy9Qbni5PdhrPtUe6Emvr7weeNX0mmGlz5cPt2wQjdkqhDMNdTSooXN
+          vrF0Mj2t0ftxy5y3f6VRrYKk61NaahEj9KTLOB6liUd/hARKOcF6J2jYlxu4itV0
+          Yqs8z2WeOwPHUkfgVynZZPstojhmB00cZympQQ+pKwg/ySgTAmrgEjIIAI47alw3
+          haM0I/233KHgiog1KM2wid2wGSjJC3qpaEk8h6O6j82ZP9nwkc3JUxzgPvbM8LUU
+          k36hERzoce8QZPSmJM0oGj15UUey2AQZmvQRAcMeSd51ODSRIJucoCE3GLe8Z6jz
+          SFl3l8KBAoGBAOsJIlfbaXWALlNcxhKruytCl4Smcdl5E7p0YcWHojaUCmqZHIAl
+          HtN6yOToMmyqeakgvpd6TnqPy12uDDsSMJkwZXXs33MFHMvtT9Z6ckEtIwigJipt
+          rBQ8pxKHGxF5oxn6C4VheLJvcSTnujczKNQBX2go560I7gCQI0FH3hiJAoGBAP8D
+          Ir+jD5VZfXJwZV5J0ZOkOrSjTWqpRYxSBHtjD+d/sSZJBnBFtRKqguXqkc8OB5+9
+          dCz3C5RJRE7gG+0y3yw5YTRJHkAnRerG8oOWXKr0tZwvrO+WDsi/3LYhO1MQ1iL1
+          PzdZpvchrZRshKg6qgAslQJ/W5B7h2iReGVdxpTfAoGBAMZ3VBS0Jf0eW//wmyEw
+          +j+xX5iXpBNrdglANT9DJOrJX3JcEAD1V25khDcnC01PNqRmDgqDMLm1qphUW+eV
+          mIwCnepSNu09J+/bWEtX4hq/LpIeCZxSN7hu7vVqOKUs/Vj2F7xtbineiMANHOV3
+          wcYj0ph10gv/OlonXF3HffdhAoGBAMDbAz2AuPlO63NPkynik8+fZRJVaeffSgyb
+          vm399foydKuqkGb6IL2UHFh6tHiteJCS+7hBwQ0M987a5+PUFDliz6N2JJ2J1fN/
+          L8raPQzA8lPDLnsmtdmWV/mZWj8wvXFEneFjOMUvQBG+m/iKHSTykmKIJJw4/6fS
+          VAX9DIBrAoGAILv685OhTaO4gKT4gt+rtbetjMiDZ8TY0FtrhFga4g0wrEu8g3cv
+          bddtw+otPyyZNen8lBxJqhlzxFgeFb8Iz0byosmM44WE12z43PPqQ6GKdF3gIIzg
+          H+XzKxTUnFzckWgYK7+lrp5Srk21mVp4eSsgHIn2xl0d7E7I9KX57D0=
+          -----END RSA PRIVATE KEY-----
+
+        insecure: false
+      requirements:
+      - yorcConfigHostedOnYorcYorcServerConfig:
+          type_requirement: host
+          node: YorcServer
+          capability: org.ystia.yorc.pub.capabilities.YorcConfigContainer
+          relationship: org.ystia.yorc.pub.relationships.YorcConfigHostedOnYorc
+    NFSClient:
+      type: org.ystia.nfs.linux.ansible.nodes.NFSClient
+      properties:
+        fs_type: ext4
+        location: "/nfs_yorc"
+      requirements:
+      - joinNfsServerNfsServerNfs_server:
+          type_requirement: partition
+          node: NFSServer
+          capability: org.ystia.nfs.pub.capabilities.NFSServer
+          relationship: org.ystia.nfs.linux.ansible.relationships.JoinNFSServer
+      - hostedOnComputeYorcHost:
+          type_requirement: host
+          node: ComputeYorc
+          capability: tosca.capabilities.Container
+          relationship: tosca.relationships.HostedOn
+    ConsulAgentA4C:
+      type: org.ystia.yorc.experimental.consul.linux.ansible.nodes.ConsulAgent
+      properties:
+        install_dnsmasq: true
+        mode: agent
+        download_url: "https://releases.hashicorp.com/consul/1.0.2/consul_1.0.2_linux_amd64.zip"
+        install_dir: "/usr/local/bin"
+        data_dir: "/var/consul"
+        config_dir: "/etc/consul.d"
+        datacenter: dc1
+        domain: consul
+      requirements:
+      - joinServerConsulServerConsul_server:
+          type_requirement: consul_server
+          node: ConsulServer
+          capability: org.ystia.yorc.experimental.consul.pub.capabilities.ConsulServer
+          relationship: org.ystia.yorc.experimental.consul.linux.ansible.relationships.JoinServer
+      - hostedOnComputeAlienHost:
+          type_requirement: host
+          node: ComputeAlien
+          capability: tosca.capabilities.Container
+          relationship: tosca.relationships.HostedOn
+      capabilities:
+        consul_agent:
+          properties:
+            api_port: 8500
+            protocol: tcp
+            secure: false
+            network_name: PRIVATE
+            initiator: source
+    ConsulAgentYorcServer:
+      type: org.ystia.yorc.experimental.consul.linux.ansible.nodes.ConsulAgent
+      properties:
+        install_dnsmasq: true
+        mode: agent
+        download_url: "https://releases.hashicorp.com/consul/1.0.2/consul_1.0.2_linux_amd64.zip"
+        install_dir: "/usr/local/bin"
+        data_dir: "/var/consul"
+        config_dir: "/etc/consul.d"
+        datacenter: dc1
+        domain: consul
+      requirements:
+      - joinServerConsulServerConsul_server:
+          type_requirement: consul_server
+          node: ConsulServer
+          capability: org.ystia.yorc.experimental.consul.pub.capabilities.ConsulServer
+          relationship: org.ystia.yorc.experimental.consul.linux.ansible.relationships.JoinServer
+      - hostedOnComputeYorcHost:
+          type_requirement: host
+          node: ComputeYorc
+          capability: tosca.capabilities.Container
+          relationship: tosca.relationships.HostedOn
+      capabilities:
+        consul_agent:
+          properties:
+            api_port: 8500
+            protocol: tcp
+            secure: false
+            network_name: PRIVATE
+            initiator: source
+    YorcServer:
+      type: org.ystia.yorc.linux.ansible.nodes.YorcServer
+      properties:
+        download_url: "https://github.com/ystia/yorc/releases/download/v3.0.0/yorc.tgz"
+        install_dir: "/usr/local/bin"
+        config_dir: "/etc/yorc"
+        data_dir: "/var/yorc"
+      requirements:
+      - hostedOnComputeYorcHost:
+          type_requirement: host
+          node: ComputeYorc
+          capability: tosca.capabilities.Container
+          relationship: tosca.relationships.HostedOn
+      - joinConsulAgentConsulAgentConsul_agent:
+          type_requirement: consul
+          node: ConsulAgentYorcServer
+          capability: org.ystia.yorc.experimental.consul.pub.capabilities.ConsulAgent
+          relationship: org.ystia.yorc.linux.ansible.relationships.JoinConsulAgent
+      - dependsOnAnsibleRuntimeAnsibleRuntimeFeature:
+          type_requirement: ansible
+          node: AnsibleRuntime
+          capability: tosca.capabilities.Node
+          relationship: org.ystia.ansible.pub.relationships.DependsOnAnsibleRuntime
+      - dependsOnTerraformRuntimeTerraformRuntimeFeature:
+          type_requirement: terraform
+          node: TerraformRuntime
+          capability: tosca.capabilities.Node
+          relationship: org.ystia.terraform.pub.relationships.DependsOnTerraformRuntime
+      - dependsOnFilessystemNfsClientFeature:
+          type_requirement: work_directory
+          node: NFSClient
+          capability: tosca.capabilities.Node
+          relationship: org.ystia.yorc.pub.relationships.DependsOnFilessystem
+      capabilities:
+        rest:
+          properties:
+            port: 8800
+            protocol: http
+            secure: false
+            network_name: PRIVATE
+            initiator: source
