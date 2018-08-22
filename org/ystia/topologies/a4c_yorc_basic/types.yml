@@ -27,7 +27,7 @@ imports:
 
 repositories:
   Pulp:
-    url: http://10.197.135.244/starlings/alien4cloud
+    url: https://fastconnect.org/maven/service/local/repositories/opensource/content/alien4cloud/alien4cloud-dist/2.0.0
     type: http
 
 topology_template:
@@ -92,7 +92,7 @@ topology_template:
             initiator: source
       artifacts:
         alien_dist:
-          file: alien4cloud-premium-dist-2.0.0-dist.tar.gz
+          file: alien4cloud-dist-2.0.0-dist.tar.gz
           type: tosca.artifacts.File
           repository: Pulp
     AnsibleRuntime:
