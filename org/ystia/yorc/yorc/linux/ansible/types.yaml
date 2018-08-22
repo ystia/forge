@@ -25,7 +25,7 @@ imports:
   - tosca-normative-types:1.0.0-ALIEN20
   - yorc-types:1.0.0
   - org.ystia.yorc.pub:2.1.0-SNAPSHOT
-  - org.ystia.yorc.samples.consul.pub:1.0.0-SNAPSHOT
+  - org.ystia.yorc.experimental.consul.pub:2.1.0-SNAPSHOT
 
 
 node_types:
@@ -96,7 +96,7 @@ node_types:
         delete: playbooks/delete.yml
     requirements:
       - consul:
-          capability: org.ystia.yorc.samples.consul.pub.capabilities.ConsulAgent
+          capability: org.ystia.yorc.experimental.consul.pub.capabilities.ConsulAgent
           # Override parent requirement relationship
           relationship: org.ystia.yorc.linux.ansible.relationships.JoinConsulAgent
           occurrences: [ 1, 1 ]
@@ -107,7 +107,7 @@ node_types:
 
 relationship_types:
   org.ystia.yorc.linux.ansible.relationships.JoinConsulAgent:
-    derived_from: org.ystia.yorc.samples.consul.pub.relationships.JoinConsulAgent
+    derived_from: org.ystia.yorc.experimental.consul.pub.relationships.JoinConsulAgent
     interfaces:
       Configure:
         pre_configure_source:

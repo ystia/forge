@@ -22,7 +22,7 @@ metadata:
 
 imports:
   - tosca-normative-types:1.0.0-ALIEN20
-  - org.ystia.yorc.samples.consul.pub:1.0.0-SNAPSHOT
+  - org.ystia.yorc.experimental.consul.pub:2.1.0-SNAPSHOT
   - org.ystia.ansible.pub:2.1.0-SNAPSHOT
   - org.ystia.terraform.pub:2.1.0-SNAPSHOT
 
@@ -147,7 +147,7 @@ node_types:
         default: /var/yorc
     requirements:
     - consul:
-        capability: org.ystia.yorc.samples.consul.pub.capabilities.ConsulAgent
+        capability: org.ystia.yorc.experimental.consul.pub.capabilities.ConsulAgent
         occurrences: [ 1, 1 ]
     - ansible:
         capability: tosca.capabilities.Node
