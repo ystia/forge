@@ -147,7 +147,8 @@ node_types:
         default: /var/yorc
     requirements:
     - consul:
-        capability: org.ystia.yorc.experimental.consul.pub.capabilities.ConsulAgent
+        capability: org.alien4cloud.consul.pub.capabilities.ConsulAgent
+        relationship: org.ystia.yorc.pub.relationships.JoinConsulAgent
         occurrences: [ 1, 1 ]
     - ansible:
         capability: tosca.capabilities.Node
@@ -191,6 +192,8 @@ capability_types:
     derived_from: tosca.capabilities.Container
 
 relationship_types:
+  org.ystia.yorc.pub.relationships.JoinConsulAgent:
+    derived_from: org.ystia.yorc.experimental.consul.pub.relationships.JoinConsulAgent
   org.ystia.yorc.pub.relationships.YorcConfigHostedOnYorc:
     derived_from: tosca.relationships.HostedOn
   org.ystia.yorc.pub.relationships.DependsOnFilessystem:
