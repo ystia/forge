@@ -29,32 +29,15 @@
         yorcConfig: "{{ result.stdout | from_yaml }}"
 
     - set_fact:
-        tmp: '{ "infrastructures": { "openstack": { "auth_url": "{{ AUTH_URL }}" } } }'
-    - set_fact:
-        yorcConfig: "{{ yorcConfig | combine(tmp, recursive=True) }}"
-
-    - set_fact:
-        tmp: '{ "infrastructures": { "openstack": { "tenant_name": "{{ TENANT_NAME }}" } } }'
-    - set_fact:
-        yorcConfig: "{{ yorcConfig | combine(tmp, recursive=True) }}"
-
-    - set_fact:
-        tmp: '{ "infrastructures": { "openstack": { "user_name": "{{ USER_NAME }}" } } }'
-    - set_fact:
-        yorcConfig: "{{ yorcConfig | combine(tmp, recursive=True) }}"
-
-    - set_fact:
-        tmp: '{ "infrastructures": { "openstack": { "password": "{{ PASSWORD }}" } } }'
-    - set_fact:
-        yorcConfig: "{{ yorcConfig | combine(tmp, recursive=True) }}"
-
-    - set_fact:
-        tmp: '{ "infrastructures": { "openstack": { "private_network_name": "{{ PRIVATE_NETWORK_NAME }}" } } }'
-    - set_fact:
-        yorcConfig: "{{ yorcConfig | combine(tmp, recursive=True) }}"
-
-    - set_fact:
-        tmp: '{ "infrastructures": { "openstack": { "default_security_groups": {{ DEFAULT_SECURITY_GROUPS }} } } }'
+        tmp: >
+          { "infrastructures": { "openstack": {
+              "auth_url": "{{ AUTH_URL }}",
+              "tenant_name": "{{ TENANT_NAME }}",
+              "user_name": "{{ USER_NAME }}",
+              "password": "{{ PASSWORD }}",
+              "private_network_name": "{{ PRIVATE_NETWORK_NAME }}",
+              "default_security_groups": {{ DEFAULT_SECURITY_GROUPS }}
+          } } }
     - set_fact:
         yorcConfig: "{{ yorcConfig | combine(tmp, recursive=True) }}"
 
