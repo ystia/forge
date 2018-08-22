@@ -1,0 +1,244 @@
+tosca_definitions_version: alien_dsl_2_0_0
+
+metadata:
+  template_name: org.ystia.topologies.a4c_yorc_basic
+  template_version: 2.1.0-SNAPSHOT
+  template_author: Ystia
+
+description: ""
+
+imports:
+- tosca-normative-types:1.0.0-ALIEN20
+
+- org.alien4cloud.alien4cloud.pub:2.0.0
+- org.alien4cloud.alien4cloud.webapp:2.0.0
+- org.alien4cloud.java.jdk.linux:2.0.0
+
+- org.ystia.terraform.linux.terraform:2.1.0-SNAPSHOT
+- org.ystia.yorc.alien4cloud:2.1.0-SNAPSHOT
+- org.ystia.ansible.linux.ansible:2.1.0-SNAPSHOT
+- org.ystia.terraform.pub:2.1.0-SNAPSHOT
+- org.ystia.yorc.linux.ansible:2.1.0-SNAPSHOT
+- org.ystia.yorc.experimental.consul.linux.ansible:2.1.0-SNAPSHOT
+- org.ystia.yorc.pub:2.1.0-SNAPSHOT
+- org.ystia.ansible.pub:2.1.0-SNAPSHOT
+- org.ystia.yorc.experimental.consul.pub:2.1.0-SNAPSHOT
+
+
+repositories:
+  Pulp:
+    url: http://10.197.135.244/starlings/alien4cloud
+    type: http
+
+topology_template:
+  node_templates:
+    OracleJDK:
+      type: org.alien4cloud.java.jdk.linux.nodes.OracleJDK
+      properties:
+        java_url: "https://edelivery.oracle.com/otn-pub/java/jdk/8u131-b11/d54c1d3a095b4ff2b6607d096fa80163/jdk-8u131-linux-x64.tar.gz"
+        java_home: "/opt/java"
+        component_version: "1.8.0-131-b11"
+      requirements:
+      - hostedOnComputeHost:
+          type_requirement: host
+          node: A4C_Yorc
+          capability: tosca.capabilities.Container
+          relationship: tosca.relationships.HostedOn
+    Network:
+      metadata:
+        a4c_edit_x: 179
+        a4c_edit_y: "-132"
+      type: tosca.nodes.Network
+      properties:
+        ip_version: 4
+    Alien4Cloud:
+      type: org.alien4cloud.alien4cloud.webapp.nodes.Alien4Cloud
+      properties:
+        context_root: "/"
+        component_version: "2.0.0"
+        data_dir: "/opt/alien4cloud/data"
+      requirements:
+      - javaSoftwareHostedOnJdkOracleJdkJdk:
+          type_requirement: java
+          node: OracleJDK
+          capability: org.alien4cloud.java.pub.capabilities.JDK
+          relationship: org.alien4cloud.java.pub.relationships.JavaSoftwareHostedOnJDK
+      capabilities:
+        consul:
+          properties:
+            tls_enabled: false
+            protocol: tcp
+            secure: false
+            network_name: PRIVATE
+            initiator: source
+        jolokia:
+          properties:
+            port: 8778
+        http:
+          properties:
+            port: 9200
+            protocol: http
+            secure: false
+            network_name: PRIVATE
+            initiator: source
+        rest:
+          properties:
+            user: admin
+            password: admin
+            port: 8080
+            protocol: http
+            secure: false
+            network_name: PRIVATE
+            initiator: source
+      artifacts:
+        alien_dist:
+          file: alien4cloud-premium-dist-2.0.0-dist.tar.gz
+          type: tosca.artifacts.File
+          repository: Pulp
+    AnsibleRuntime:
+      type: org.ystia.ansible.linux.ansible.nodes.AnsibleRuntime
+      properties:
+        component_version: "2.4.1.0"
+      requirements:
+      - hostedOnComputeHost:
+          type_requirement: host
+          node: A4C_Yorc
+          capability: tosca.capabilities.Container
+          relationship: tosca.relationships.HostedOn
+    YorcPlugin:
+      type: org.ystia.yorc.alien4cloud.nodes.YorcPlugin
+      properties:
+        download_url: "https://github.com/ystia/yorc-a4c-plugin/releases/download/v3.1.0-M1/alien4cloud-yorc-plugin-3.1.0-M1.zip"
+        orchestrator_name: Yorc
+        discriminator: YourInitials
+        pluginId: "alien4cloud-yorc-plugin"
+        pluginBean: "yorc-orchestrator-factory"
+      requirements:
+      - alienConfiguratorHostedOnAlienAlien4CloudConfig:
+          type_requirement: host
+          node: Alien4Cloud
+          capability: org.alien4cloud.alien4cloud.pub.capabilities.AlienConfigContainer
+          relationship: org.alien4cloud.alien4cloud.pub.relationships.AlienConfiguratorHostedOnAlien
+      - connectsToYorcYorcServerRest:
+          type_requirement: yorc
+          node: YorcServer
+          capability: org.ystia.yorc.pub.capabilities.YorcRestAPI
+          relationship: org.ystia.yorc.alien4cloud.relationships.ConnectsToYorc
+    YorcServer:
+      type: org.ystia.yorc.linux.ansible.nodes.YorcServer
+      properties:
+        download_url: "https://github.com/ystia/yorc/releases/download/v3.1.0-M1/yorc.tgz"
+        install_dir: "/usr/local/bin"
+        config_dir: "/etc/yorc"
+        data_dir: "/var/yorc"
+      requirements:
+      - hostedOnComputeHost:
+          type_requirement: host
+          node: A4C_Yorc
+          capability: tosca.capabilities.Container
+          relationship: tosca.relationships.HostedOn
+      - joinConsulAgentConsulServerConsul_agent:
+          type_requirement: consul
+          node: ConsulServer
+          capability: org.ystia.yorc.experimental.consul.pub.capabilities.ConsulAgent
+          relationship: org.ystia.yorc.linux.ansible.relationships.JoinConsulAgent
+      - dependsOnAnsibleRuntimeAnsibleRuntimeFeature:
+          type_requirement: ansible
+          node: AnsibleRuntime
+          capability: tosca.capabilities.Node
+          relationship: org.ystia.ansible.pub.relationships.DependsOnAnsibleRuntime
+      - dependsOnTerraformRuntimeTerraformRuntimeFeature:
+          type_requirement: terraform
+          node: TerraformRuntime
+          capability: tosca.capabilities.Node
+          relationship: org.ystia.terraform.pub.relationships.DependsOnTerraformRuntime
+      capabilities:
+        rest:
+          properties:
+            port: 8800
+            protocol: http
+            secure: false
+            network_name: PRIVATE
+            initiator: source
+    ConsulServer:
+      type: org.ystia.yorc.experimental.consul.linux.ansible.nodes.ConsulServer
+      properties:
+        install_dnsmasq: true
+        mode: server
+        download_url: "https://releases.hashicorp.com/consul/1.0.2/consul_1.0.2_linux_amd64.zip"
+        install_dir: "/usr/local/bin"
+        data_dir: "/var/consul"
+        config_dir: "/etc/consul.d"
+        datacenter: dc1
+        domain: consul
+      requirements:
+      - hostedOnComputeHost:
+          type_requirement: host
+          node: A4C_Yorc
+          capability: tosca.capabilities.Container
+          relationship: tosca.relationships.HostedOn
+      capabilities:
+        consul_agent:
+          properties:
+            api_port: 8500
+            protocol: tcp
+            secure: false
+            network_name: PRIVATE
+            initiator: source
+    TerraformRuntime:
+      type: org.ystia.terraform.linux.terraform.nodes.TerraformRuntime
+      properties:
+        component_version: "0.9.11"
+        install_dir: "/usr/local/bin"
+      requirements:
+      - hostedOnA4CYorcHost:
+          type_requirement: host
+          node: A4C_Yorc
+          capability: tosca.capabilities.Container
+          relationship: tosca.relationships.HostedOn
+    A4C_Yorc:
+      metadata:
+        a4c_edit_x: 510
+        a4c_edit_y: "-275"
+      type: tosca.nodes.Compute
+      requirements:
+      - networkNetworkConnection:
+          type_requirement: network
+          node: Network
+          capability: tosca.capabilities.Connectivity
+          relationship: tosca.relationships.Network
+      capabilities:
+        os:
+          properties:
+            type: linux
+        scalable:
+          properties:
+            min_instances: 1
+            max_instances: 1
+            default_instances: 1
+        endpoint:
+          properties:
+            secure: true
+            protocol: tcp
+            network_name: PRIVATE
+            initiator: source
+    OpenStackConfig:
+      type: org.ystia.yorc.infrastructure.OpenStackConfig
+      properties:
+        auth_url: { get_input: auth_url }
+        tenant_name: { get_input: tenant_name }
+        user_name: { get_input: user_name }
+        password: { get_input: password }
+        private_network_name: { get_input: private_network_name }
+        default_security_groups: { get_input: default_security_groups }
+        key_pair: { get_input: key_pair }
+
+      requirements:
+      - yorcConfigHostedOnYorcYorcServerConfig:
+          type_requirement: host
+          node: YorcServer
+          capability: org.ystia.yorc.pub.capabilities.YorcConfigContainer
+          relationship: org.ystia.yorc.pub.relationships.YorcConfigHostedOnYorc
+  outputs:
+    Alien4Cloud_alien_url:
+      value: { get_attribute: [ Alien4Cloud, alien_url ] }
