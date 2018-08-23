@@ -368,7 +368,7 @@ topology_template:
       - joinConsulAgentConsulAgentConsul_agent:
           type_requirement: consul
           node: ConsulAgentYorcServer
-          capability: org.ystia.yorc.experimental.consul.pub.capabilities.ConsulAgent
+          capability: org.alien4cloud.consul.pub.capabilities.ConsulAgent
           relationship: org.ystia.yorc.linux.ansible.relationships.JoinConsulAgent
       - dependsOnAnsibleRuntimeAnsibleRuntimeFeature:
           type_requirement: ansible
