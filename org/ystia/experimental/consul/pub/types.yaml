@@ -56,6 +56,9 @@ node_types:
         constraints:
           - valid_values: [ "agent", "server" ]
         required: true
+      download_url:
+        # override default version of supported consul
+        default: https://releases.hashicorp.com/consul/1.0.6/consul_1.0.6_linux_amd64.zip
       install_dir:
         description: Installation directory for the Consul binary
         type: string
