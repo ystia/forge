@@ -70,7 +70,7 @@ topology_template:
       capabilities:
         consul_agent:
           properties:
-            api_port: 8500
+            port: 8500
     # Using a service that is not defined in this Topology.
     # This is done by specifying an Abstract Node Type that will be matched 
     # at deployment time against the service implementation.

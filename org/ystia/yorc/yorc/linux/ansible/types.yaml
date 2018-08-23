@@ -113,7 +113,7 @@ relationship_types:
         pre_configure_source:
           inputs:
             CONSUL_SCHEME: "http"
-            CONSUL_PORT: { get_property: [TARGET, consul_agent, api_port] }
+            CONSUL_PORT: { get_property: [TARGET, consul_agent, port] }
           implementation: playbooks/join_consul.yml
   org.ystia.yorc.linux.ansible.relationships.DependsOnFilessystem:
     derived_from: tosca.relationships.DependsOn
