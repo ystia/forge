@@ -144,7 +144,7 @@ capability_types:
 #      A ConsulAgent capability allows to binds to the Consul HTTP API.
 #      Both agents and servers expose this capability
 #    properties:
-#      api_port:
+#      port:
 #        type: integer
 #        description: Port of the Consul HTTP API.
 #        required: true
