@@ -37,5 +37,3 @@
         name: "{{item}}"
         state: absent
       with_items: "{{install_packages}}"
-    
-        
