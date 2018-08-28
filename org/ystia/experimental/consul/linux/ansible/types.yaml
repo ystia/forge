@@ -44,7 +44,7 @@ node_types:
           It is sometimes needed to remove it if another DNS is already installed (bind for example)
         default: true
     attributes:
-      web_ui_url: { concat: [ "http://", get_attribute: [ HOST, public_address ], ":", get_property: [ SELF, consul_agent, api_port ] ] }
+      web_ui_url: { concat: [ "http://", get_attribute: [ HOST, public_address ], ":", get_property: [ SELF, consul_agent, port ] ] }
     requirements:
       - wan_server:
           # Optionally a server may join another server in another data center using the WAN interface

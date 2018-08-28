@@ -96,7 +96,7 @@ node_types:
         delete: playbooks/delete.yml
     requirements:
       - consul:
-          capability: org.ystia.yorc.experimental.consul.pub.capabilities.ConsulAgent
+          capability: org.alien4cloud.consul.pub.capabilities.ConsulAgent
           # Override parent requirement relationship
           relationship: org.ystia.yorc.linux.ansible.relationships.JoinConsulAgent
           occurrences: [ 1, 1 ]
@@ -107,13 +107,13 @@ node_types:
 
 relationship_types:
   org.ystia.yorc.linux.ansible.relationships.JoinConsulAgent:
-    derived_from: org.ystia.yorc.experimental.consul.pub.relationships.JoinConsulAgent
+    derived_from: org.ystia.yorc.pub.relationships.JoinConsulAgent
     interfaces:
       Configure:
         pre_configure_source:
           inputs:
             CONSUL_SCHEME: "http"
-            CONSUL_PORT: { get_property: [TARGET, consul_agent, api_port] }
+            CONSUL_PORT: { get_property: [TARGET, consul_agent, port] }
           implementation: playbooks/join_consul.yml
   org.ystia.yorc.linux.ansible.relationships.DependsOnFilessystem:
     derived_from: tosca.relationships.DependsOn

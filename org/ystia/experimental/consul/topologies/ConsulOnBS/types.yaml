@@ -26,7 +26,6 @@ description: "This topology illustrates how to setup block storage and partition
 imports:
   - tosca-normative-types:1.0.0-ALIEN20
   - alien-extended-storage-types:2.0.0
-  - yorc-types:2.1.0
   - org.ystia.yorc.experimental.consul.linux.ansible:2.1.0-SNAPSHOT
   - org.ystia.yorc.experimental.consul.pub:2.1.0-SNAPSHOT
 
@@ -113,7 +112,7 @@ topology_template:
       capabilities:
         consul_agent:
           properties:
-            api_port: 8500
+            port: 8500
             protocol: tcp
             secure: false
             network_name: PRIVATE
@@ -143,7 +142,7 @@ topology_template:
       capabilities:
         consul_agent:
           properties:
-            api_port: 8500
+            port: 8500
             protocol: tcp
             secure: false
             network_name: PRIVATE
