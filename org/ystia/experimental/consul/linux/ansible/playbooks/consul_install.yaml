@@ -99,14 +99,6 @@
         group: consul
         mode: "u=rwx,g=rwx,o=rx"
 
-    - name: Setup permissions on /run/consul dir
-      file:
-        path: "/run/consul"
-        state: directory
-        owner: consul
-        group: consul
-        mode: "u=rwx,g=rwx,o=rx"
-
     - name: Download Consul binary
       get_url:
         url: "{{DOWNLOAD_URL}}"
