@@ -24,4 +24,4 @@
         session_id: "{{ login.set_cookie.split(';')[0] }}"
 
     - name: Upload plugin archive to A4C
-      shell: "curl -k -X POST -H 'cookie: {{ session_id }}' -F file=@/tmp/alien4cloud-yorc-plugin_{{ INSTANCE }}.zip '{{ alien_url }}/rest/latest/plugins'"
+      shell: "env -i curl -k -X POST -H 'cookie: {{ session_id }}' -F file=@/tmp/alien4cloud-yorc-plugin_{{ INSTANCE }}.zip '{{ alien_url }}/rest/latest/plugins'"
