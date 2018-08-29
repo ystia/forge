@@ -1,5 +1,4 @@
-
-- name: Upload plugin
+- name: Download plugin
   hosts: all
   strategy: linear
   become: true
@@ -9,6 +8,19 @@
         url: "{{ download_url }}"
         dest: "/tmp/alien4cloud-yorc-plugin_{{ INSTANCE }}.zip"
 
+- name: Upload plugin into Alien
+  hosts: all
+  strategy: linear
+  become: true
+  environment:
+    # We are assuming that Alien is accessible without proxies
+    # as actually this component is hosted on the Alien node 
+    # (so they are on the same host)
+    http_proxy: ""
+    HTTP_PROXY: ""
+    https_proxy: ""
+    HTTPS_PROXY: ""
+  tasks:
     - name: "Login onto A4C using {{ alien_url }}/login?username={{ alien_user }}&password={{ alien_password }}&submit=Login"
       uri:
         url: "{{ alien_url }}/login?username={{ alien_user }}&password={{ alien_password }}&submit=Login"

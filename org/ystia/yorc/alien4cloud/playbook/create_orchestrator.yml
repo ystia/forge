@@ -3,15 +3,25 @@
   hosts: all
   strategy: linear
   become: true
+  environment:
+    # We are assuming that Alien is accessible without proxies
+    # as actually this component is hosted on the Alien node 
+    # (so they are on the same host)
+    http_proxy: ""
+    HTTP_PROXY: ""
+    https_proxy: ""
+    HTTPS_PROXY: ""
   tasks:
     # read yorc_url from yorc connection
     - name: Check relationship inputs exists
       stat: path="/tmp/a4cPlaybookRegistry/{{ NODE }}/{{ INSTANCE }}/connect_yorc/inputs/yorc_url"
       register: yorc_url_file
+
     - name: read relationship inputs
       command: /bin/cat "/tmp/a4cPlaybookRegistry/{{ NODE }}/{{ INSTANCE }}/connect_yorc/inputs/yorc_url"
       register: yorc_url_content
       when: yorc_url_file.stat.exists
+      
     - name: set yorc_url
       set_fact:
         yorc_url: "{{ yorc_url_content.stdout_lines[0] }}"
