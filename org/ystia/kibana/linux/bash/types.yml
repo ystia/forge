@@ -175,7 +175,7 @@ relationship_types:
         post_configure_source:
           implementation: relationships/elasticsearch/kibana_to_elasticsearch_post_config_source.sh
           inputs:
-            cluster_name: { get_property: [ TARGET, cluster_name ] }
+            cluster_name: { get_property: [ TARGET, search_resource, cluster_name ] }
             kibanaIp: { get_attribute: [ SOURCE, ip_address] }
             elasticsearchIp: { get_attribute: [ TARGET, ip_address] }
             ELASTICSEARCH_HEAP_SIZE: { get_property: [SOURCE, es_heap_size] }

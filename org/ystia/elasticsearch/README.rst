@@ -61,10 +61,6 @@ Properties
 
 - **heap_size**: Sets the heap memory that will be allocated to Elasticsearch java process. It will allocate the same value to both min and max values.
 
-- **cluster_name**: Specifies the name of the cluster to which the Elasticsearch instance will belong after the deployment operation.
-
-  - Default: ystia
-
 - **number_of_shards**: Defines the number of shards per index.
 
   - Default: 5. This means that the indexes may be split between 5 nodes if needed (if not enough space on one node for example).
@@ -100,6 +96,14 @@ Capabilities
 ^^^^^^^^^^^^
 
 - **search_resource**: Search Endpoint used by components that need to connect to Elasticsearch (for example Logstash or Kibana)
+  
+  properties:
+
+  - **cluster_name**: Specifies the name of the cluster to which the Elasticsearch instance will belong after the deployment operation.
+
+    - Default: ystia
+
+
 
 Artifacts
 ^^^^^^^^^

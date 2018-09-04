@@ -600,7 +600,10 @@ relationship_types:
           pre_configure_source:
             inputs:
               LOGSTASH_HOME: { get_attribute: [SOURCE, ls_home] }
-              cluster_name: { get_property: [ TARGET, cluster_name ] }
+              cluster_name: { get_property: [ TARGET, search_resource, cluster_name ] }
+              ES_CAP_IP: { get_attribute: [ TARGET, search_resource, ip_address ] }
+              ES_IP: { get_attribute: [ TARGET, private_address ] }
+              ES_PUBLIC_IP: { get_attribute: [ TARGET, public_address ] }
             implementation: relationships/elasticsearch/configure.sh
     artifacts:
       - scripts:

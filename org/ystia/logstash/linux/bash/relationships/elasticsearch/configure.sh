@@ -31,6 +31,12 @@ IS_CONSUL=1
 if is_port_open "127.0.0.1" "8500"
 then
     host_name="elasticsearch.service.ystia"
+elif [[ -n "${ES_PUBLIC_IP}" ]]; then
+    host_name="${ES_PUBLIC_IP}"
+elif [[ -n "${ES_IP}" ]]; then
+    host_name="${ES_IP}"
+elif [[ -n "${ES_CAP_IP}" ]]; then
+    host_name="${ES_CAP_IP}"
 else
     host_name="localhost"
 fi
