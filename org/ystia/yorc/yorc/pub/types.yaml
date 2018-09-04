@@ -55,6 +55,7 @@ node_types:
       default_security_groups:
         description: "Default security groups to be used when creating a Compute instance."
         type: list
+        required: false
         entry_schema:
           type: string
       key_pair:

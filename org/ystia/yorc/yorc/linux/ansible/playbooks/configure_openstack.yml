@@ -35,11 +35,20 @@
               "tenant_name": "{{ TENANT_NAME }}",
               "user_name": "{{ USER_NAME }}",
               "password": "{{ PASSWORD }}",
-              "private_network_name": "{{ PRIVATE_NETWORK_NAME }}",
-              "default_security_groups": {{ DEFAULT_SECURITY_GROUPS }}
+              "private_network_name": "{{ PRIVATE_NETWORK_NAME }}"
           } } }
     - set_fact:
         yorcConfig: "{{ yorcConfig | combine(tmp, recursive=True) }}"
+
+    - set_fact:
+        tmp: >
+          { "infrastructures": { "openstack": {
+              "default_security_groups": {{ DEFAULT_SECURITY_GROUPS }}
+          } } }
+      when: DEFAULT_SECURITY_GROUPS != ''
+    - set_fact:
+        yorcConfig: "{{ yorcConfig | combine(tmp, recursive=True) }}"
+      when: DEFAULT_SECURITY_GROUPS != ''
 
     - name: "Output config to file {{ CONFIG_DIR }}/config.yorc.yaml"
       copy:
