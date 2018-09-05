@@ -31,6 +31,37 @@ repositories:
     type: http
 
 topology_template:
+  inputs:
+    tenant_name:
+      type: string
+      required: true
+      description: "The OpenStack tenant name to use."
+    password:
+      type: string
+      required: true
+      description: "The OpenStack password to use."
+    user_name:
+      type: string
+      required: true
+      description: "The OpenStack user name to use."
+    key_pair:
+      type: string
+      required: true
+      description: "Content of the key pair used to connect on the OpenStack computes. Stored as ~/.ssh/yorc.pem"
+    default_security_groups:
+      type: list
+      required: false
+      entry_schema:
+        type: string
+      description: "Default security groups to be used when creating a Compute instance."
+    auth_url:
+      type: string
+      required: true
+      description: "The authentication url for OpenStack (should be the Keystone endpoint ie: http://your-openstack:5000/v2.0)."
+    private_network_name:
+      type: string
+      required: true
+      description: "The name of private network to use as primary adminstration network between Yorc and Compute instances. It should be a private network accessible by this instance of Yorc."
   node_templates:
     OracleJDK:
       type: org.alien4cloud.java.jdk.linux.nodes.OracleJDK
@@ -109,7 +140,7 @@ topology_template:
       type: org.ystia.yorc.alien4cloud.nodes.YorcPlugin
       properties:
         download_url: "https://github.com/ystia/yorc-a4c-plugin/releases/download/v3.1.0-M1/alien4cloud-yorc-plugin-3.1.0-M1.zip"
-        orchestrator_name: Yorc
+        name: Yorc
         discriminator: YourInitials
         pluginId: "alien4cloud-yorc-plugin"
         pluginBean: "yorc-orchestrator-factory"

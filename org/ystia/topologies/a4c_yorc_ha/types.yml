@@ -40,6 +40,53 @@ repositories:
 topology_template:
   description: A topology template to connect A4C, Yorc, Consul, in High Avaibilty mode
 
+  inputs:
+    tenant_name:
+      type: string
+      required: true
+      description: "The OpenStack tenant name to use."
+    password:
+      type: string
+      required: true
+      description: "The OpenStack password to use."
+    user_name:
+      type: string
+      required: true
+      description: "The OpenStack user name to use."
+    key_pair:
+      type: string
+      required: true
+      description: "Content of the key pair used to connect on the OpenStack computes. Stored as ~/.ssh/yorc.pem"
+    master_url:
+      type: string
+      required: true
+      description: "URL of the HTTP API of Kubernetes is exposed. Format: https://<host>:<port>"
+    insecure:
+      type: boolean
+      required: true
+      default: false
+      description: "Server should be accessed without verifying the TLS certificate (testing only)"
+    cert:
+      type: string
+      required: true
+      description: "The TLS client certificate used for authentication"
+    auth_url:
+      type: string
+      required: true
+      description: "The authentication url for OpenStack (should be the Keystone endpoint ie: http://your-openstack:5000/v2.0)."
+    private_network_name:
+      type: string
+      required: true
+      description: "The name of private network to use as primary adminstration network between Yorc and Compute instances. It should be a private network accessible by this instance of Yorc."
+    ca:
+      type: string
+      required: true
+      description: "Trusted root certificates for server"
+    key:
+      type: string
+      required: true
+      description: "The TLS client key used for authentication"
+
   node_templates:
     ComputeAlien:
       metadata:
@@ -196,7 +243,7 @@ topology_template:
       type: org.ystia.yorc.alien4cloud.nodes.YorcPlugin
       properties:
         download_url: "https://github.com/ystia/yorc-a4c-plugin/releases/download/v3.0.0/alien4cloud-yorc-plugin-3.0.0.zip"
-        orchestrator_name: Yorc
+        name: Yorc
         discriminator: bertrand
         pluginId: "alien4cloud-yorc-plugin"
         pluginBean: "yorc-orchestrator-factory"
@@ -253,7 +300,6 @@ topology_template:
         user_name: { get_input: user_name }
         password: { get_input: password }
         private_network_name: { get_input: private_network_name }
-        default_security_groups: { get_input: default_security_groups }
         key_pair: { get_input: key_pair }
 
       requirements:
