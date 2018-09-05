@@ -31,46 +31,27 @@ imports:
 node_types:
   org.ystia.yorc.infrastructure.OpenStackConfig:
     derived_from: org.ystia.yorc.pub.infrastructure.OpenStackConfig
-    interfaces:
-      Standard:
-        inputs:
-          CONFIG_DIR: { get_property: [HOST, config_dir] }
-          DATA_DIR: { get_property: [SELF, data_dir] }
-          AUTH_URL: { get_property: [SELF, auth_url] }
-          TENANT_NAME: { get_property: [SELF, tenant_name] }
-          USER_NAME: { get_property: [SELF, user_name] }
-          PASSWORD: { get_property: [SELF, password] }
-          PRIVATE_NETWORK_NAME: { get_property: [SELF, private_network_name] }
-          DEFAULT_SECURITY_GROUPS: { get_property: [SELF, default_security_groups] }
-          KEY_PAIR: { get_property: [SELF, key_pair] }
-        configure:
-          implementation: playbooks/configure_openstack.yml
+    requirements:
+    - host:
+        capability: org.ystia.yorc.pub.capabilities.YorcConfigContainer
+        relationship: org.ystia.yorc.linux.ansible.relationships.YorcConfigOpenstackHostedOnYorc
+        occurrences: [ 1, 1 ]
 
   org.ystia.yorc.infrastructure.AWSConfig:
     derived_from: org.ystia.yorc.pub.infrastructure.AWSConfig
-    interfaces:
-      Standard:
-        inputs:
-          CONFIG_DIR: { get_property: [HOST, config_dir] }
-          ACCESS_KEY: { get_property: [SELF, access_key] }
-          SECRET_KEY: { get_property: [SELF, secret_key] }
-          REGION: { get_property: [SELF, region] }
-        configure:
-          implementation: playbooks/configure_aws.yml
+    requirements:
+    - host:
+        capability: org.ystia.yorc.pub.capabilities.YorcConfigContainer
+        relationship: org.ystia.yorc.linux.ansible.relationships.YorcConfigAWSHostedOnYorc
+        occurrences: [ 1, 1 ]
 
   org.ystia.yorc.infrastructure.KubernetesConfig:
     derived_from: org.ystia.yorc.pub.infrastructure.KubernetesConfig
-    interfaces:
-      Standard:
-        inputs:
-          CONFIG_DIR: { get_property: [HOST, config_dir] }
-          MASTER_URL: { get_property: [SELF, master_url] }
-          CA: { get_property: [SELF, ca] }
-          CERT: { get_property: [SELF, cert] }
-          KEY: { get_property: [SELF, key] }
-          INSECURE: { get_property: [SELF, insecure] }
-        configure:
-          implementation: playbooks/configure_kubernetes.yml
+    requirements:
+    - host:
+        capability: org.ystia.yorc.pub.capabilities.YorcConfigContainer
+        relationship: org.ystia.yorc.linux.ansible.relationships.YorcConfigKubernetesHostedOnYorc
+        occurrences: [ 1, 1 ]
 
   org.ystia.yorc.linux.ansible.nodes.YorcServer:
     derived_from: org.ystia.yorc.pub.nodes.YorcServer
@@ -127,3 +108,55 @@ relationship_types:
             CONFIG_DIR: { get_property: [SOURCE, config_dir] }
             DIRECTORY: { get_property: [TARGET, location] }
           implementation: playbooks/configure_filesystem.yml
+  org.ystia.yorc.linux.ansible.relationships.YorcConfigOpenstackHostedOnYorc:
+    derived_from: tosca.relationships.HostedOn
+    description: >
+      Configure a Yorc server with an openstack infrastructure
+    valid_target_types: [ org.ystia.yorc.pub.nodes.YorcServer ]
+    interfaces:
+      Configure:
+        post_configure_target:
+          inputs:
+            CONFIG_DIR: { get_property: [SOURCE, config_dir] }
+            DATA_DIR: { get_property: [SOURCE, data_dir] }
+            AUTH_URL: { get_property: [SOURCE, auth_url] }
+            TENANT_NAME: { get_property: [SOURCE, tenant_name] }
+            USER_NAME: { get_property: [SOURCE, user_name] }
+            PASSWORD: { get_property: [SOURCE, password] }
+            PRIVATE_NETWORK_NAME: { get_property: [SOURCE, private_network_name] }
+            DEFAULT_SECURITY_GROUPS: { get_property: [SOURCE, default_security_groups] }
+            KEY_PAIR: { get_property: [SOURCE, key_pair] }
+          implementation: playbooks/configure_openstack.yml
+
+  org.ystia.yorc.linux.ansible.relationships.YorcConfigKubernetesHostedOnYorc:
+    derived_from: tosca.relationships.HostedOn
+    description: >
+      Configure a Yorc server with a kubernetes infrastructure
+    valid_target_types: [ org.ystia.yorc.pub.nodes.YorcServer ]
+    interfaces:
+      Configure:
+        post_configure_target:
+          inputs:
+            CONFIG_DIR: { get_property: [SOURCE, config_dir] }
+            MASTER_URL: { get_property: [SOURCE, master_url] }
+            CA: { get_property: [SOURCE, ca] }
+            CERT: { get_property: [SOURCE, cert] }
+            KEY: { get_property: [SOURCE, key] }
+            INSECURE: { get_property: [SOURCE, insecure] }
+          implementation: playbooks/configure_kubernetes.yml
+
+  org.ystia.yorc.linux.ansible.relationships.YorcConfigAWSHostedOnYorc:
+    derived_from: tosca.relationships.HostedOn
+    description: >
+      Configure a Yorc server with an aws infrastructure
+    valid_target_types: [ org.ystia.yorc.pub.nodes.YorcServer ]
+    interfaces:
+      Configure:
+        post_configure_target:
+          inputs:
+            CONFIG_DIR: { get_property: [SOURCE, config_dir] }
+            ACCESS_KEY: { get_property: [SOURCE, access_key] }
+            SECRET_KEY: { get_property: [SOURCE, secret_key] }
+            REGION: { get_property: [SOURCE, region] }
+          implementation: playbooks/configure_aws.yml
+

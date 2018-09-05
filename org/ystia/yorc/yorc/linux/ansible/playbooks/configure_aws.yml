@@ -37,13 +37,3 @@
       copy:
         content: "{{ yorcConfig | to_yaml }}"
         dest: "{{ CONFIG_DIR }}/config.yorc.yaml"
-
-- name: Restart Yorc
-  hosts: all
-  strategy: free
-  become: true
-  tasks:
-    - name: restart Yorc
-      systemd:
-        name: yorc
-        state: restarted

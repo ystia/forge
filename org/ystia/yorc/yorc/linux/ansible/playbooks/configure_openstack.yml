@@ -64,13 +64,3 @@
       copy:
         content: "{{ KEY_PAIR }}"
         dest: "{{ DATA_DIR }}/.ssh/yorc.pem"
-
-- name: Restart Yorc
-  hosts: all
-  strategy: free
-  become: true
-  tasks:
-    - name: restart Yorc
-      systemd:
-        name: yorc
-        state: restarted
