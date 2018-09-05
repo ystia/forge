@@ -44,8 +44,12 @@ port="9200"
 host=$host_name:$port
 log info "Elasticsearch host is $host"
 
+if [[ -n "${PROXY}" ]]; then
+    proxy_config="\n\t\tproxy => \"${PROXY}\""
+fi
+
 #echo -e "output {\n\telasticsearch {\n\t\tcluster => \"${cluster_name}\"\n\t\tprotocol => node\n\t}\n}" >>${LOGSTASH_HOME}/conf/3-elasticsearch_logstash_outputs.conf
-echo -e "output {\n\telasticsearch {\n\t\thosts => [\"$host\"] }\n}" >>${LOGSTASH_HOME}/conf/3-elasticsearch_logstash_outputs.conf
+echo -e "output {\n\telasticsearch {${proxy_config}\n\t\thosts => [\"$host\"] \n\t}\n}" >>${LOGSTASH_HOME}/conf/3-elasticsearch_logstash_outputs.conf
 log info "A4C configure elasticsearch cluster ${cluster_name}"
 
 touch "${YSTIA_DIR}/.${SOURCE_NODE}-ls2esFlag"

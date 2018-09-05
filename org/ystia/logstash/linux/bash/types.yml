@@ -595,6 +595,15 @@ relationship_types:
     derived_from: org.ystia.relationships.ConnectsTo
     description: Connects Logstash to ElasticSearch
     valid_target_types: [ org.ystia.elasticsearch.pub.capabilities.SearchEndpoint ]
+    properties:
+      proxy:
+        description:
+          Allows to specify a proxy to use to connect to ElasticSearch
+        type: string
+        required: false
+        default: ""
+        constraints:
+          - pattern: "^(https?://.+)?"
     interfaces:
       Configure:
           pre_configure_source:
@@ -604,6 +613,7 @@ relationship_types:
               ES_CAP_IP: { get_attribute: [ TARGET, search_resource, ip_address ] }
               ES_IP: { get_attribute: [ TARGET, private_address ] }
               ES_PUBLIC_IP: { get_attribute: [ TARGET, public_address ] }
+              PROXY: { get_property: [SELF, proxy] }
             implementation: relationships/elasticsearch/configure.sh
     artifacts:
       - scripts:
