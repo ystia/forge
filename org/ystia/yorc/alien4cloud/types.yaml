@@ -8,6 +8,9 @@ metadata:
 imports:
   - org.alien4cloud.alien4cloud.pub:2.0.0
   - org.alien4cloud.alien4cloud.config.pub:2.0.0
+  - org.alien4cloud.alien4cloud.config.location:2.0.0
+  - org.alien4cloud.alien4cloud.config.location_resources.on_demand:2.0.0
+  - org.alien4cloud.alien4cloud.config.location_resources.autoconfig:2.0.0
   - tosca-normative-types:1.0.0-ALIEN20
   - yorc-types:1.0.0
   - org.ystia.yorc.pub:2.1.0-SNAPSHOT
@@ -17,7 +20,7 @@ node_types:
   org.ystia.yorc.alien4cloud.nodes.YorcPlugin:
     description: |
       Upload Yorc orchestrator plugin
-    derived_from: org.alien4cloud.alien4cloud.pub.nodes.AlienConfigurator
+    derived_from: org.alien4cloud.alien4cloud.config.pub.nodes.OrchestratorConfigurator
     requirements:
       - yorc:
           capability: org.ystia.yorc.pub.capabilities.YorcRestAPI
@@ -31,7 +34,7 @@ node_types:
         type: string
         required: true
         default: https://github.com/ystia/yorc-a4c-plugin/releases/download/v3.0.0/alien4cloud-yorc-plugin-3.0.0.zip
-      orchestrator_name:
+      name:
         type: string
         required: true
         default: Yorc
@@ -59,11 +62,41 @@ node_types:
             alien_password: { get_property: [HOST, rest, password] }
             alien_url: { get_attribute: [HOST, alien_url] }
             download_url: { get_property: [SELF, download_url] }
-            orchestrator_name: { get_property: [SELF, orchestrator_name] }
+            orchestrator_name: { get_property: [SELF, name] }
             pluginId: { get_property: [SELF, pluginId] }
             pluginBean: { get_property: [SELF, pluginBean] }
             discriminator: { get_property: [SELF, discriminator] }
           implementation: playbook/start.yml
+
+  org.ystia.yorc.alien4cloud.nodes.YorcLocationConfigurator:
+    derived_from: org.alien4cloud.alien4cloud.config.location.nodes.SimpleLocationConfigurator
+    properties:
+      type:
+        type: string
+        required: true
+        default: OpenStack
+        constraints:
+        - valid_values: [ "Google Cloud", "AWS", "OpenStack", "Slurm", "Kubernetes", "HostsPool" ]
+
+  org.ystia.yorc.alien4cloud.nodes.YorcAutoconfigResourcesConfigurator:
+    derived_from: org.alien4cloud.alien4cloud.config.location_resources.autoconfig.nodes.ResourcesConfigurator
+    properties:
+      type:
+        type: string
+        required: true
+        default: OpenStack
+        constraints:
+        - valid_values: [ "Google Cloud", "AWS", "OpenStack", "Slurm", "Kubernetes", "HostsPool" ]
+
+  org.ystia.yorc.alien4cloud.nodes.YorcOnDemandLocationResourcesConfigurator:
+    derived_from: org.alien4cloud.alien4cloud.config.location_resources.on_demand.nodes.OnDemandLocationResourcesConfigurator
+    properties:
+      type:
+        type: string
+        required: true
+        default: OpenStack
+        constraints:
+        - valid_values: [ "Google Cloud", "AWS", "OpenStack", "Slurm", "Kubernetes", "HostsPool" ]
 
 capability_types:
   org.ystia.yorc.alien4cloud.capabilities.YorcPlugin:
