@@ -265,11 +265,11 @@ topology_template:
         key_pair: { get_input: key_pair }
 
       requirements:
-      - yorcConfigHostedOnYorcYorcServerConfig:
+      - yorcConfigOpenstackHostedOnYorcYorcServerConfig:
           type_requirement: host
           node: YorcServer
           capability: org.ystia.yorc.pub.capabilities.YorcConfigContainer
-          relationship: org.ystia.yorc.pub.relationships.YorcConfigHostedOnYorc
+          relationship: org.ystia.yorc.linux.ansible.relationships.YorcConfigOpenstackHostedOnYorc
   outputs:
     Alien4Cloud_alien_url:
       value: { get_attribute: [ Alien4Cloud, alien_url ] }

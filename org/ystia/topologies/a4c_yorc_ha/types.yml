@@ -303,11 +303,11 @@ topology_template:
         key_pair: { get_input: key_pair }
 
       requirements:
-      - yorcConfigHostedOnYorcYorcServerConfig:
+      - yorcConfigOpenstackHostedOnYorcYorcServerConfig:
           type_requirement: host
           node: YorcServer
           capability: org.ystia.yorc.pub.capabilities.YorcConfigContainer
-          relationship: org.ystia.yorc.pub.relationships.YorcConfigHostedOnYorc
+          relationship: org.ystia.yorc.linux.ansible.relationships.YorcConfigOpenstackHostedOnYorc
     KubernetesConfig:
       type: org.ystia.yorc.infrastructure.KubernetesConfig
       properties:
@@ -317,11 +317,11 @@ topology_template:
         key: { get_input: key }
         insecure: { get_input: insecure }
       requirements:
-      - yorcConfigHostedOnYorcYorcServerConfig:
+      - yorcConfigKubernetesHostedOnYorcYorcServerConfig:
           type_requirement: host
           node: YorcServer
           capability: org.ystia.yorc.pub.capabilities.YorcConfigContainer
-          relationship: org.ystia.yorc.pub.relationships.YorcConfigHostedOnYorc
+          relationship: org.ystia.yorc.linux.ansible.relationships.YorcConfigKubernetesHostedOnYorc
     NFSClient:
       type: org.ystia.nfs.linux.ansible.nodes.NFSClient
       properties:
