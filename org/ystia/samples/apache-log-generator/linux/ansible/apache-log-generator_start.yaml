@@ -1,0 +1,13 @@
+- name: Start Apache Log Generator
+  hosts: all
+  strategy: free
+  vars:
+    INSTALL_DIR: "/opt/apache-log-generator"
+    PID_FILE: "{{ INSTALL_DIR }}/generator.pid"
+  tasks:
+    - name: Debug command
+      debug:
+        msg: "Command to execute: nohup python {{ INSTALL_DIR }}/apache-fake-log-gen.py -n {{ TOTAL_LOGS_NB }} -s {{ DELAY_S }} > {{ LOG_PATH }} & echo $! > {{PID_FILE}}"
+
+    - name: Launch Apache Log Generator
+      shell: "nohup python {{ INSTALL_DIR }}/apache-fake-log-gen.py -n {{ TOTAL_LOGS_NB }} -s {{ DELAY_S }} > {{ LOG_PATH }} & echo $! > {{ PID_FILE }}"

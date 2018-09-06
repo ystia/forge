@@ -1,0 +1,36 @@
+- name: Install Apache Log Genereator requirements
+  hosts: all
+  strategy: free
+  become: true
+  become_method: sudo
+  vars:
+      INSTALL_DIR: "/opt/apache-log-generator"
+  tasks:
+    - name: Create install directory
+      file:
+        path: "{{ INSTALL_DIR }}"
+        state: directory
+
+    - name: Install binaries
+      copy:
+        src: "{{ item }}"
+        dest: "{{ INSTALL_DIR }}"
+      with_items:
+        - requirements.txt
+        - apache-fake-log-gen.py
+
+    - name: Ensure pip is installed
+      easy_install:
+        name: pip
+        state: latest
+
+    - name: Install Apache log Generator python requirements
+      pip:
+        requirements: "{{ INSTALL_DIR }}/requirements.txt"
+
+    - name: Change install dir owner
+      file:
+        path: "{{ INSTALL_DIR }}"
+        owner: "{{ ansible_env.SUDO_UID }}"
+        group: "{{ ansible_env.SUDO_GID }}"
+        recurse: yes
