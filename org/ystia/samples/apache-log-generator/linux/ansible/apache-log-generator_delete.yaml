@@ -1,0 +1,13 @@
+- name: Delete Apache Log Generator
+  hosts: all
+  strategy: free
+  become: true
+  become_method: sudo
+  vars:
+    INSTALL_DIR: "/opt/apache-log-generator"
+  tasks:
+    - name: Delete Apache Log Generator
+      file:
+        path: "{{ INSTALL_DIR }}"
+        state: absent
+
