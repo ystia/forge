@@ -69,9 +69,13 @@ tar -xzf ${INSTALL_DIR}/${KBN_ZIP_NAME} -C  ${INSTALL_DIR} || error_exit "ERROR:
 # $1 :plugin name
 # $2 :plugin zip name
 function install_plugin {
-    log info ">>>> Install ${1} plugin"
-    sudo cp ${plugins}/${2} ${KIBANA_PLUGIN_DIR}
-    sudo unzip ${KIBANA_PLUGIN_DIR}/${2} -d ${KIBANA_PLUGIN_DIR}
+    if [[ -e ${plugins}/${2} ]] ; then
+        log info ">>>> Install ${1} plugin"
+        sudo cp ${plugins}/${2} ${KIBANA_PLUGIN_DIR}
+        sudo unzip ${KIBANA_PLUGIN_DIR}/${2} -d ${KIBANA_PLUGIN_DIR}
+    else
+        log info ">>>> Plugin ${1} missing. Skipping its installation."
+    fi
 }
 
 # Network plugin installation

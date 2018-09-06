@@ -22,10 +22,8 @@ imports:
 
 node_types:
   org.ystia.elasticsearch.linux.bash.nodes.Elasticsearch:
-    derived_from: org.ystia.consul.pub.nodes.ConsulUser
+    derived_from: org.ystia.elasticsearch.pub.nodes.AbstractElasticSearch
     description: Elasticsearch component for linux
-    tags:
-      icon: /images/elasticsearch-icon.png
     properties:
       component_version:
         type: version
@@ -72,12 +70,6 @@ node_types:
           It allocates the same value to both initial and maximum values (ie -Xms and -Xmx java options).
         constraints:
           - pattern: "[1-9][0-9]*[kKmMgG]"
-      cluster_name:
-        type: string
-        default: ystia
-        description: >
-          Cluster name identifies your Elasticsearch cluster for auto-discovery.
-          If you're running multiple clusters on the same network, make sure you're using unique names.
       number_of_shards:
         type: integer
         default: 5
@@ -156,7 +148,7 @@ node_types:
             ELASTICSEARCH_HEAP_SIZE: { get_property: [SELF, heap_size] }
             JAVA_HOME: { get_attribute: [SELF, java_home] }
             ip_address: { get_attribute: [SELF, ip_address] }
-            cluster_name: { get_property: [ SELF, cluster_name ] }
+            cluster_name: { get_property: [ SELF, search_resource, cluster_name ] }
             number_of_shards: { get_property: [ SELF, number_of_shards ] }
             number_of_replicas: { get_property: [ SELF, number_of_replicas ] }
             nb_close_older_than: { get_property: [ SELF, nb_close_older_than ] }
