@@ -74,11 +74,53 @@ Properties
 
 - **default_security_groups** : Default security groups to be used when creating a Compute instance.
 
-
-Artifacts
-^^^^^^^^^
-
 - **key_pair** : The Key pair to use to connect on the OpenStack computes.
+
+
+Requirements
+^^^^^^^^^^^^
+
+- **host**: OpenStackConfig should be hosted on a YorcServer component.
+
+
+KubernetesConfig Component
+--------------------------
+
+The OpenStackConfig component allows to add OpenStack infrastructure to the configuration of Yorc
+
+Properties
+^^^^^^^^^^
+
+- **master_url** : URL of the HTTP API of Kubernetes is exposed. Format: https://<host>:<port>
+
+- **ca** : Trusted root certificates for server
+
+- **cert** : The TLS client certificate used for authentication
+
+- **key** : The TLS client key used for authentication
+
+- **insecure** : Server should be accessed without verifying the TLS certificate (testing only)
+
+
+Requirements
+^^^^^^^^^^^^
+
+- **host**: OpenStackConfig should be hosted on a YorcServer component.
+
+
+AWSConfig Component
+-------------------
+
+The OpenStackConfig component allows to add OpenStack infrastructure to the configuration of Yorc
+
+Properties
+^^^^^^^^^^
+
+- **access_key** : The AWS access key credential.
+
+- **secret_key** : The AWS secret key credential.
+
+- **region** : The AWS region to use.
 
 Requirements
 ^^^^^^^^^^^^
