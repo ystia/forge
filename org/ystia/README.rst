@@ -126,7 +126,24 @@ For the first method, see the example provided below for the *Welcome* sample.
 
 For the second method:
 
-- you need to configure a Git Location corresponding to the Ystia Forge in Alien4Cloud.
+- you need to configure a Git Location corresponding to some Alien4Cloud components in the csar-public-library.
+
+  - Repository URL: https://github.com/alien4cloud/csar-public-library.git
+  - Credentials: *none*
+  - Branch: **v2.0.0**
+  - Archives to import:
+    - **org/alien4cloud/consul**
+    - **org/alien4cloud/java**
+    - **org/alien4cloud/elasticsearch**
+    - **org/alien4cloud/cloudify/manager/pub**
+    - **org/alien4cloud/cloudify/hostpool/pub**
+    - **org/alien4cloud/alien4cloud/pub**
+    - **org/alien4cloud/alien4cloud/config**
+    - **org/alien4cloud/alien4cloud/webapp**
+
+- then execute the import operation for this git location. (known error : It is currently failing with the error : File path : archive.zip l:95 c: 70	The File does not respect YAML format, (mapping values are not allowed here).
+
+- then you need to configure a Git Location corresponding to the Ystia Forge in Alien4Cloud.
 
   - Repository URL: https://github.com/ystia/forge.git
   - Credentials: *none*
