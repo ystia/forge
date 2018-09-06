@@ -8,4 +8,4 @@
     PID_FILE: "{{ INSTALL_DIR }}/generator.pid"
   tasks:
     - name: Stop Apache Log Generator
-      command: "kill $(cat {{ PID_FILE}})"
+      shell: "kill $(cat {{ PID_FILE}})"
