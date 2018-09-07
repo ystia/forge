@@ -240,3 +240,5 @@ topology_template:
     kibana_url:
       description: The URL to access the Kibana dashboard
       value: { get_attribute: [ Kibana, url ] }
+    elastic_api:
+      value: { get_attribute: [Elasticsearch, api]}

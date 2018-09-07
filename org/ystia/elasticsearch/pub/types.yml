@@ -24,6 +24,9 @@ node_types:
     abstract: true
     tags:
       icon: /images/elasticsearch-icon.png
+    attributes:
+      api: 
+        type: string
     capabilities:
       search_resource: org.ystia.elasticsearch.pub.capabilities.SearchEndpoint
 

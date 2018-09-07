@@ -122,6 +122,7 @@ node_types:
           - valid_values: [days,months,years]
     attributes:
       java_home: { get_operation_output: [ SELF, Configure, pre_configure_source, JAVA_HOME ] }
+      api: { concat: [get_attribute: [ SELF, search_resource, ip_address ], ":", get_attribute: [ SELF, search_resource, port ]]}
     capabilities:
       search_resource: org.ystia.elasticsearch.pub.capabilities.SearchEndpoint
     requirements:
