@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-BINTRAY_USER="stebenoist"
+BINTRAY_USER="loicalbertin"
 
 date_lang="1 month ago"
 purge_date="$(date --date="${date_lang}" --iso-8601=seconds)"
