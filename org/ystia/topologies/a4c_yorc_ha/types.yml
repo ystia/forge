@@ -176,7 +176,7 @@ topology_template:
     AnsibleRuntime:
       type: org.ystia.ansible.linux.ansible.nodes.AnsibleRuntime
       properties:
-        component_version: "2.4.1.0"
+        component_version: "2.6.3"
       requirements:
       - hostedOnComputeYorcHost:
           type_requirement: host
