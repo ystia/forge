@@ -36,20 +36,19 @@ node_types:
     tags:
       icon: /images/consul-icon.png
     properties:
-# UNSUPPORTED properties of A4C type
-#      tls_enabled:
-#        description: Defines if the communication with the consul agent will be secured (HTTPS).
-#        type: boolean
-#        required: true
-#        default: false
-#      ca_passphrase:
-#        description: The provided CA certificate passphrase.
-#        type: string
-#        required: false
-#      encrypt_key:
-#        description: The key to encrypt gossip exchanges into consul cluster.
-#        type: string
-#        required: false
+      tls_enabled:
+        description: UNSUPPORTED property of A4C type - Defines if the communication with the consul agent will be secured (HTTPS).
+        type: boolean
+        required: true
+        default: false
+      ca_passphrase:
+        description: UNSUPPORTED property of A4C type - The provided CA certificate passphrase.
+        type: string
+        required: false
+      encrypt_key:
+        description: UNSUPPORTED property of A4C type - The key to encrypt gossip exchanges into consul cluster.
+        type: string
+        required: false
       mode:
         description: The mode (agent or server) for operating Consul
         type: string
