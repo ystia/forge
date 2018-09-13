@@ -32,35 +32,33 @@ repositories:
 
 topology_template:
   inputs:
-    tenant_name:
+    os_tenant_name:
       type: string
       required: true
       description: "The OpenStack tenant name to use."
-    password:
+    os_password:
       type: string
       required: true
       description: "The OpenStack password to use."
-    user_name:
+    os_user_name:
       type: string
       required: true
       description: "The OpenStack user name to use."
-    key_pair:
+    os_key_pair_content:
       type: string
       required: true
       description: "Content of the key pair used to connect on the OpenStack computes. Stored as ~/.ssh/yorc.pem"
-    default_security_groups:
+    os_default_security_groups:
       type: list
-      required: false
       entry_schema:
         type: string
       description: "Default security groups to be used when creating a Compute instance."
-    auth_url:
+    os_auth_url:
       type: string
       required: true
       description: "The authentication url for OpenStack (should be the Keystone endpoint ie: http://your-openstack:5000/v2.0)."
-    private_network_name:
+    os_private_network_name:
       type: string
-      required: true
       description: "The name of private network to use as primary adminstration network between Yorc and Compute instances. It should be a private network accessible by this instance of Yorc."
   node_templates:
     OracleJDK:
@@ -256,13 +254,13 @@ topology_template:
     OpenStackConfig:
       type: org.ystia.yorc.infrastructure.OpenStackConfig
       properties:
-        auth_url: { get_input: auth_url }
-        tenant_name: { get_input: tenant_name }
-        user_name: { get_input: user_name }
-        password: { get_input: password }
-        private_network_name: { get_input: private_network_name }
-        default_security_groups: { get_input: default_security_groups }
-        key_pair: { get_input: key_pair }
+        auth_url: { get_input: os_auth_url }
+        tenant_name: { get_input: os_tenant_name }
+        user_name: { get_input: os_user_name }
+        password: { get_input: os_password }
+        private_network_name: { get_input: os_private_network_name }
+        default_security_groups: { get_input: os_default_security_groups }
+        key_pair: { get_input: os_key_pair_content }
 
       requirements:
       - yorcConfigOpenstackHostedOnYorcYorcServerConfig:

@@ -41,48 +41,48 @@ topology_template:
   description: A topology template to connect A4C, Yorc, Consul, in High Avaibilty mode
 
   inputs:
-    tenant_name:
+    os_tenant_name:
       type: string
       required: true
       description: "The OpenStack tenant name to use."
-    password:
+    os_password:
       type: string
       required: true
       description: "The OpenStack password to use."
-    user_name:
+    os_user_name:
       type: string
       required: true
       description: "The OpenStack user name to use."
-    key_pair:
+    os_key_pair_content:
       type: string
       required: true
       description: "Content of the key pair used to connect on the OpenStack computes. Stored as ~/.ssh/yorc.pem"
-    master_url:
+    os_auth_url:
+      type: string
+      required: true
+      description: "The authentication url for OpenStack (should be the Keystone endpoint ie: http://your-openstack:5000/v2.0)."
+    os_private_network_name:
+      type: string
+      required: true
+      description: "The name of private network to use as primary adminstration network between Yorc and Compute instances. It should be a private network accessible by this instance of Yorc."
+    k8s_master_url:
       type: string
       required: true
       description: "URL of the HTTP API of Kubernetes is exposed. Format: https://<host>:<port>"
-    insecure:
+    k8s_insecure:
       type: boolean
       required: true
       default: false
       description: "Server should be accessed without verifying the TLS certificate (testing only)"
-    cert:
-      type: string
-      required: true
-      description: "The TLS client certificate used for authentication"
-    auth_url:
-      type: string
-      required: true
-      description: "The authentication url for OpenStack (should be the Keystone endpoint ie: http://your-openstack:5000/v2.0)."
-    private_network_name:
-      type: string
-      required: true
-      description: "The name of private network to use as primary adminstration network between Yorc and Compute instances. It should be a private network accessible by this instance of Yorc."
-    ca:
+    k8s_root_ca:
       type: string
       required: true
       description: "Trusted root certificates for server"
-    key:
+    k8s_client_cert:
+      type: string
+      required: true
+      description: "The TLS client certificate used for authentication"
+    k8s_client_key:
       type: string
       required: true
       description: "The TLS client key used for authentication"
@@ -295,12 +295,12 @@ topology_template:
     OpenStackConfig:
       type: org.ystia.yorc.infrastructure.OpenStackConfig
       properties:
-        auth_url: { get_input: auth_url }
-        tenant_name: { get_input: tenant_name }
-        user_name: { get_input: user_name }
-        password: { get_input: password }
-        private_network_name: { get_input: private_network_name }
-        key_pair: { get_input: key_pair }
+        auth_url: { get_input: os_auth_url }
+        tenant_name: { get_input: os_tenant_name }
+        user_name: { get_input: os_user_name }
+        password: { get_input: os_password }
+        private_network_name: { get_input: os_private_network_name }
+        key_pair: { get_input: os_key_pair_content }
 
       requirements:
       - yorcConfigOpenstackHostedOnYorcYorcServerConfig:
@@ -311,11 +311,11 @@ topology_template:
     KubernetesConfig:
       type: org.ystia.yorc.infrastructure.KubernetesConfig
       properties:
-        master_url: { get_input: master_url }
-        ca: { get_input: ca }
-        cert: { get_input: cert }
-        key: { get_input: key }
-        insecure: { get_input: insecure }
+        master_url: { get_input: k8s_master_url }
+        ca: { get_input: k8s_root_ca }
+        cert: { get_input: k8s_client_cert }
+        key: { get_input: k8s_client_key }
+        insecure: { get_input: k8s_insecure }
       requirements:
       - yorcConfigKubernetesHostedOnYorcYorcServerConfig:
           type_requirement: host
