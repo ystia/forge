@@ -33,7 +33,7 @@ node_types:
       component_version:
         type: version
         required: true
-        default: 2.4.1.0
+        default: 2.6.3
 
 relationship_types:
   org.ystia.ansible.pub.relationships.DependsOnAnsibleRuntime:
