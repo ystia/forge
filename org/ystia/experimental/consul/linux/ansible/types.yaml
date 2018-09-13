@@ -165,6 +165,7 @@ relationship_types:
             # Workaround for consul_server that is not a derived of tosca.capabilities.Endpoint
             # we get consul server @ip from the capability in order to be able to get it from an a4c service
             # not working in 2.0.0, but will work when consul_server will be fixed in tosca.capabilities.Endpoint
+            # see https://github.com/alien4cloud/csar-public-library/pull/19
             SERVER_IP_CAP: { get_attribute: [TARGET, consul_server, ip_address] }
             # and we get the @ip from the target host. In order to work with services, we should add an ip_address
             # attribute to the output properties of the consul server service topology
