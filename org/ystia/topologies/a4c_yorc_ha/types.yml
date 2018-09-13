@@ -326,7 +326,7 @@ topology_template:
       type: org.ystia.nfs.linux.ansible.nodes.NFSClient
       properties:
         fs_type: ext4
-        location: "/nfs_yorc"
+        location: "/var/yorc/work"
       requirements:
       - joinNfsServerNfsServerNfs_server:
           type_requirement: partition
