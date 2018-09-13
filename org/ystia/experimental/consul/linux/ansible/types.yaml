@@ -162,7 +162,13 @@ relationship_types:
       Configure:
         pre_configure_source:
           inputs:
-            SERVER_IP: { get_attribute: [TARGET, consul_server, ip_address] }
+            # Workaround for consul_server that is not a derived of tosca.capabilities.Endpoint
+            # we get consul server @ip from the capability in order to be able to get it from an a4c service
+            # not working in 2.0.0, but will work when consul_server will be fixed in tosca.capabilities.Endpoint
+            SERVER_IP_CAP: { get_attribute: [TARGET, consul_server, ip_address] }
+            # and we get the @ip from the target host. In order to work with services, we should add an ip_address
+            # attribute to the output properties of the consul server service topology
+            SERVER_IP: { get_attribute: [TARGET, ip_address] }
             CONFIG_DIR: { get_property: [SOURCE, config_dir] }
           implementation: playbooks/consul_connects_agent_to_server.yml
 

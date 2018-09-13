@@ -29,6 +29,12 @@
       with_items: "{{ hostvars[inventory_hostname]  }}"
       when: item | match(TARGET_NODE+'_.*_SERVER_IP')
 
+    - name: compute consul servers
+      set_fact:
+        consul_servers: "{{ consul_servers }} + [ '{{ hostvars[inventory_hostname][item] }}' ]"
+      with_items: "{{ hostvars[inventory_hostname]  }}"
+      when: item | match(TARGET_NODE+'_.*SERVER_IP_CAP')
+
     - name: Install servers config for consul
       template: 
         src: 2_connects_to_servers.json.j2
