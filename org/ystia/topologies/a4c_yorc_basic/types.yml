@@ -139,7 +139,7 @@ topology_template:
       properties:
         download_url: "https://github.com/ystia/yorc-a4c-plugin/releases/download/v3.1.0-M1/alien4cloud-yorc-plugin-3.1.0-M1.zip"
         name: Yorc
-        discriminator: YourInitials
+        discriminator: yorc
         pluginId: "alien4cloud-yorc-plugin"
         pluginBean: "yorc-orchestrator-factory"
       requirements:

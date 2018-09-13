@@ -244,7 +244,7 @@ topology_template:
       properties:
         download_url: "https://github.com/ystia/yorc-a4c-plugin/releases/download/v3.0.0/alien4cloud-yorc-plugin-3.0.0.zip"
         name: Yorc
-        discriminator: bertrand
+        discriminator: yorc
         pluginId: "alien4cloud-yorc-plugin"
         pluginBean: "yorc-orchestrator-factory"
         yorc_address_ha: "yorc.service.consul"
