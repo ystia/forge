@@ -32,6 +32,7 @@
 
     - name: Download and unarchive a file
       unarchive:
-        src: "{{PLUGINS_URLS}}"
+        src: "{{item}}"
         dest: "{{PLUGINS_DIR}}"
         remote_src: yes
+      with_items: "{{PLUGINS_URLS}}"
