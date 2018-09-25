@@ -33,7 +33,7 @@ node_types:
       component_version:
         type: version
         required: true
-        default: 0.9.11
+        default: 0.11.8
       install_dir:
         description: Installation directory for the Terraform binary
         type: string
