@@ -284,7 +284,7 @@ topology_template:
     TerraformRuntime:
       type: org.ystia.terraform.linux.terraform.nodes.TerraformRuntime
       properties:
-        component_version: "0.9.11"
+        component_version: "0.11.8"
         install_dir: "/usr/local/bin"
       requirements:
       - hostedOnComputeYorcHost:
@@ -324,6 +324,8 @@ topology_template:
           relationship: org.ystia.yorc.linux.ansible.relationships.YorcConfigKubernetesHostedOnYorc
     TerraformConfig:
       type: org.ystia.yorc.TerraformConfig
+      properties: 
+        plugins_download_urls: ["https://releases.hashicorp.com/terraform-provider-null/1.0.0/terraform-provider-null_1.0.0_linux_amd64.zip", "https://releases.hashicorp.com/terraform-provider-consul/2.1.0/terraform-provider-consul_2.1.0_linux_amd64.zip", "https://releases.hashicorp.com/terraform-provider-openstack/1.9.0/terraform-provider-openstack_1.9.0_linux_amd64.zip", "https://releases.hashicorp.com/terraform-provider-aws/1.36.0/terraform-provider-aws_1.36.0_linux_amd64.zip", "https://releases.hashicorp.com/terraform-provider-google/1.18.0/terraform-provider-google_1.18.0_linux_amd64.zip"]
       requirements:
       - yorcConfigTerraformHostedOnYorcYorcServerConfig:
           type_requirement: host

@@ -63,8 +63,8 @@ node_types:
     interfaces:
       Standard:
         inputs:
-          PLUGINS_DIR: { get_property: [SOURCE, plugins_dir] }
-          PLUGINS_DOWNLOAD_URLS: { get_property: [SOURCE, plugins_download_urls] }
+          PLUGINS_DIR: { get_property: [SELF, plugins_dir] }
+          PLUGINS_DOWNLOAD_URLS: { get_property: [SELF, plugins_download_urls] }
         create: playbooks/terraform_create.yml
         delete: playbooks/terraform_delete.yml
 
