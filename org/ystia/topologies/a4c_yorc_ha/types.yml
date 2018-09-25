@@ -322,6 +322,14 @@ topology_template:
           node: YorcServer
           capability: org.ystia.yorc.pub.capabilities.YorcConfigContainer
           relationship: org.ystia.yorc.linux.ansible.relationships.YorcConfigKubernetesHostedOnYorc
+    TerraformConfig:
+      type: org.ystia.yorc.TerraformConfig
+      requirements:
+      - yorcConfigTerraformHostedOnYorcYorcServerConfig:
+          type_requirement: host
+          node: YorcServer
+          capability: org.ystia.yorc.pub.capabilities.YorcConfigContainer
+          relationship: org.ystia.yorc.linux.ansible.relationships.YorcConfigTerraformHostedOnYorc
     NFSClient:
       type: org.ystia.nfs.linux.ansible.nodes.NFSClient
       properties:

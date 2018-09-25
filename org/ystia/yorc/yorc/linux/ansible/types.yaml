@@ -60,6 +60,13 @@ node_types:
         capability: org.ystia.yorc.pub.capabilities.YorcConfigContainer
         relationship: org.ystia.yorc.linux.ansible.relationships.YorcConfigTerraformHostedOnYorc
         occurrences: [ 1, 1 ]
+    interfaces:
+      Standard:
+        inputs:
+          PLUGINS_DIR: { get_property: [SOURCE, plugins_dir] }
+          PLUGINS_DOWNLOAD_URLS: { get_property: [SOURCE, plugins_download_urls] }
+        create: playbooks/terraform_create.yml
+        delete: playbooks/terraform_delete.yml
 
   org.ystia.yorc.linux.ansible.nodes.YorcServer:
     derived_from: org.ystia.yorc.pub.nodes.YorcServer
@@ -175,13 +182,9 @@ relationship_types:
     valid_target_types: [ org.ystia.yorc.pub.nodes.YorcServer ]
     interfaces:
       Configure:
-        pre_configure_target:
-          inputs:
-            PLUGINS_DIR: { get_property: [SOURCE, plugins_dir] }
-          implementation: playbooks/pre_configure_terraform.yml
         post_configure_target:
           inputs:
+            CONFIG_DIR: { get_property: [TARGET, config_dir] }
             PLUGINS_DIR: { get_property: [SOURCE, plugins_dir] }
-            PLUGINS_URLS: { get_property: [SOURCE, plugins_download_urls] }
           implementation: playbooks/post_configure_terraform.yml
 

@@ -14,29 +14,13 @@
 # limitations under the License.
 #
 
-
-- name: Setup Terraform config
+- name: Uninstall Terraform plugins
   hosts: all
   strategy: free
-  become_user: yorc
   become: true
+  become_method: sudo
   tasks:
-    - name: "get current config of Yorc"
-      shell: "cat {{ CONFIG_DIR }}/config.yorc.yaml"
-      register: result
-
-    - set_fact:
-        yorcConfig: "{{ result.stdout | from_yaml }}"
-
-    - set_fact:
-        tmp: '{ "terraform": { "plugins_dir": "{{ PLUGINS_DIR }}" } }'
-      when: PLUGINS_DIR != ''
-
-    - set_fact:
-        yorcConfig: "{{ yorcConfig | combine(tmp, recursive=True) }}"
-      when: PLUGINS_DIR != ''
-
-    - name: "Output config to file {{ CONFIG_DIR }}/config.yorc.yaml"
-      copy:
-        content: "{{ yorcConfig | to_yaml }}"
-        dest: "{{ CONFIG_DIR }}/config.yorc.yaml"
+    - name: Delete Terraform plugins dir
+      file:
+        path: "{{PLUGINS_DIR}}"
+        state: absent

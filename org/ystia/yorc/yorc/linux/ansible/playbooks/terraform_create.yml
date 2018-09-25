@@ -35,4 +35,4 @@
         src: "{{item}}"
         dest: "{{PLUGINS_DIR}}"
         remote_src: yes
-      with_items: "{{PLUGINS_URLS}}"
+      with_items: "{{PLUGINS_DOWNLOAD_URLS}}"
