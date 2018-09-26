@@ -180,7 +180,7 @@ topology_template:
           type_requirement: terraform
           node: TerraformRuntime
           capability: tosca.capabilities.Node
-          relationship: org.ystia.terraform.pub.relationships.DependsOnTerraformRuntime
+          relationship: org.ystia.yorc.linux.ansible.relationships.DependsOnTerraformRuntime
       capabilities:
         rest:
           properties:
