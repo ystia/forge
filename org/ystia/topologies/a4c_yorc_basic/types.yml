@@ -268,14 +268,6 @@ topology_template:
           node: YorcServer
           capability: org.ystia.yorc.pub.capabilities.YorcConfigContainer
           relationship: org.ystia.yorc.linux.ansible.relationships.YorcConfigOpenstackHostedOnYorc
-    TerraformConfig:
-      type: org.ystia.yorc.TerraformConfig
-      requirements:
-      - yorcConfigTerraformHostedOnYorcYorcServerConfig:
-          type_requirement: host
-          node: YorcServer
-          capability: org.ystia.yorc.pub.capabilities.YorcConfigContainer
-          relationship: org.ystia.yorc.linux.ansible.relationships.YorcConfigTerraformHostedOnYorc
   outputs:
     Alien4Cloud_alien_url:
       value: { get_attribute: [ Alien4Cloud, alien_url ] }

@@ -175,16 +175,3 @@ relationship_types:
             REGION: { get_property: [SOURCE, region] }
           implementation: playbooks/configure_aws.yml
 
-  org.ystia.yorc.linux.ansible.relationships.YorcConfigTerraformHostedOnYorc:
-    derived_from: tosca.relationships.HostedOn
-    description: >
-      Configure a Yorc server with Terraform
-    valid_target_types: [ org.ystia.yorc.pub.nodes.YorcServer ]
-    interfaces:
-      Configure:
-        post_configure_target:
-          inputs:
-            CONFIG_DIR: { get_property: [TARGET, config_dir] }
-            PLUGINS_DIR: { get_property: [SOURCE, plugins_dir] }
-          implementation: playbooks/post_configure_terraform.yml
-
