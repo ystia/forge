@@ -14,25 +14,13 @@
 # limitations under the License.
 #
 
-
-- name: Install Terraform plugins
+- name: Uninstall Terraform
   hosts: all
   strategy: free
   become: true
   become_method: sudo
   tasks:
-
-    - name: Setup permissions on terraform plugins dir
+    - name: Delete Terraform plugins dir
       file:
         path: "{{PLUGINS_DIR}}"
-        state: directory
-        owner: yorc
-        group: yorc
-        mode: "u=rwx,g=rwx,o=rx"
-
-    - name: Download and unarchive a file
-      unarchive:
-        src: "{{item}}"
-        dest: "{{PLUGINS_DIR}}"
-        remote_src: yes
-      with_items: "{{PLUGINS_DOWNLOAD_URLS}}"
+        state: absent

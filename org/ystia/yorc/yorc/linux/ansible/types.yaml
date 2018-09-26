@@ -53,21 +53,6 @@ node_types:
         relationship: org.ystia.yorc.linux.ansible.relationships.YorcConfigKubernetesHostedOnYorc
         occurrences: [ 1, 1 ]
 
-  org.ystia.yorc.TerraformConfig:
-    derived_from: org.ystia.yorc.pub.TerraformConfig
-    requirements:
-    - host:
-        capability: org.ystia.yorc.pub.capabilities.YorcConfigContainer
-        relationship: org.ystia.yorc.linux.ansible.relationships.YorcConfigTerraformHostedOnYorc
-        occurrences: [ 1, 1 ]
-    interfaces:
-      Standard:
-        inputs:
-          PLUGINS_DIR: { get_property: [SELF, plugins_dir] }
-          PLUGINS_DOWNLOAD_URLS: { get_property: [SELF, plugins_download_urls] }
-        create: playbooks/terraform_create.yml
-        delete: playbooks/terraform_delete.yml
-
   org.ystia.yorc.linux.ansible.nodes.YorcServer:
     derived_from: org.ystia.yorc.pub.nodes.YorcServer
     description: Yorc server instance
@@ -100,6 +85,10 @@ node_types:
           capability: tosca.capabilities.Node
           relationship: org.ystia.yorc.linux.ansible.relationships.DependsOnFilessystem
           occurrences: [0,1]
+      - terraform:
+          capability: tosca.capabilities.Node
+          relationship: org.ystia.yorc.linux.ansible.relationships.DependsOnTerraformRuntime
+          occurrences: [ 1, 1 ]
 
 relationship_types:
   org.ystia.yorc.linux.ansible.relationships.JoinConsulAgent:
@@ -123,6 +112,17 @@ relationship_types:
             CONFIG_DIR: { get_property: [SOURCE, config_dir] }
             DIRECTORY: { get_property: [TARGET, location] }
           implementation: playbooks/configure_filesystem.yml
+  org.ystia.yorc.linux.ansible.relationships.DependsOnTerraformRuntime:
+    derived_from: org.ystia.terraform.pub.relationships.DependsOnTerraformRuntime
+    description: >
+      Yorc depends on Terraform runtime
+    interfaces:
+      Configure:
+        post_configure_source:
+          inputs:
+            CONFIG_DIR: { get_property: [SOURCE, config_dir] }
+            PLUGINS_DIR: { get_property: [TARGET, plugins_dir] }
+          implementation: playbooks/configure_terraform.yml
   org.ystia.yorc.linux.ansible.relationships.YorcConfigOpenstackHostedOnYorc:
     derived_from: tosca.relationships.HostedOn
     description: >

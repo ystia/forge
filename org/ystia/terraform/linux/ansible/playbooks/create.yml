@@ -52,3 +52,16 @@
         dest: "{{INSTALL_DIR}}"
         creates: "{{INSTALL_DIR}}/terraform"
         mode: "u=rx,g=rx,o=rx"
+
+    - name: Setup permissions on terraform plugins dir
+      file:
+        path: "{{PLUGINS_DIR}}"
+        state: directory
+        mode: "u=rwx,g=rwx,o=rx"
+
+    - name: Download and unarchive plugins
+      unarchive:
+        src: "{{item}}"
+        dest: "{{PLUGINS_DIR}}"
+        remote_src: yes
+      with_items: "{{PLUGINS_DOWNLOAD_URLS}}"

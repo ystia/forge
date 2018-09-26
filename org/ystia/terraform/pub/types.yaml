@@ -39,6 +39,18 @@ node_types:
         type: string
         required: true
         default: /usr/local/bin
+      plugins_dir:
+        description: "The directory where are located Terraform plugins"
+        type: string
+        required: true
+        default: /var/terraform/plugins
+      plugins_download_urls:
+        description: "List of Terraform plugins download urls"
+        type: list
+        required: true
+        entry_schema:
+          type: string
+        default: ["https://releases.hashicorp.com/terraform-provider-null/1.0.0/terraform-provider-null_1.0.0_linux_amd64.zip", "https://releases.hashicorp.com/terraform-provider-consul/2.1.0/terraform-provider-consul_2.1.0_linux_amd64.zip", "https://releases.hashicorp.com/terraform-provider-openstack/1.9.0/terraform-provider-openstack_1.9.0_linux_amd64.zip", "https://releases.hashicorp.com/terraform-provider-aws/1.36.0/terraform-provider-aws_1.36.0_linux_amd64.zip", "https://releases.hashicorp.com/terraform-provider-google/1.18.0/terraform-provider-google_1.18.0_linux_amd64.zip"]
 
 relationship_types:
   org.ystia.terraform.pub.relationships.DependsOnTerraformRuntime:
