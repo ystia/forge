@@ -30,8 +30,10 @@ node_types:
     derived_from: org.ystia.terraform.pub.nodes.TerraformRuntime
     interfaces:
       Standard:
-        create:
-          inputs:
-            TERRAFORM_VERSION: { get_property: [SELF, component_version] }
-            INSTALL_DIR: { get_property: [SELF, install_dir] }
-          implementation: playbooks/create.yml
+        inputs:
+          TERRAFORM_VERSION: { get_property: [SELF, component_version] }
+          INSTALL_DIR: { get_property: [SELF, install_dir] }
+          PLUGINS_DIR: { get_property: [SELF, plugins_dir] }
+          PLUGINS_DOWNLOAD_URLS: { get_property: [SELF, plugins_download_urls] }
+        create: playbooks/create.yml
+        delete: playbooks/delete.yml

@@ -85,6 +85,10 @@ node_types:
           capability: tosca.capabilities.Node
           relationship: org.ystia.yorc.linux.ansible.relationships.DependsOnFilessystem
           occurrences: [0,1]
+      - terraform:
+          capability: tosca.capabilities.Node
+          relationship: org.ystia.yorc.linux.ansible.relationships.DependsOnTerraformRuntime
+          occurrences: [ 1, 1 ]
 
 relationship_types:
   org.ystia.yorc.linux.ansible.relationships.JoinConsulAgent:
@@ -108,6 +112,17 @@ relationship_types:
             CONFIG_DIR: { get_property: [SOURCE, config_dir] }
             DIRECTORY: { get_property: [TARGET, location] }
           implementation: playbooks/configure_filesystem.yml
+  org.ystia.yorc.linux.ansible.relationships.DependsOnTerraformRuntime:
+    derived_from: org.ystia.terraform.pub.relationships.DependsOnTerraformRuntime
+    description: >
+      Yorc depends on Terraform runtime
+    interfaces:
+      Configure:
+        post_configure_source:
+          inputs:
+            CONFIG_DIR: { get_property: [SOURCE, config_dir] }
+            PLUGINS_DIR: { get_property: [TARGET, plugins_dir] }
+          implementation: playbooks/configure_terraform.yml
   org.ystia.yorc.linux.ansible.relationships.YorcConfigOpenstackHostedOnYorc:
     derived_from: tosca.relationships.HostedOn
     description: >
