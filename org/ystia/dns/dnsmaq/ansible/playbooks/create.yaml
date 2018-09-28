@@ -8,12 +8,19 @@
 - name: Install Dnsmasq
   hosts: all
   become: true
+  vars:
+    upstream_servers: []
   tasks:
     - name: Backup original resolve.conf
       copy:
         src: /etc/resolv.conf
         remote_src: yes
         dest: /etc/resolv.conf.ori
+
+    - name: Set upstream servers fact
+      set_fact:
+        upstream_servers: "{{UPSTREAM_SERVERS | from_json}}"
+      when: UPSTREAM_SERVERS|default("") != "" 
       
     - name: Dnsmasq Install
       import_role:
@@ -25,7 +32,7 @@
         dnsmasq_dhcp: False
         dnsmasq_host_domain: "{{DOMAIN}}"
         dnsmasq_tftp: False
-        dnsmasq_conf_servers: "{{UPSTREAM_SERVERS | from_json}}"
+        dnsmasq_conf_servers: "{{upstream_servers}}"
 
     - name: Copy systemd auto reload of Dnsmasq on /etc/hosts changed 
       copy:
