@@ -46,12 +46,8 @@ node_types:
           will generate a lot of network traffic if the servers for the listed domains are not local, and that queries will time out
           if no server is available for one of the domains. The search list is currently limited to six domains with a total of
           256 characters.
-    capabilities:
-      resolvable_host:
-        type: org.ystia.dns.pub.capabilities.ResolvableHost
-        attributes:
-          hostname: { get_operation_output: [SELF, Standard, configure, HOSTNAME] }
-          ip_address: { get_attribute: [HOST, private_address]}
+    attributes:
+      hostname: { get_operation_output: [SELF, Standard, configure, HOSTNAME] }
     requirements:
       - dns_server: 
           capability: org.ystia.dns.pub.capabilities.DnsEndpoint
@@ -72,9 +68,17 @@ relationship_types:
     interfaces:
       Configure:
         inputs:
-          IP_ADDRESS: {get_attribute: [TARGET, ip_address]}
-        add_target:
-          implementation: playbooks/add_target_dns_server.yaml
-        remove_target:
-          implementation: playbooks/remove_target_dns_server.yaml
+          IP_ADDRESS: {get_attribute: [TARGET, private_address]}
+        add_target: playbooks/add_target_dns_server.yaml
+        remove_target: playbooks/remove_target_dns_server.yaml
+        add_source:
+          inputs:
+            HOSTNAME: {get_attribute: [SOURCE, hostname]}
+            IP_ADDRESS: {get_attribute: [SOURCE, private_address]}
+          implementation: playbooks/add_host.yaml
+        remove_source:
+          inputs:
+            HOSTNAME: {get_attribute: [SOURCE, hostname]}
+            IP_ADDRESS: {get_attribute: [SOURCE, private_address]}
+          implementation: playbooks/remove_host.yaml
           

@@ -41,11 +41,3 @@ capability_types:
         default: 53
         constraints:
           - in_range: [ 1, 65535 ]
-
-  org.ystia.dns.pub.capabilities.ResolvableHost:
-    derived_from: tosca.capabilities.Node
-    attributes:
-      hostname:
-        type: string
-      ip_address:
-        type: string
