@@ -1,0 +1,10 @@
+- name: "Add instance to resolv.conf"
+  hosts: all
+  become: true
+  tasks:
+    - name: "Add {{TARGET_INSTANCE}} to resolv.conf"
+      blockinfile:
+        path: "/etc/resolv.conf"
+        marker: "# {mark} ANSIBLE MANAGED BLOCK {{TARGET_INSTANCE}}"
+        block: |
+              nameserver {{IP_ADDRESS}}

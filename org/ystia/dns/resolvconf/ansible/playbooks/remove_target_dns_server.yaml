@@ -1,0 +1,11 @@
+- name: "Remove instance from resolv.conf"
+  hosts: all
+  become: true
+  tasks:
+    - name: "Remove {{TARGET_INSTANCE}} from resolv.conf"
+      blockinfile:
+        path: "/etc/resolv.conf"
+        state: absent
+        marker: "# {mark} ANSIBLE MANAGED BLOCK {{TARGET_INSTANCE}}"
+        block: |
+              nameserver {{IP_ADDRESS}}
