@@ -10,9 +10,9 @@ description: ""
 imports:
 - tosca-normative-types:1.0.0-ALIEN20
 
-- org.alien4cloud.alien4cloud.pub:2.0.0
-- org.alien4cloud.alien4cloud.webapp:2.0.0
-- org.alien4cloud.java.jdk.linux:2.0.0
+- org.alien4cloud.alien4cloud.pub:2.1.0-SNAPSHOT
+- org.alien4cloud.alien4cloud.webapp:2.1.0-SNAPSHOT
+- org.alien4cloud.java.jdk.linux:2.1.0-SNAPSHOT
 
 - org.ystia.terraform.linux.terraform:2.1.0-SNAPSHOT
 - org.ystia.yorc.alien4cloud:2.1.0-SNAPSHOT
