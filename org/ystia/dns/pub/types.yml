@@ -21,6 +21,8 @@ node_types:
   org.ystia.dns.pub.nodes.DnsServer:
     derived_from: tosca.nodes.SoftwareComponent
     abstract: true
+    metadata:
+      icon: /images/dns-icon.png
     capabilities:
       dns_endpoint: org.ystia.dns.pub.capabilities.DnsEndpoint
 

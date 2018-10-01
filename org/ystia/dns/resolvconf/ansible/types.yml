@@ -20,6 +20,8 @@ imports:
 node_types:
   org.ystia.dns.resolvconf.ansible.Resolvconf:
     derived_from: tosca.nodes.SoftwareComponent
+    metadata:
+      icon: /images/dns-icon.png
     properties:
       domain:
         type: string

@@ -21,6 +21,8 @@ node_types:
   org.ystia.ntp.pub.nodes.NtpServer:
     derived_from: tosca.nodes.SoftwareComponent
     abstract: true
+    metadata:
+      icon: /images/ntp-icon.png
     capabilities:
       ntp_endpoint: org.ystia.ntp.pub.capabilities.NtpEndpoint
 

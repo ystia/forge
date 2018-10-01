@@ -34,6 +34,8 @@ node_types:
 
   org.ystia.ntp.ansible.nodes.NtpClient:
     derived_from: tosca.nodes.SoftwareComponent
+    metadata:
+      icon: /images/ntp-client-icon.png
     requirements:
       - ntp_server: 
           capability: org.ystia.ntp.pub.capabilities.NtpEndpoint

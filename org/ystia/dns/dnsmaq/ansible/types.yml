@@ -20,6 +20,8 @@ imports:
 node_types:
   org.ystia.dns.dnsmasq.ansible.nodes.Dnsmasq:
     derived_from: org.ystia.dns.pub.nodes.DnsServer
+    metadata:
+      icon: /images/dnsmasq-icon.png
     properties:
       properties:
       domain:
