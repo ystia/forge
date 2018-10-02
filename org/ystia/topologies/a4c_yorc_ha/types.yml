@@ -153,7 +153,7 @@ topology_template:
       properties:
         install_dnsmasq: true
         mode: server
-        download_url: "https://releases.hashicorp.com/consul/1.0.2/consul_1.0.2_linux_amd64.zip"
+        download_url: "https://releases.hashicorp.com/consul/1.2.3/consul_1.2.3_linux_amd64.zip"
         install_dir: "/usr/local/bin"
         data_dir: "/var/consul"
         config_dir: "/etc/consul.d"
@@ -242,7 +242,7 @@ topology_template:
     YorcPlugin:
       type: org.ystia.yorc.alien4cloud.nodes.YorcPlugin
       properties:
-        download_url: "https://github.com/ystia/yorc-a4c-plugin/releases/download/v3.0.0/alien4cloud-yorc-plugin-3.0.0.zip"
+        download_url: "https://github.com/ystia/yorc-a4c-plugin/releases/download/v3.1.0-M3/alien4cloud-yorc-plugin-3.1.0-M3.zip"
         name: Yorc
         discriminator: yorc
         pluginId: "alien4cloud-yorc-plugin"
@@ -343,7 +343,7 @@ topology_template:
       properties:
         install_dnsmasq: true
         mode: agent
-        download_url: "https://releases.hashicorp.com/consul/1.0.2/consul_1.0.2_linux_amd64.zip"
+        download_url: "https://releases.hashicorp.com/consul/1.2.3/consul_1.2.3_linux_amd64.zip"
         install_dir: "/usr/local/bin"
         data_dir: "/var/consul"
         config_dir: "/etc/consul.d"
@@ -373,7 +373,7 @@ topology_template:
       properties:
         install_dnsmasq: true
         mode: agent
-        download_url: "https://releases.hashicorp.com/consul/1.0.2/consul_1.0.2_linux_amd64.zip"
+        download_url: "https://releases.hashicorp.com/consul/1.2.3/consul_1.2.3_linux_amd64.zip"
         install_dir: "/usr/local/bin"
         data_dir: "/var/consul"
         config_dir: "/etc/consul.d"
@@ -401,7 +401,7 @@ topology_template:
     YorcServer:
       type: org.ystia.yorc.linux.ansible.nodes.YorcServer
       properties:
-        download_url: "https://github.com/ystia/yorc/releases/download/v3.0.0/yorc.tgz"
+        download_url: "https://github.com/ystia/yorc/releases/download/v3.1.0-M3/yorc.tgz"
         install_dir: "/usr/local/bin"
         config_dir: "/etc/yorc"
         data_dir: "/var/yorc"
