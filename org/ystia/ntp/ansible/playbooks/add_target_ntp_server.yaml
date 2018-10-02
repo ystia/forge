@@ -14,7 +14,17 @@
         marker: "# {mark} ANSIBLE MANAGED BLOCK {{TARGET_INSTANCE}}"
         block: |
           server {{IP_ADDRESS}} iburst 
-          
+    
+    - name: Set NTP variables (RedHat)
+      set_fact:
+        ntp_service: "ntpd"
+      when: ansible_os_family == 'RedHat'
+
+    - name: Set NTP variables (Debian)
+      set_fact:
+        ntp_service: "ntp"
+      when: ansible_os_family == 'Debian'
+            
     - name: Restarting NTP service
       service:
         name: "{{ ntp_service }}"
