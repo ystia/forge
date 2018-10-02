@@ -71,6 +71,7 @@ node_types:
         configure:
           inputs:
             REST_API_PORT: { get_property: [SELF, rest, port] }
+            SSH_KEY: { get_property: [SELF, private_key_content] }
           implementation: playbooks/configure.yml
         start: playbooks/start.yml
         stop: playbooks/stop.yml
@@ -140,7 +141,6 @@ relationship_types:
             PASSWORD: { get_property: [SOURCE, password] }
             PRIVATE_NETWORK_NAME: { get_property: [SOURCE, private_network_name] }
             DEFAULT_SECURITY_GROUPS: { get_property: [SOURCE, default_security_groups] }
-            KEY_PAIR: { get_property: [SOURCE, key_pair] }
           implementation: playbooks/configure_openstack.yml
 
   org.ystia.yorc.linux.ansible.relationships.YorcConfigKubernetesHostedOnYorc:

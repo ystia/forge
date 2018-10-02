@@ -54,14 +54,3 @@
       copy:
         content: "{{ yorcConfig | to_yaml }}"
         dest: "{{ CONFIG_DIR }}/config.yorc.yaml"
-
-    - name: "Ensures {{ DATA_DIR }}/.ssh dir exists"
-      file:
-        path: "{{ DATA_DIR }}/.ssh"
-        state: directory
-
-    - name: "Copy key pair"
-      copy:
-        content: "{{ KEY_PAIR }}"
-        dest: "{{ DATA_DIR }}/.ssh/yorc.pem"
-        mode: 0400

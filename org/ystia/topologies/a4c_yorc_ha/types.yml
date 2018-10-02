@@ -53,10 +53,6 @@ topology_template:
       type: string
       required: true
       description: "The OpenStack user name to use."
-    os_key_pair_content:
-      type: string
-      required: true
-      description: "Content of the key pair used to connect on the OpenStack computes. Stored as ~/.ssh/yorc.pem"
     os_auth_url:
       type: string
       required: true
@@ -86,6 +82,10 @@ topology_template:
       type: string
       required: true
       description: "The TLS client key used for authentication"
+    private_key_content:
+      type: string
+      required: true
+      description: "Content of the default ssh private key used to connect on computes. Stored as ~/.ssh/yorc.pem"
 
   node_templates:
     ComputeAlien:
@@ -300,7 +300,6 @@ topology_template:
         user_name: { get_input: os_user_name }
         password: { get_input: os_password }
         private_network_name: { get_input: os_private_network_name }
-        key_pair: { get_input: os_key_pair_content }
 
       requirements:
       - yorcConfigOpenstackHostedOnYorcYorcServerConfig:
@@ -405,6 +404,7 @@ topology_template:
         install_dir: "/usr/local/bin"
         config_dir: "/etc/yorc"
         data_dir: "/var/yorc"
+        private_key_content: { get_input: private_key_content }
       requirements:
       - hostedOnComputeYorcHost:
           type_requirement: host

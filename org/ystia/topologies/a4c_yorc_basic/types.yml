@@ -44,10 +44,6 @@ topology_template:
       type: string
       required: true
       description: "The OpenStack user name to use."
-    os_key_pair_content:
-      type: string
-      required: true
-      description: "Content of the key pair used to connect on the OpenStack computes. Stored as ~/.ssh/yorc.pem"
     os_default_security_groups:
       type: list
       entry_schema:
@@ -60,6 +56,10 @@ topology_template:
     os_private_network_name:
       type: string
       description: "The name of private network to use as primary adminstration network between Yorc and Compute instances. It should be a private network accessible by this instance of Yorc."
+    private_key_content:
+      type: string
+      required: true
+      description: "Content of the default ssh private key used to connect on computes. Stored as ~/.ssh/yorc.pem"
   node_templates:
     OracleJDK:
       type: org.alien4cloud.java.jdk.linux.nodes.OracleJDK
@@ -160,6 +160,7 @@ topology_template:
         install_dir: "/usr/local/bin"
         config_dir: "/etc/yorc"
         data_dir: "/var/yorc"
+        private_key_content: { get_input: private_key_content }
       requirements:
       - hostedOnComputeHost:
           type_requirement: host
@@ -260,7 +261,6 @@ topology_template:
         password: { get_input: os_password }
         private_network_name: { get_input: os_private_network_name }
         default_security_groups: { get_input: os_default_security_groups }
-        key_pair: { get_input: os_key_pair_content }
 
       requirements:
       - yorcConfigOpenstackHostedOnYorcYorcServerConfig:

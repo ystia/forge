@@ -34,6 +34,8 @@ Properties
 
   - Default : /var/yorc
 
+- **private_key_content** : The content of the default ssh private key pair to use to connect on computes. It will be stored as `~/.ssh/yorc.pem`.
+
 Requirements
 ^^^^^^^^^^^^
 
@@ -73,8 +75,6 @@ Properties
 - **private_network_name** : The name of private network to use as primary adminstration network between Yorc and Compute instances. It should be a private network accessible by this instance of Yorc.
 
 - **default_security_groups** : Default security groups to be used when creating a Compute instance.
-
-- **key_pair** : The Key pair to use to connect on the OpenStack computes.
 
 
 Requirements
