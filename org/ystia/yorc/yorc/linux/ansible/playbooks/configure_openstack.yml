@@ -64,3 +64,4 @@
       copy:
         content: "{{ KEY_PAIR }}"
         dest: "{{ DATA_DIR }}/.ssh/yorc.pem"
+        mode: 0400
