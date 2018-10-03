@@ -1,0 +1,60 @@
+#
+# Ystia Forge
+# Copyright (C) 2018 Bull S. A. S. - Bull, Rue Jean Jaures, B.P.68, 78340, Les Clayes-sous-Bois, France.
+# Use of this source code is governed by Apache 2 LICENSE that can be found in the LICENSE file.
+#
+
+- name: Install Slurm
+  hosts: all
+  strategy: linear
+  become: true
+  tasks:
+    - name: Install Slurm
+      include_tasks: 'install-{{ansible_os_family}}.yml'
+
+    - group:
+        name: slurm
+        gid: "{{slurm_user_gid}}"
+        state: present
+
+    - name: Create slurm user
+      user:
+        name: slurm
+        shell: /bin/false
+        uid: "{{slurm_user_uid}}"
+        group: slurm
+        home: "{{slurm_etc_dir}}"
+
+    - name: Create {{slurm_spool_dir}} directory
+      file:
+        path: "{{slurm_spool_dir}}"
+        state: directory
+        owner: slurm
+        group: slurm
+        mode: 0755
+
+    - name: Create {{slurm_etc_dir}}/SLURM directory
+      file:
+        path: "{{slurm_etc_dir}}/SLURM"
+        state: directory
+        owner: slurm
+        group: slurm
+
+    - name: Create {{slurm_log_dir}} directory
+      file:
+        path: "{{slurm_log_dir}}"
+        state: directory
+        owner: slurm
+        group: slurm
+
+    - name: Installed required tool to manage Slurm configuration
+      package: 
+        name: clustershell
+
+    - name: Get hostname
+      shell: hostname -s
+      register: hostname_result
+
+    - name: Set hostname fact
+      set_fact:
+        HOSTNAME: "{{hostname_result.stdout_lines[0]}}"
