@@ -33,6 +33,8 @@
         dnsmasq_host_domain: "{{DOMAIN}}"
         dnsmasq_tftp: False
         dnsmasq_conf_servers: "{{upstream_servers}}"
+        dnsmasq_conf_hosts:
+          - ["{{ ansible_default_ipv4.address }}", "{{ ansible_hostname }}", "{{ ansible_fqdn }}" ]
 
     - name: Copy systemd auto reload of Dnsmasq on /etc/hosts changed 
       copy:
