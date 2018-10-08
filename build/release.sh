@@ -113,6 +113,15 @@ if [[ "develop" == "${branch}" ]] && [[ -z "${prerelease}" ]]; then
 fi
 
 # Now checks are passed then update version, tag and cleanup :)
+# Now checks are passed then tag, build, release and cleanup :)
+cherries=()
+# Update changelog Release date
+if [[ -e CHANGELOG.md ]]; then
+    sed -i -e "s/^## UNRELEASED.*$/## ${version} ($(LC_ALL=C date +'%B %d, %Y'))/g" CHANGELOG.md
+    git commit -m "Update changelog for release ${version}" CHANGELOG.md
+    cherries+=("$(git log -1 --pretty=format:"%h")")
+fi
+
 # Update version
 sed -i -e "/${componentVersionName}: /c${componentVersionName}: ${version}" versions.yaml
 git add versions.yaml
@@ -124,6 +133,13 @@ git commit -m "Prepare release ${version}"
 
 
 git tag -a v${version} -m "Release tag v${version}"
+
+# Update changelog Release date
+if [[ -e CHANGELOG.md ]]; then
+    sed -i -e "2a## UNRELEASED\n" CHANGELOG.md
+    git commit -m "Update changelog for future release" CHANGELOG.md
+    cherries+=("$(git log -1 --pretty=format:"%h")")
+fi
 
 # Update version
 nextDevelopmentVersion=""
@@ -146,6 +162,11 @@ git commit -m "Prepare for next development cycle ${nextDevelopmentVersion}"
 if [[ "develop" == "${branch}" ]] && [[ -z "${prerelease}" ]]; then
     # merge back to develop
     git checkout develop
+
+    if [[ ${#cherries[@]} -gt 0 ]] ; then
+        git cherry-pick ${cherries[@]}
+    fi
+    
     if [[ ! -e versions.yaml ]]; then
         # Force creation of versions.yaml
         echo "${componentVersionName}: 0.0.0" > versions.yaml

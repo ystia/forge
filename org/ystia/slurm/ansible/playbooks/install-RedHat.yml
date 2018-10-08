@@ -1,0 +1,73 @@
+---
+
+- name: Set SLURM common variables (RedHat)
+  set_fact:
+    slurm_user_uid: 567
+    slurm_user_gid: 567
+    slurm_etc_dir: /etc/slurm
+    slurm_log_dir: /var/log/slurm
+    slurm_pid_dir: /var/run
+    slurm_spool_dir: /var/spool/slurmd
+
+- name: Add Epel directory to install Munge
+  yum: 
+    name: https://dl.fedoraproject.org/pub/epel/epel-release-latest-7.noarch.rpm
+  
+- name: Install rpmbuild and required tools to build Slurm packages
+  yum: 
+    name: "{{ item }}"
+  with_items:
+    - rpm-build
+    - gcc
+    - perl-devel
+    - readline-devel
+    - openssl-devel
+    - munge-devel
+    - munge-libs
+    - pam-devel
+
+- name: Download Slurm archive
+  get_url:
+    url: "{{ DOWNLOAD_URL }}"
+    dest: /tmp/
+    mode: 0440
+  register: dl_archive
+
+- name: Get rpmbuild path
+  stat: 
+    path: "{{ansible_env.HOME}}/rpmbuild"
+  register: rpmbuild_stat
+
+- name: Warn about build duration
+  debug:
+    msg: "Now building Slurm RPMs from sources. This can take a while."
+
+- name: Build Slurm RPMs in order to install it
+  shell: "rpmbuild -ta {{ dl_archive.dest }}"
+  when: rpmbuild_stat.stat.exists == False
+
+- name: Find Slurm package names before installing it
+  find:
+    paths: "{{ansible_env.HOME}}/rpmbuild/RPMS/"
+    patterns: 'slurm(-munge|-plugins)?-\d.*\.rpm'
+    recurse: yes
+    use_regex: True
+  register: slurm_rpms_files
+
+- name: Refactor previous_results
+  set_fact: 
+    slurm_rpms_paths: "{{slurm_rpms_files.files|map(attribute='path')|list}}"
+
+
+- name: Install Slurm
+  yum: 
+    name: "{{item}}"
+  with_items: "{{slurm_rpms_paths}}"
+
+- name: Remove Slurm installation artifacts
+  file:
+    path: "{{item}}"
+    state: absent
+  with_items:
+    - "{{ dl_archive.dest }}"
+    - "{{ansible_env.HOME}}/rpmbuild"

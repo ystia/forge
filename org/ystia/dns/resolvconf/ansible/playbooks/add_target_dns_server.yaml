@@ -1,0 +1,16 @@
+#
+# Ystia Forge
+# Copyright (C) 2018 Bull S. A. S. - Bull, Rue Jean Jaures, B.P.68, 78340, Les Clayes-sous-Bois, France.
+# Use of this source code is governed by Apache 2 LICENSE that can be found in the LICENSE file.
+#
+
+- name: "Add instance to resolv.conf"
+  hosts: all
+  become: true
+  tasks:
+    - name: "Add {{TARGET_INSTANCE}} to resolv.conf"
+      blockinfile:
+        path: "/etc/resolv.conf"
+        marker: "# {mark} ANSIBLE MANAGED BLOCK {{TARGET_INSTANCE}}"
+        block: |
+              nameserver {{IP_ADDRESS}}

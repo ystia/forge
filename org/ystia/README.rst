@@ -32,7 +32,9 @@ can be used to construct different application categories :
 
 - Data science development and execution environments (RStudio_, Jupyter_)
 
-- Containers as a Service (CaaS) with Kubernetes_ 
+- Containers as a Service (CaaS) with Kubernetes_
+
+- Cluster Scheduler to run jobs with Slurm_
 
 - Moreover, technical components such as *Java*, Træfik_ (loadbalancer/reverse proxy) and Consul_ (Consensus Systems), allow detailed application architectures to be designed.
 
@@ -54,6 +56,7 @@ To simplify topology creation, Ystia Forge provides **topology templates** that 
 .. _NiFi: https://nifi.apache.org/
 .. _PostgreSQL: https://www.postgresql.org/
 .. _RStudio: https://www.rstudio.com/
+.. _Slurm: https://slurm.schedmd.com
 .. _Træfik: https://traefik.io/
 
 
@@ -211,12 +214,6 @@ Components
 
 This section lists the TOSCA components provided by Ystia Forge.
 
-Consensus systems
-=================
-
-+------------+--------------------+---------------+
-| **Consul** | *org/ystia/consul* | version 0.5.2 |
-+------------+--------------------+---------------+
 
 Cloudera Hadoop components
 ==========================
@@ -224,6 +221,52 @@ Cloudera Hadoop components
 +--------------+----------------------+----------------+
 | **Cloudera** | *org/ystia/cloudera* | version 5.14.1 |
 +--------------+----------------------+----------------+
+
+Cluster Schedulers
+==================
+
++-----------+-------------------+--------------+
+| **Slurm** | *org/ystia/slurm* | version 1.10 |
++-----------+-------------------+--------------+
+
+Consensus systems
+=================
+
++------------+--------------------+---------------+
+| **Consul** | *org/ystia/consul* | version 0.5.2 |
++------------+--------------------+---------------+
+
+Containers as a Service
+=======================
+
++----------------+------------------------+--------------+
+| **Kubernetes** | *org/ystia/kubernetes* | version 1.10 |
++----------------+------------------------+--------------+
+
+
+Database Servers
+================
+
++-----------+-------------------+-------------+
+| **MySQL** | *org/ystia/mysql* | version 5.6 |
++-----------+-------------------+-------------+
+
+Distributed File Systems
+========================
+
++---------+-----------------+-----+
+| **NFS** | *org/ystia/nfs* |     |
++---------+-----------------+-----+
+
+
+DNS services
+============
+
++----------------+----------------------------+-----+
+| **Dnsmasq**    | *org/ystia/dns/dnsmasq*    |     |
++----------------+----------------------------+-----+
+| **Resolvconf** | *org/ystia/dns/resolvconf* |     |
++----------------+----------------------------+-----+
 
 ELK components
 ==============
@@ -253,14 +296,6 @@ Geolocation components
 +--------------+----------------------+
 
 
-Social network connectors
-=========================
-
-+----------------------+----------------------+
-| **TwitterConnector** | *org/ystia/logstash* |
-+----------------------+----------------------+
-
-
 Message brokers
 ===============
 
@@ -270,6 +305,12 @@ Message brokers
 | **NiFi**  | *org/ystia/nifi*  | version 1.1.2                |
 +-----------+-------------------+------------------------------+
 
+Social network connectors
+=========================
+
++----------------------+----------------------+
+| **TwitterConnector** | *org/ystia/logstash* |
++----------------------+----------------------+
 
 Stream & real-time processing
 =============================
@@ -288,21 +329,6 @@ Studios for data scientists
 | **RStudio** | *org/ystia/rstudio* | version 1.1.383 |
 +-------------+---------------------+-----------------+
 
-
-Database Servers
-================
-
-+-----------+-------------------+-------------+
-| **MySQL** | *org/ystia/mysql* | version 5.6 |
-+-----------+-------------------+-------------+
-
-Containers as a Service
-=======================
-
-+----------------+------------------------+--------------+
-| **Kubernetes** | *org/ystia/kubernetes* | version 1.10 |
-+----------------+------------------------+--------------+
-
 Utilities
 =========
 
@@ -311,11 +337,15 @@ Utilities
 +-------------+---------------------+-----------------------------------+
 | **Java**    | *org/ystia/java*    |                                   |
 +-------------+---------------------+-----------------------------------+
+| **Munge**   | *org/ystia/munge*   |                                   |
++-------------+---------------------+-----------------------------------+
+| **NTP**     | *org/ystia/ntp*     |                                   |
++-------------+---------------------+-----------------------------------+
 | **Python**  | *org/ystia/python*  | version 2.7.14 (Anaconda 2.5.1.0) |
 +-------------+---------------------+-----------------------------------+
-| **XFS**     | *org/ystia/xfs*     |                                   |
-+-------------+---------------------+-----------------------------------+
 | **Træfik**  | *org/ystia/traefik* |                                   |
++-------------+---------------------+-----------------------------------+
+| **XFS**     | *org/ystia/xfs*     |                                   |
 +-------------+---------------------+-----------------------------------+
 
 .. *********************************************************************************************************************

@@ -1,0 +1,223 @@
+tosca_definitions_version: alien_dsl_2_0_0
+
+metadata:
+  template_name: org.ystia.topologies.slurm
+  template_version: 0.1.0-SNAPSHOT
+  template_author: Ystia
+
+description: "Configure a Slurm cluster"
+
+imports:
+  - org.ystia.ntp.ansible:2.1.0-SNAPSHOT
+  - org.ystia.ntp.pub:2.1.0-SNAPSHOT
+  - tosca-normative-types:1.0.0-ALIEN20
+  - org.ystia.slurm.pub:2.1.0-SNAPSHOT
+  - org.ystia.munge.ansible:2.1.0-SNAPSHOT
+  - org.ystia.slurm.ansible:2.1.0-SNAPSHOT
+  - org.ystia.dns.resolvconf.ansible:2.1.0-SNAPSHOT
+  - org.ystia.dns.pub:2.1.0-SNAPSHOT
+  - org.ystia.dns.dnsmasq.ansible:2.1.0-SNAPSHOT
+  - yorc-types:1.0.0
+
+topology_template:
+  inputs:
+    key:
+      type: string
+      required: false
+      description: "Base64-encoded Munge secret key. If not provided a key will be generated automatically using a pseudo-random seed."
+    download_url:
+      type: string
+      required: true
+      default: "https://www.schedmd.com/downloads/latest/slurm-17.02.11.tar.bz2"
+      constraints:
+        - pattern: "https?://.+"
+  node_templates:
+    ComputeSlurmCtl:
+      metadata:
+        a4c_edit_x: 501
+        a4c_edit_y: "-93"
+      type: tosca.nodes.Compute
+      requirements:
+        - networkNetworkConnection:
+            type_requirement: network
+            node: Network
+            capability: tosca.capabilities.Connectivity
+            relationship: tosca.relationships.Network
+      capabilities:
+        scalable:
+          properties:
+            min_instances: 1
+            max_instances: 1
+            default_instances: 1
+        endpoint:
+          properties:
+            secure: true
+            protocol: tcp
+            network_name: PRIVATE
+            initiator: source
+    ComputeSlurmNode:
+      metadata:
+        a4c_edit_x: 93
+        a4c_edit_y: "-88"
+      type: tosca.nodes.Compute
+      capabilities:
+        scalable:
+          properties:
+            min_instances: 1
+            max_instances: 10
+            default_instances: 5
+        endpoint:
+          properties:
+            secure: true
+            protocol: tcp
+            network_name: PRIVATE
+            initiator: source
+    Dnsmasq:
+      type: org.ystia.dns.dnsmasq.ansible.nodes.Dnsmasq
+      properties:
+        domain: hpda
+      requirements:
+        - hostedOnComputeSlurmCtlHost:
+            type_requirement: host
+            node: ComputeSlurmCtl
+            capability: tosca.capabilities.Container
+            relationship: tosca.relationships.HostedOn
+      capabilities:
+        dns_endpoint:
+          properties:
+            protocol: udp
+            port: 53
+            secure: false
+            network_name: PRIVATE
+            initiator: source
+    Resolvconf:
+      type: org.ystia.dns.resolvconf.ansible.Resolvconf
+      requirements:
+        - hostedOnComputeSlurmNodeHost:
+            type_requirement: host
+            node: ComputeSlurmNode
+            capability: tosca.capabilities.Container
+            relationship: tosca.relationships.HostedOn
+        - connectsToDnsmasqDns_endpoint:
+            type_requirement: dns_server
+            node: Dnsmasq
+            capability: org.ystia.dns.pub.capabilities.DnsEndpoint
+            relationship: org.ystia.dns.resolvconf.ansible.relationships.ConnectsTo
+    NtpServer:
+      type: org.ystia.ntp.ansible.nodes.NtpServer
+      requirements:
+        - hostedOnComputeSlurmCtlHost:
+            type_requirement: host
+            node: ComputeSlurmCtl
+            capability: tosca.capabilities.Container
+            relationship: tosca.relationships.HostedOn
+      capabilities:
+        ntp_endpoint:
+          properties:
+            protocol: udp
+            port: 123
+            secure: false
+            network_name: PRIVATE
+            initiator: source
+    NtpClient:
+      type: org.ystia.ntp.ansible.nodes.NtpClient
+      requirements:
+        - hostedOnComputeSlurmNodeHost:
+            type_requirement: host
+            node: ComputeSlurmNode
+            capability: tosca.capabilities.Container
+            relationship: tosca.relationships.HostedOn
+        - connectsToNtpServerNtp_endpoint:
+            type_requirement: ntp_server
+            node: NtpServer
+            capability: org.ystia.ntp.pub.capabilities.NtpEndpoint
+            relationship: org.ystia.ntp.ansible.relationships.ConnectsTo
+    MungeCtl:
+      type: org.ystia.munge.ansible.nodes.Munge
+      properties:
+        key: { get_input: key }
+      requirements:
+        - hostedOnComputeSlurmCtlHost:
+            type_requirement: host
+            node: ComputeSlurmCtl
+            capability: tosca.capabilities.Container
+            relationship: tosca.relationships.HostedOn
+    MungeNode:
+      type: org.ystia.munge.ansible.nodes.Munge
+      properties:
+        key: { get_input: key }
+      requirements:
+        - hostedOnComputeSlurmNodeHost:
+            type_requirement: host
+            node: ComputeSlurmNode
+            capability: tosca.capabilities.Container
+            relationship: tosca.relationships.HostedOn
+    SlurmController:
+      type: org.ystia.slurm.ansible.nodes.SlurmController
+      properties:
+        cluster_name: cluster
+        download_url: { get_input: download_url }
+      requirements:
+        - hostedOnComputeSlurmCtlHost:
+            type_requirement: host
+            node: ComputeSlurmCtl
+            capability: tosca.capabilities.Container
+            relationship: tosca.relationships.HostedOn
+        - dependsOnDnsmasqFeature:
+            type_requirement: dependency
+            node: Dnsmasq
+            capability: tosca.capabilities.Node
+            relationship: tosca.relationships.DependsOn
+        - dependsOnMungeCtlFeature:
+            type_requirement: dependency
+            node: MungeCtl
+            capability: tosca.capabilities.Node
+            relationship: tosca.relationships.DependsOn
+      capabilities:
+        slurmctl_endpoint:
+          properties:
+            port: 6817
+            protocol: tcp
+            secure: false
+            network_name: PRIVATE
+            initiator: source
+    SlurmDaemon:
+      type: org.ystia.slurm.ansible.nodes.SlurmDaemon
+      properties:
+        download_url: { get_input: download_url }
+      requirements:
+        - hostedOnComputeSlurmNodeHost:
+            type_requirement: host
+            node: ComputeSlurmNode
+            capability: tosca.capabilities.Container
+            relationship: tosca.relationships.HostedOn
+        - dependsOnMungeNodeFeature:
+            type_requirement: dependency
+            node: MungeNode
+            capability: tosca.capabilities.Node
+            relationship: tosca.relationships.DependsOn
+        - slurmDaemonConnectsToSlurmControllerSlurmctl_endpoint:
+            type_requirement: slurmctl
+            node: SlurmController
+            capability: org.ystia.slurm.pub.capabilities.SlurmControllerEndpoint
+            relationship: org.ystia.slurm.ansible.relationships.SlurmDaemonConnectsTo
+        - dependsOnResolvconfFeature:
+            type_requirement: dependency
+            node: Resolvconf
+            capability: tosca.capabilities.Node
+            relationship: tosca.relationships.DependsOn
+      capabilities:
+        slurmd_endpoint:
+          properties:
+            port: 6818
+            protocol: tcp
+            secure: false
+            network_name: PRIVATE
+            initiator: source
+    Network:
+      metadata:
+        a4c_edit_x: 151
+        a4c_edit_y: "-168"
+      type: tosca.nodes.Network
+      properties:
+        ip_version: 4

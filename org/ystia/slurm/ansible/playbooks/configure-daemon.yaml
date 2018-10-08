@@ -1,0 +1,22 @@
+#
+# Ystia Forge
+# Copyright (C) 2018 Bull S. A. S. - Bull, Rue Jean Jaures, B.P.68, 78340, Les Clayes-sous-Bois, France.
+# Use of this source code is governed by Apache 2 LICENSE that can be found in the LICENSE file.
+#
+
+- name: Configure Slurm Daemon
+  hosts: all
+  strategy: linear
+  become: true
+  tasks:
+    - name: Set System capabilities
+      set_fact:
+        sockets: "{{ hostvars[inventory_hostname]['ansible_processor_count'] }}"
+        cores_per_socket: "{{ hostvars[inventory_hostname]['ansible_processor_cores'] }}"
+        threads_per_core: "{{ hostvars[inventory_hostname]['ansible_processor_threads_per_core'] }}"
+        real_memory: "{{ hostvars[inventory_hostname]['ansible_memtotal_mb'] }} "
+
+    - name: Create slurm configuration
+      template:
+        src: slurm-daemon.conf.j2
+        dest: "/etc/slurm/slurm.conf"

@@ -1,0 +1,38 @@
+
+SlurmUser=slurm
+SlurmdPort={{SLURM_DAEMON_PORT}}
+
+AuthType=auth/munge
+CryptoType=crypto/munge
+
+StateSaveLocation=/etc/slurm/SLURM
+SlurmdSpoolDir=/var/spool/slurmd
+SlurmctldPidFile=/var/run/slurmctld.pid
+SlurmdPidFile=/var/run/slurmd.pid
+CacheGroups=0
+ReturnToService=0
+SlurmctldTimeout=300
+SlurmdTimeout=300
+InactiveLimit=0
+MinJobAge=300
+KillWait=30
+Waittime=0
+MpiDefault=pmi2
+SchedulerType=sched/backfill
+SelectType=select/cons_res
+SelectTypeParameters= CR_Core_Memory
+FastSchedule=1
+SlurmctldDebug=5
+SlurmctldLogFile=/var/log/slurm/slurmctld.log
+SlurmdDebug=5
+SlurmdLogFile=/var/log/slurm/slurmd.log.%h
+JobCompType=jobcomp/none
+SrunPortRange=60000-60100
+
+# Discard logs warnings on different conf files
+DebugFlags=NO_CONF_HASH 
+
+GresTypes=gpu
+
+NodeName={{ hostname }} Sockets={{ sockets }} CoresPerSocket={{ cores_per_socket }} ThreadsPerCore={{ threads_per_core }} RealMemory={{ real_memory }} State=UNKNOWN
+
