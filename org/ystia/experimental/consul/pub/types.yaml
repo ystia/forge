@@ -23,7 +23,7 @@ metadata:
 
 imports:
   - tosca-normative-types:1.0.0-ALIEN20
-  -  org.alien4cloud.consul.pub:2.0.0
+  - org.alien4cloud.consul.pub:2.1.0-SM6
 
 description: >
   This component exposes public interfaces for Consul
@@ -58,7 +58,7 @@ node_types:
       download_url:
         description: The URL to download the consul archive.
         # override default version of supported consul
-        default: https://releases.hashicorp.com/consul/1.0.6/consul_1.0.6_linux_amd64.zip
+        default: https://releases.hashicorp.com/consul/1.2.3/consul_1.2.3_linux_amd64.zip
         type: string
         required: true
       install_dir:
