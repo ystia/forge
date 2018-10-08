@@ -26,8 +26,8 @@ description: "This topology illustrates how to setup block storage and partition
 imports:
   - tosca-normative-types:1.0.0-ALIEN20
   - alien-extended-storage-types:2.1.0-SM6
-  - org.ystia.yorc.experimental.consul.linux.ansible:2.1.0-SNAPSHOT
-  - org.ystia.yorc.experimental.consul.pub:2.1.0-SNAPSHOT
+  - org.ystia.yorc.experimental.consul.linux.ansible:2.1.0-M4
+  - org.ystia.yorc.experimental.consul.pub:2.1.0-M4
 
 topology_template:
   node_templates:
