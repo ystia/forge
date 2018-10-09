@@ -51,9 +51,13 @@
       file:
         path: "{{ DATA_DIR }}/.ssh"
         state: directory
+        owner: yorc
+        group: yorc
 
     - name: "Copy key pair"
       copy:
         content: "{{ SSH_KEY }}"
         dest: "{{ DATA_DIR }}/.ssh/yorc.pem"
+        owner: yorc
+        group: yorc
         mode: 0400
