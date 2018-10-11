@@ -6,6 +6,8 @@
 
 * Google Compute Engine Infrastructure configuration ([GH-23](https://github.com/ystia/forge/issues/23))
 
+## 2.1.0-M4 (October 08, 2018)
+
 ### DEPENDENCIES
 
 * Ystia Forge components require now Alien4Cloud 2.1.0-SM6
