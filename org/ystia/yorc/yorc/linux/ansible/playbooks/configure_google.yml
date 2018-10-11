@@ -15,7 +15,7 @@
 #
 
 
-- name: Setup Google Infrastrucutre configuration
+- name: Setup Google Infrastructure configuration
   hosts: all
   strategy: free
   become_user: yorc
