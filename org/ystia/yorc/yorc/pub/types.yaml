@@ -27,6 +27,33 @@ imports:
   - org.ystia.terraform.pub:2.1.0-SNAPSHOT
 
 node_types:
+  org.ystia.yorc.pub.infrastructure.GoogleConfig:
+    derived_from: tosca.nodes.Root
+    description: |
+      Google Compute Engine Infrastructure configuration for Yorc
+    abstract: true
+    properties:
+      project:
+        description: "The Google Cloud project to use."
+        type: string
+        required: true
+      region:
+        description: "The Google Compute Engine region to use."
+        type: string
+        required: false
+      application_credentials:
+        description: "Path to file containing service account private keys in JSON format."
+        type: string
+        required: false
+      credentials:
+        description: "Content of file containing service account private keys."
+        type: string
+        required: false
+    requirements:
+    - host:
+        capability: org.ystia.yorc.pub.capabilities.YorcConfigContainer
+        relationship: org.ystia.yorc.pub.relationships.YorcConfigHostedOnYorc
+        occurrences: [ 1, 1 ]
   org.ystia.yorc.pub.infrastructure.OpenStackConfig:
     derived_from: tosca.nodes.Root
     description: |

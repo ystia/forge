@@ -2,7 +2,9 @@
 
 ## UNRELEASED
 
-## 2.1.0-M4 (October 08, 2018)
+### NEW COMPONENTS
+
+* Google Compute Engine Infrastructure configuration ([GH-23](https://github.com/ystia/forge/issues/23))
 
 ### DEPENDENCIES
 
