@@ -56,6 +56,28 @@ Capabilities
 
 - **config**: Allows to host configuration fragments (e.g. infrastructures)
 
+GoogleConfig Component
+----------------------
+
+GoogleConfig component allows to add a Google Compute Engine infrastructure to Yorc configuration.
+
+Properties
+^^^^^^^^^^
+
+- **project** : ID of the Google Cloud project to apply any resources to
+
+- **region** : The Google Cloud region where to create resources
+
+- **application_credentials** : Path to file containing service account private keys in JSON format
+
+- **credentials** : Content of file containing service account private keys in JSON format
+
+
+Requirements
+^^^^^^^^^^^^
+
+- **host**: GoogleConfig should be hosted on a YorcServer component.
+
 OpenStackConfig Component
 -------------------------
 
@@ -86,7 +108,7 @@ Requirements
 KubernetesConfig Component
 --------------------------
 
-The OpenStackConfig component allows to add OpenStack infrastructure to the configuration of Yorc
+The KubernetesConfig component allows to add a Kubernetes infrastructure to the configuration of Yorc
 
 Properties
 ^^^^^^^^^^
@@ -105,13 +127,13 @@ Properties
 Requirements
 ^^^^^^^^^^^^
 
-- **host**: OpenStackConfig should be hosted on a YorcServer component.
+- **host**: KubernetesConfig should be hosted on a YorcServer component.
 
 
 AWSConfig Component
 -------------------
 
-The OpenStackConfig component allows to add OpenStack infrastructure to the configuration of Yorc
+The AWSConfig component allows to add an AWS infrastructure to the configuration of Yorc
 
 Properties
 ^^^^^^^^^^
@@ -125,5 +147,5 @@ Properties
 Requirements
 ^^^^^^^^^^^^
 
-- **host**: OpenStackConfig should be hosted on a YorcServer component.
+- **host**: AWSConfig should be hosted on a YorcServer component.
 

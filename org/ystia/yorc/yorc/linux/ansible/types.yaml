@@ -29,6 +29,14 @@ imports:
 
 
 node_types:
+  org.ystia.yorc.infrastructure.GoogleConfig:
+    derived_from: org.ystia.yorc.pub.infrastructure.GoogleConfig
+    requirements:
+    - host:
+        capability: org.ystia.yorc.pub.capabilities.YorcConfigContainer
+        relationship: org.ystia.yorc.linux.ansible.relationships.YorcConfigGoogleHostedOnYorc
+        occurrences: [ 1, 1 ]
+
   org.ystia.yorc.infrastructure.OpenStackConfig:
     derived_from: org.ystia.yorc.pub.infrastructure.OpenStackConfig
     requirements:
@@ -124,6 +132,20 @@ relationship_types:
             CONFIG_DIR: { get_property: [SOURCE, config_dir] }
             PLUGINS_DIR: { get_property: [TARGET, plugins_dir] }
           implementation: playbooks/configure_terraform.yml
+  org.ystia.yorc.linux.ansible.relationships.YorcConfigGoogleHostedOnYorc:
+    derived_from: tosca.relationships.HostedOn
+    description: >
+      Configure a Yorc server with a Google Compute Engine infrastructure
+    valid_target_types: [ org.ystia.yorc.pub.nodes.YorcServer ]
+    interfaces:
+      Configure:
+        post_configure_target:
+          inputs:
+            PROJECT: { get_property: [SOURCE, project] }
+            REGION: { get_property: [SOURCE, region] }
+            APPLICATION_CREDENTIALS: { get_property: [SOURCE, application_credentials] }
+            CREDENTIALS: { get_property: [SOURCE, credentials] }
+          implementation: playbooks/configure_google.yml
   org.ystia.yorc.linux.ansible.relationships.YorcConfigOpenstackHostedOnYorc:
     derived_from: tosca.relationships.HostedOn
     description: >
