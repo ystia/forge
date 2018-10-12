@@ -58,9 +58,6 @@ node_types:
         required: false
         entry_schema:
           type: string
-      key_pair:
-        description: "Content of the key pair used to connect on the OpenStack computes. Stored as ~/.ssh/yorc.pem"
-        type: string
     requirements:
     - host:
         capability: org.ystia.yorc.pub.capabilities.YorcConfigContainer
@@ -146,6 +143,9 @@ node_types:
         type: string
         required: true
         default: /var/yorc
+      private_key_content:
+        description: "Content of the default ssh private key used to connect on computes. Stored as ~/.ssh/yorc.pem"
+        type: string
     requirements:
     - consul:
         capability: org.alien4cloud.consul.pub.capabilities.ConsulAgent
