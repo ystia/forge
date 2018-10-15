@@ -30,9 +30,35 @@ node_types:
           http proxy used by docker daemon
         constraints:
           - pattern: "https?://.*:[0-9]+/?"
+      docker_version:
+        type: string
+        default: ""
+        required: false
+        description: >
+          docker package version
+      repository_url:
+        type: string
+        default: ""
+        required: false
+        description: >
+          repository url to install docker from
+        constraints:
+          - pattern: ".*https?://.*"
+      docker_gpgkey:
+        type: string
+        default: ""
+        required: false
+        description: >
+         gpg key url to use for docker package installation
+        constraints:
+          - pattern: ".*https?://.*"
     interfaces:
       Standard:
         create:
+          inputs:
+            DOCKER_VERSION: {get_property: [SELF, docker_version]}
+            REPOSITORY_URL: {get_property: [SELF, repository_url]}
+            DOCKER_GPGKEY: {get_property: [SELF, docker_gpgkey]}
           implementation: playbooks/create.yaml
         configure:
           inputs:

@@ -6,14 +6,18 @@
 - name: Install Docker
   hosts: all
   vars:
-    # The baseurl of the RedHat/CentOS docker repository.
-    redhat_docker_repository: 'https://download.docker.com/linux/centos/7/$basearch/stable'
-    redhat_docker_gpgkey: 'https://download.docker.com/linux/centos/gpg'
-    # The baseurl of the Debian/Ubuntu docker repository.
-    debian_docker_repository: 'deb https://download.docker.com/linux/ubuntu xenial stable'
-    debian_docker_gpgkey: 'https://download.docker.com/linux/ubuntu/gpg'
+
   become: true
   tasks:
+
+  - set_fact:
+      # The baseurl of the RedHat/CentOS docker repository.
+      redhat_docker_repository: "{{ REPOSITORY_URL  if (REPOSITORY_URL != '') else ('https://download.docker.com/linux/centos/7/$basearch/stable') }}"
+      redhat_docker_gpgkey: "{{ DOCKER_GPGKEY if (DOCKER_GPGKEY != '') else ('https://download.docker.com/linux/centos/gpg') }}"
+      # The baseurl of the Debian/Ubuntu docker repository.
+      debian_docker_repository: "{{ REPOSITORY_URL if (REPOSITORY_URL != '') else ('deb https://download.docker.com/linux/ubuntu xenial stable') }}"
+      debian_docker_gpgkey: "{{ DOCKER_GPGKEY if (DOCKER_GPGKEY != '') else ('https://download.docker.com/linux/ubuntu/gpg') }}"
+      docker_package_name:  "docker-ce{{ '-'  if (DOCKER_VERSION != '') else ('') }}{{ DOCKER_VERSION if (DOCKER_VERSION != '') else ('') }}"
 
   - name: Add Docker Yum repository
     yum_repository:
@@ -44,7 +48,7 @@
 
   - name: Ensure Docker is installed
     package:
-      name: docker-ce
+      name: "{{ docker_package_name }}"
       state: present
 
   - name: Enable munge service
