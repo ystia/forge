@@ -51,7 +51,7 @@
       name: "{{ docker_package_name }}"
       state: present
 
-  - name: Enable munge service
+  - name: Enable docker service
     service:
       name: docker
       enabled: yes

@@ -11,25 +11,16 @@ metadata:
   template_version: 2.1.0-SNAPSHOT
   template_author: Ystia
 
-
 imports:
   - tosca-normative-types:1.0.0-ALIEN20
   - yorc-types:1.0.0
 
 node_types:
-  org.ystia.munge.ansible.nodes.Docker:
+  org.ystia.docker.ansible.nodes.Docker:
     derived_from: tosca.nodes.SoftwareComponent
     metadata:
       icon: /images/docker-icon.png
     properties:
-      proxy_url:
-        type: string
-        default: ""
-        required: false
-        description: >
-          http proxy used by docker daemon
-        constraints:
-          - pattern: "https?://.*:[0-9]+/?"
       docker_version:
         type: string
         default: ""
@@ -41,7 +32,8 @@ node_types:
         default: ""
         required: false
         description: >
-          repository url to install docker from
+          repository url to install docker from. This property is optional and the default value is 'https://download.docker.com/linux/centos/7/$basearch/stable'
+          on Redhat systems and 'deb https://download.docker.com/linux/ubuntu xenial stable' on Debian ones.
         constraints:
           - pattern: ".*https?://.*"
       docker_gpgkey:
@@ -49,7 +41,8 @@ node_types:
         default: ""
         required: false
         description: >
-         gpg key url to use for docker package installation
+         gpg key url to use for docker package installation. This property is optional and the default value is 'https://download.docker.com/linux/centos/gpg'
+         on Redhat systems and 'https://download.docker.com/linux/ubuntu/gpg' on Debian ones.
         constraints:
           - pattern: ".*https?://.*"
     interfaces:
@@ -61,8 +54,6 @@ node_types:
             DOCKER_GPGKEY: {get_property: [SELF, docker_gpgkey]}
           implementation: playbooks/create.yaml
         configure:
-          inputs:
-            PROXY_URL: {get_property: [SELF, proxy_url]}
           implementation: playbooks/configure.yaml
         start: playbooks/start.yaml
         stop: playbooks/stop.yaml
