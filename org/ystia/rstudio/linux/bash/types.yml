@@ -8,15 +8,15 @@ tosca_definitions_version: alien_dsl_2_0_0
 
 metadata:
   template_name: org.ystia.rstudio.linux.bash
-  template_version: 2.1.0-SNAPSHOT
+  template_version: 2.1.0-M5
   template_author: Ystia
 
 description: RStudio is a development platform for R through a web dashboard
 
 imports:
   - tosca-normative-types:1.0.0-ALIEN20
-  - org.ystia.common:2.1.0-SNAPSHOT
-  - org.ystia.java.pub:2.1.0-SNAPSHOT
+  - org.ystia.common:2.1.0-M5
+  - org.ystia.java.pub:2.1.0-M5
 
 node_types:
   org.ystia.rstudio.linux.bash.nodes.RStudio:
