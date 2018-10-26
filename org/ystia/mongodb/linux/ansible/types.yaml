@@ -8,7 +8,7 @@ tosca_definitions_version: alien_dsl_2_0_0
 
 metadata:
   template_name: org.ystia.mongodb.linux.ansible
-  template_version: 2.1.0-M5
+  template_version: 2.1.0-SNAPSHOT
   template_author: Ystia
 
 description: MongoBD Component
@@ -16,8 +16,8 @@ description: MongoBD Component
 imports:
   - tosca-normative-types:1.0.0-ALIEN20
   - yorc-types:1.0.0
-  - org.ystia.common:2.1.0-M5
-  - org.ystia.mongodb.pub:2.1.0-M5
+  - org.ystia.common:2.1.0-SNAPSHOT
+  - org.ystia.mongodb.pub:2.1.0-SNAPSHOT
 
 node_types:
   org.ystia.mongodb.linux.ansible.nodes.MongoDB:
