@@ -1,0 +1,57 @@
+#
+# Ystia Forge
+# Copyright (C) 2018 Bull S. A. S. - Bull, Rue Jean Jaures, B.P.68, 78340, Les Clayes-sous-Bois, France.
+# Use of this source code is governed by Apache 2 LICENSE that can be found in the LICENSE file.
+#
+- name: Install Docker
+  hosts: all
+  vars:
+
+  become: true
+  tasks:
+
+  - set_fact:
+      # The baseurl of the RedHat/CentOS docker repository.
+      redhat_docker_repository: "{{ REPOSITORY_URL  if (REPOSITORY_URL != '') else ('https://download.docker.com/linux/centos/7/$basearch/stable') }}"
+      redhat_docker_gpgkey: "{{ DOCKER_GPGKEY if (DOCKER_GPGKEY != '') else ('https://download.docker.com/linux/centos/gpg') }}"
+      # The baseurl of the Debian/Ubuntu docker repository.
+      debian_docker_repository: "{{ REPOSITORY_URL if (REPOSITORY_URL != '') else ('deb https://download.docker.com/linux/ubuntu xenial stable') }}"
+      debian_docker_gpgkey: "{{ DOCKER_GPGKEY if (DOCKER_GPGKEY != '') else ('https://download.docker.com/linux/ubuntu/gpg') }}"
+      docker_package_name:  "docker-ce{{ '-'  if (DOCKER_VERSION != '') else ('') }}{{ DOCKER_VERSION if (DOCKER_VERSION != '') else ('') }}"
+
+  - name: Add Docker Yum repository
+    yum_repository:
+      name: docker
+      description: Docker repository
+      baseurl: "{{redhat_docker_repository}}"
+      gpgkey: "{{redhat_docker_gpgkey}}"
+      gpgcheck: yes
+    when: ansible_os_family == 'RedHat'
+
+  - name: Ensure the APT package cache is updated
+    apt:
+      update_cache: yes
+      cache_valid_time: 0
+    when: ansible_os_family == 'Debian'
+
+  - name: Add Docker Apt key.
+    apt_key:
+      url: "{{debian_docker_gpgkey}}"
+      state: present
+    when: ansible_os_family == 'Debian'
+
+  - name: Add Docker Apt repository
+    apt_repository:
+      repo: "{{debian_docker_repository}}"
+      state: present
+    when: ansible_os_family == 'Debian'
+
+  - name: Ensure Docker is installed
+    package:
+      name: "{{ docker_package_name }}"
+      state: present
+
+  - name: Enable docker service
+    service:
+      name: docker
+      enabled: yes

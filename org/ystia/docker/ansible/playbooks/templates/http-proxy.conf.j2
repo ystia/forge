@@ -1,0 +1,6 @@
+[Service]
+Environment="HTTP_PROXY={% if ansible_env['HTTP_PROXY'] is defined %}{{ansible_env['HTTP_PROXY']}}{%elif ansible_env['http_proxy'] is defined %}{{ansible_env['http_proxy']}}{%endif%}"
+Environment="HTTPS_PROXY={% if ansible_env['HTTPS_PROXY'] is defined %}{{ansible_env['HTTPS_PROXY']}}{%elif ansible_env['https_proxy'] is defined %}{{ansible_env['https_proxy']}}{%endif%}"
+# Truncating list of proxies if needed as systemd has a maximum of 2048 chars per line
+Environment="NO_PROXY={% if ansible_env['NO_PROXY'] is defined %}{{ansible_env['NO_PROXY']|truncate(2039)}}{%elif ansible_env['no_proxy'] is defined %}{{ansible_env['no_proxy']|truncate(2039)}}{%endif%}"
+
