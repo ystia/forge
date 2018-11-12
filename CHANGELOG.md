@@ -2,6 +2,11 @@
 
 ## UNRELEASED
 
+### BUG FIXES
+
+* Yorc AnsibleRuntime component creation fails on CentOS 7 on AWS ([GH-30](https://github.com/ystia/forge/issues/30))
+
+
 ## 2.1.0-M5 (October 26, 2018)
 
 ### NEW COMPONENTS

@@ -20,4 +20,3 @@ install_packages:
   - python2
   - python2-dev
   - virtualenv
-  - python-pip
