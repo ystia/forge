@@ -10,9 +10,9 @@ description: ""
 imports:
 - tosca-normative-types:1.0.0-ALIEN20
 
-- org.alien4cloud.alien4cloud.pub:2.1.0-SM6
-- org.alien4cloud.alien4cloud.webapp:2.1.0-SM6
-- org.alien4cloud.java.jdk.linux:2.1.0-SM6
+- org.alien4cloud.alien4cloud.pub:2.1.0-SM7
+- org.alien4cloud.alien4cloud.webapp:2.1.0-SM7
+- org.alien4cloud.java.jdk.linux:2.1.0-SM7
 
 - org.ystia.terraform.linux.terraform:2.1.0-SNAPSHOT
 - org.ystia.yorc.alien4cloud:2.1.0-SNAPSHOT
@@ -26,8 +26,8 @@ imports:
 
 
 repositories:
-  Pulp:
-    url: https://fastconnect.org/maven/service/local/repositories/opensource/content/alien4cloud/alien4cloud-dist/2.0.0
+  fastconnect_nexus:
+    url: https://fastconnect.org/maven/service/local/repositories/opensource/content/alien4cloud/alien4cloud-dist/2.1.0-SM7
     type: http
 
 topology_template:
@@ -121,9 +121,9 @@ topology_template:
             initiator: source
       artifacts:
         alien_dist:
-          file: alien4cloud-dist-2.0.0-dist.tar.gz
+          file: alien4cloud-dist-2.1.0-SM7-dist.tar.gz
           type: tosca.artifacts.File
-          repository: Pulp
+          repository: fastconnect_nexus
     AnsibleRuntime:
       type: org.ystia.ansible.linux.ansible.nodes.AnsibleRuntime
       properties:
@@ -137,7 +137,7 @@ topology_template:
     YorcPlugin:
       type: org.ystia.yorc.alien4cloud.nodes.YorcPlugin
       properties:
-        download_url: "https://github.com/ystia/yorc-a4c-plugin/releases/download/v3.1.0-M3/alien4cloud-yorc-plugin-3.1.0-M3.zip"
+        download_url: "https://github.com/ystia/yorc-a4c-plugin/releases/download/v3.1.0-M5/alien4cloud-yorc-plugin-3.1.0-M5.zip"
         name: Yorc
         discriminator: yorc
         pluginId: "alien4cloud-yorc-plugin"
@@ -156,7 +156,7 @@ topology_template:
     YorcServer:
       type: org.ystia.yorc.linux.ansible.nodes.YorcServer
       properties:
-        download_url: "https://github.com/ystia/yorc/releases/download/v3.1.0-M3/yorc.tgz"
+        download_url: "https://github.com/ystia/yorc/releases/download/v3.1.0-M5/yorc-3.1.0-M5.tgz"
         install_dir: "/usr/local/bin"
         config_dir: "/etc/yorc"
         data_dir: "/var/yorc"
