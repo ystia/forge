@@ -22,7 +22,7 @@ metadata:
 
 imports:
   - tosca-normative-types:1.0.0-ALIEN20
-  - alien-extended-storage-types:2.1.0-SM6
+  - alien-extended-storage-types:2.1.0-SM7
 
 node_types:
   org.ystia.nfs.pub.nodes.NFSServer:
