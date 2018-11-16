@@ -212,17 +212,6 @@ relationship_types:
             REGION: { get_property: [SOURCE, region] }
           implementation: playbooks/configure_aws.yml
 
-  org.ystia.yorc.linux.ansible.relationships.YorcConfigHostedOnYorc:
-    derived_from: org.ystia.yorc.pub.relationships.YorcHostsPoolConnectsToYorc
-    description: >
-      Configure a Yorc server with an Hosts Pool
-    interfaces:
-      Configure:
-        post_configure_target:
-          inputs:
-            YORC_URL: { concat: [get_property: [TARGET, rest, protocol], "://", get_attribute: [TARGET, rest, ip_address], ":", get_property: [TARGET, rest, port]] }
-          implementation: playbooks/configure_hostspool.yml
-
   org.ystia.yorc.linux.ansible.relationships.YorcConfigHostsPoolHostedOnYorc:
     derived_from: org.ystia.yorc.pub.relationships.YorcConfigHostedOnYorc
     description: >
