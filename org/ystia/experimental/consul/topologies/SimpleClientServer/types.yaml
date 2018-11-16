@@ -25,8 +25,8 @@ description: "A simple topology used to demonstrate how to deploy a Consul clust
 
 imports:
   - tosca-normative-types:1.0.0-ALIEN20
-  - org.ystia.yorc.experimental.consul.linux.ansible:2.1.0-SNAPSHOT
-  - org.ystia.yorc.experimental.consul.pub:2.1.0-SNAPSHOT
+  - org.ystia.yorc.experimental.consul.linux.ansible:2.1.0-M6
+  - org.ystia.yorc.experimental.consul.pub:2.1.0-M6
 
 topology_template:
   node_templates:
