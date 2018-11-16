@@ -2,6 +2,11 @@
 
 ## UNRELEASED
 
+### DEPENDENCIES
+
+* Ystia Forge components require now Alien4Cloud 2.1.0-SM7
+* Ystia Forge components require now Alien4Cloud CSAR public library 2.1.0-SM7
+
 ### BUG FIXES
 
 * Yorc AnsibleRuntime component creation fails on CentOS 7 on AWS ([GH-30](https://github.com/ystia/forge/issues/30))
