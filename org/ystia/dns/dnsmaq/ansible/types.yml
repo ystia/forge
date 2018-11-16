@@ -8,14 +8,14 @@ tosca_definitions_version: alien_dsl_2_0_0
 
 metadata:
   template_name: org.ystia.dns.dnsmasq.ansible
-  template_version: 2.1.0-M6
+  template_version: 2.1.0-SNAPSHOT
   template_author: Ystia
 
 
 imports:
   - tosca-normative-types:1.0.0-ALIEN20
   - yorc-types:1.0.0
-  - org.ystia.dns.pub:2.1.0-M6
+  - org.ystia.dns.pub:2.1.0-SNAPSHOT
 
 node_types:
   org.ystia.dns.dnsmasq.ansible.nodes.Dnsmasq:
