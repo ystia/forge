@@ -144,6 +144,20 @@ node_types:
         relationship: org.ystia.yorc.pub.relationships.YorcConfigHostedOnYorc
         occurrences: [ 1, 1 ]
 
+  org.ystia.yorc.pub.infrastructure.HostsPoolConfig:
+    derived_from: tosca.nodes.Root
+    description: |
+      Hosts Pool Infrastructure configuration for Yorc
+    abstract: true
+    properties:
+      hosts:
+        type: string
+        description: "Yaml description of Hosts in the Pool"
+    requirements:
+      - yorc:
+          capability: org.ystia.yorc.pub.capabilities.YorcConfigContainer
+          relationship: org.ystia.yorc.pub.relationships.YorcConfigHostedOnYorc
+
   org.ystia.yorc.pub.nodes.YorcServer:
     derived_from: tosca.nodes.SoftwareComponent
     metadata:
