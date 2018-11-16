@@ -2,6 +2,8 @@
 
 ## UNRELEASED
 
+## 2.1.0-M6 (November 16, 2018)
+
 ### DEPENDENCIES
 
 * Ystia Forge components require now Alien4Cloud 2.1.0-SM7
