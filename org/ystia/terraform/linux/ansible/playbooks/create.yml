@@ -42,7 +42,7 @@
 
     - name: Download Terraform binary
       get_url:
-        url: "https://releases.hashicorp.com/terraform/{{ TERRAFORM_VERSION }}/terraform_{{ TERRAFORM_VERSION }}_linux_amd64.zip"
+        url: "{{ DOWNLOAD_URL }}"
         dest: /tmp/terraform.zip
 
     - name: copy Terraform bin

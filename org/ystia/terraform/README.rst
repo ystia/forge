@@ -17,11 +17,15 @@ The TerraformRuntime component install the terraform binary
 Properties
 ^^^^^^^^^^
 
+- **download_url** : Terraform download URL.
+  Providing a value different from the default value allows to specify an alternative repository (ie: for offline installations).
+  It is your responsibility to provide an accessible download url and to store required artifacts on it.
+
+  - Default : https://releases.hashicorp.com/terraform/0.11.8/terraform_0.11.8_linux_amd64.zip
+
 - **install_dir**: Directory where Terraform binary should be installed
 
   - Default : /usr/local/bin
-
-- **component_version**: Version of Terraform to install.
 
 - **plugins_dir**: Directory where are located Terraform plugins
 

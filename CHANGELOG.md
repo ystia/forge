@@ -2,6 +2,10 @@
 
 ## UNRELEASED
 
+### BUG FIXES
+
+* TerraformRuntime component should have a download URL in argument ([GH-22](https://github.com/ystia/forge/issues/22))
+
 ## 2.1.0-M6 (November 16, 2018)
 
 ### DEPENDENCIES

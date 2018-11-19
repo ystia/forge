@@ -30,10 +30,11 @@ node_types:
     tags:
       icon: terraform.jpg
     properties:
-      component_version:
-        type: version
+      download_url:
+        description: Terraform download URL
+        type: string
         required: true
-        default: 0.11.8
+        default: "https://releases.hashicorp.com/terraform/0.11.8/terraform_0.11.8_linux_amd64.zip"
       install_dir:
         description: Installation directory for the Terraform binary
         type: string
