@@ -65,3 +65,40 @@
     - name: log end agents
       debug: msg="Consul configured to run in agent mode"
       when:  MODE == "agent"
+
+    - name: log test security config
+      debug: msg="Configure secured server mode"
+      when:  MODE == "server"
+
+    - name: Generate an OpenSSL private key with default values (4096 bits, RSA).
+      openssl_privatekey:
+        path: "{{CONFIG_DIR}}/consul.key"
+
+    - name: Generate an OpenSSL CSR with subjectAltName
+      openssl_csr:
+        path: "{{CONFIG_DIR}}/consul.csr"
+        privatekey_path: "{{CONFIG_DIR}}/consul.key"
+        country_name: "FR"
+        organization_name: "Atos"
+        common_name: "127.0.0.1"
+        subjectAltName: 'IP:{{IP_ADDRESS}},IP:127.0.0.1,DNS:localhost'
+
+    - name: Install CA key
+      copy:
+        src: ca.key
+        dest: "{{CONFIG_DIR}}"
+
+    - name: Install CA certificate
+      copy:
+        src: ca.pem
+        dest: "{{CONFIG_DIR}}"
+
+    - name: Generate an OpenSSL certificate
+      openssl_certificate:
+        path: "{{CONFIG_DIR}}/consul.pem"
+        csr_path: "{{CONFIG_DIR}}/consul.csr"
+        ownca_path: "{{CONFIG_DIR}}/ca.pem"
+        ownca_privatekey_path: "{{CONFIG_DIR}}/ca.key"
+        ownca_privatekey_passphrase: "yorc"
+        provider: ownca
+        subjectAltName: 'IP:{{IP_ADDRESS}},IP:127.0.0.1,DNS:localhost'
