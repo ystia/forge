@@ -28,8 +28,14 @@
     - set_fact:
         yorcConfig: "{{ result.stdout | from_yaml }}"
 
+    - name: "Create service account key file {{ CONFIG_DIR }}/creds.json"
+      copy:
+        content: "{{ CREDENTIALS }}"
+        dest: "{{ CONFIG_DIR }}/creds.json"
+        mode: 0700
+
     - set_fact:
-        tmp: '{ "infrastructures": { "google": { "project": "{{ PROJECT }}", "region": "{{ REGION }}", "application_credentials": "{{ APPLICATION_CREDENTIALS }}", "credentials": "{{ CREDENTIALS }}" } } }'
+        tmp: '{ "infrastructures": { "google": { "project": "{{ PROJECT }}", "region": "{{ REGION }}", "application_credentials": "{{ CONFIG_DIR }}/creds.json" } } }'
     - set_fact:
         yorcConfig: "{{ yorcConfig | combine(tmp, recursive=True) }}"
 

@@ -158,7 +158,6 @@ relationship_types:
             CONFIG_DIR: { get_property: [TARGET, config_dir] }
             PROJECT: { get_property: [SOURCE, project] }
             REGION: { get_property: [SOURCE, region] }
-            APPLICATION_CREDENTIALS: { get_property: [SOURCE, application_credentials] }
             CREDENTIALS: { get_property: [SOURCE, credentials] }
           implementation: playbooks/configure_google.yml
   org.ystia.yorc.linux.ansible.relationships.YorcConfigOpenstackHostedOnYorc:
