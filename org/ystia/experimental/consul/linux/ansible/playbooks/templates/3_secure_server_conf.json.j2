@@ -14,5 +14,12 @@ See the License for the specific language governing permissions and
 limitations under the License.
 #}
 {
-  "advertise_addr_wan": "{{ WAN_ADDRESS }}"
+  "key_file": "{{ CONFIG_DIR }}/consul.key",
+  "cert_file": "{{ CONFIG_DIR }}/consul.pem",
+  "ca_file": "{{ CONFIG_DIR }}/ca.pem",
+  "verify_incoming": true,
+  "verify_outgoing": true,
+  "ports": {
+      "https": 8543
+  }
 }

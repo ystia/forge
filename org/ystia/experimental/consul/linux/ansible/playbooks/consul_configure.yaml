@@ -22,30 +22,66 @@
   become_method: sudo
   vars:
     consul_servers: []
+    consul_secured: false
   tasks:
     - name: Setup base config for consul
       template:
         src: 1_main_conf.json.j2
-        dest: "{{CONFIG_DIR}}/1_main_conf.json"
+        dest: "{{ CONFIG_DIR }}/1_main_conf.json"
 
-    - name: compute consul servers
+    - name: Compute consul servers
       set_fact:
         consul_servers: "{{ consul_servers }} + [ '{{ hostvars[inventory_hostname][item] }}' ]"
       with_items: "{{ hostvars[inventory_hostname]  }}"
       when: MODE == "server" and item | match(NODE+'_.*_IP_ADDRESS')
 
+    - name: Check security requirement
+      set_fact:
+        consul_secured: true
+      when: (CA_PASSPHRASE is defined)
+          and not(CA_PASSPHRASE is none)
+          and not(CA_PASSPHRASE | trim == '')
 
     - name: Install servers config for consul
       template: 
         src: 2_server_conf.json.j2
-        dest: "{{CONFIG_DIR}}/2_server_conf.json"
+        dest: "{{ CONFIG_DIR }}/2_server_conf.json"
       when: MODE == "server"
+
+    - name: Install security config for consul server
+      template:
+        src: 3_secure_server_conf.json.j2
+        dest: "{{ CONFIG_DIR }}/3_secure_server_conf.json"
+      when: MODE == "server" and consul_secured
+
+    - name: Install security config for consul agent
+      template:
+        src: 3_secure_agent_conf.json.j2
+        dest: "{{ CONFIG_DIR }}/3_secure_agent_conf.json"
+      when: not(MODE == "server") and consul_secured
 
     - name: Install servers WAN config for consul
       template: 
         src: 3_wan_address.json.j2
-        dest: "{{CONFIG_DIR}}/3_wan_address.json"
+        dest: "{{ CONFIG_DIR }}/3_wan_address.json"
       when:  MODE == "server" and not(
+          (WAN_ADDRESS is undefined)
+          or
+          (WAN_ADDRESS is none)
+          or
+          (WAN_ADDRESS | trim == '')
+        )
+
+    - name:
+      set_fact:
+        subjectAltName: "{{ IP_ADDRESS }}"
+      when: consul_secured
+
+    - name:
+      set_fact:
+        subjectAltName: "{{ WAN_ADDRESS }}"
+      when:
+      when: consul_secured and MODE == "server" and not(
           (WAN_ADDRESS is undefined)
           or
           (WAN_ADDRESS is none)
@@ -56,7 +92,7 @@
     - name: Install datacenter config for consul
       template: 
         src: 1_datacenter.json.j2
-        dest: "{{CONFIG_DIR}}/1_datacenter.json"
+        dest: "{{ CONFIG_DIR }}/1_datacenter.json"
 
     - name: log end servers
       debug: msg="Consul configured to run in server mode"
@@ -72,33 +108,38 @@
 
     - name: Generate an OpenSSL private key with default values (4096 bits, RSA).
       openssl_privatekey:
-        path: "{{CONFIG_DIR}}/consul.key"
+        path: "{{ CONFIG_DIR }}/consul.key"
+      when: consul_secured
 
     - name: Generate an OpenSSL CSR with subjectAltName
       openssl_csr:
-        path: "{{CONFIG_DIR}}/consul.csr"
-        privatekey_path: "{{CONFIG_DIR}}/consul.key"
+        path: "{{ CONFIG_DIR }}/consul.csr"
+        privatekey_path: "{{ CONFIG_DIR }}/consul.key"
         country_name: "FR"
         organization_name: "Atos"
         common_name: "127.0.0.1"
-        subjectAltName: 'IP:{{IP_ADDRESS}},IP:127.0.0.1,DNS:localhost'
+        subjectAltName: 'IP:{{ subjectAltName }},IP:127.0.0.1,DNS:localhost'
+      when: consul_secured
 
     - name: Install CA key
       copy:
         src: ca.key
-        dest: "{{CONFIG_DIR}}"
+        dest: "{{ CONFIG_DIR }}"
+      when: consul_secured
 
     - name: Install CA certificate
       copy:
         src: ca.pem
-        dest: "{{CONFIG_DIR}}"
+        dest: "{{ CONFIG_DIR }}"
+      when: consul_secured
 
     - name: Generate an OpenSSL certificate
       openssl_certificate:
-        path: "{{CONFIG_DIR}}/consul.pem"
-        csr_path: "{{CONFIG_DIR}}/consul.csr"
-        ownca_path: "{{CONFIG_DIR}}/ca.pem"
-        ownca_privatekey_path: "{{CONFIG_DIR}}/ca.key"
-        ownca_privatekey_passphrase: "yorc"
+        path: "{{ CONFIG_DIR }}/consul.pem"
+        csr_path: "{{ CONFIG_DIR }}/consul.csr"
+        ownca_path: "{{ CONFIG_DIR }}/ca.pem"
+        ownca_privatekey_path: "{{ CONFIG_DIR }}/ca.key"
+        ownca_privatekey_passphrase: "{{ CA_PASSPHRASE }}"
         provider: ownca
-        subjectAltName: 'IP:{{IP_ADDRESS}},IP:127.0.0.1,DNS:localhost'
+        subjectAltName: 'IP:{{ subjectAltName }},IP:127.0.0.1,DNS:localhost'
+      when: consul_secured
