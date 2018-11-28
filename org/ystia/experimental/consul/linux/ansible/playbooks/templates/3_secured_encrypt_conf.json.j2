@@ -14,13 +14,5 @@ See the License for the specific language governing permissions and
 limitations under the License.
 #}
 {
-  "key_file": "{{ CONFIG_DIR }}/consul.key",
-  "cert_file": "{{ CONFIG_DIR }}/consul.pem",
-  "ca_file": "{{ CONFIG_DIR }}/ca.pem",
-  "verify_incoming_rpc": true,
-  "verify_outgoing": true,
-  "enable_agent_tls_for_checks": {{ TLS_FOR_CHECKS_ENABLED }},
-  "ports": {
-      "https": 8543
-  }
+  "encrypt": "{{ ENCRYPT_KEY }}"
 }

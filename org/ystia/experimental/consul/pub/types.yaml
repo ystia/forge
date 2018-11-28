@@ -37,7 +37,12 @@ node_types:
       icon: /images/consul-icon.png
     properties:
       tls_enabled:
-        description: UNSUPPORTED property of A4C type - Defines if the communication with the consul agent will be secured (HTTPS).
+        description: Defines if the communication with the consul agent will be secured (HTTPS).
+        type: boolean
+        required: true
+        default: false
+      tls_for_checks_enabled:
+        description: Allows to set up HTTP health check
         type: boolean
         required: true
         default: false
@@ -45,8 +50,9 @@ node_types:
         description: The provided CA certificate passphrase.
         type: string
         required: false
+        default: "yorc"
       encrypt_key:
-        description: UNSUPPORTED property of A4C type - The key to encrypt gossip exchanges into consul cluster.
+        description: The key to encrypt gossip exchanges within the consul cluster (must be a 16-bytes, Base64 encoded key).
         type: string
         required: false
       mode:
@@ -110,6 +116,11 @@ node_types:
           - equal: "server"
         required: true
         default: "server"
+      ca_passphrase:
+        description: The provided CA certificate passphrase.
+        type: string
+        required: false
+        default: "yorc"
     capabilities:
       consul_server:
         type: org.ystia.yorc.experimental.consul.pub.capabilities.ConsulServer

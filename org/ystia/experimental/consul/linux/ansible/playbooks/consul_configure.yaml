@@ -38,9 +38,7 @@
     - name: Check security requirement
       set_fact:
         consul_secured: true
-      when: (CA_PASSPHRASE is defined)
-          and not(CA_PASSPHRASE is none)
-          and not(CA_PASSPHRASE | trim == '')
+      when: TLS_ENABLED
 
     - name: Install servers config for consul
       template: 
@@ -60,10 +58,18 @@
         dest: "{{ CONFIG_DIR }}/3_secure_agent_conf.json"
       when: not(MODE == "server") and consul_secured
 
+    - name: Install encryption key config
+      template:
+        src: 3_secured_encrypt_conf.json.j2
+        dest: "{{ CONFIG_DIR }}/3_secured_encrypt_conf.json"
+      when: (ENCRYPT_KEY is defined)
+            and not(ENCRYPT_KEY is none)
+            and not (ENCRYPT_KEY | trim == '')
+
     - name: Install servers WAN config for consul
       template: 
-        src: 3_wan_address.json.j2
-        dest: "{{ CONFIG_DIR }}/3_wan_address.json"
+        src: 4_wan_address.json.j2
+        dest: "{{ CONFIG_DIR }}/4_wan_address.json"
       when:  MODE == "server" and not(
           (WAN_ADDRESS is undefined)
           or
