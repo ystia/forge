@@ -33,5 +33,6 @@ node_types:
         create:
           inputs:
             ANSIBLE_VERSION: { get_property: [SELF, component_version] }
+            ANSIBLE_EXTRA_PACKAGE_REPOSITORY: { get_property: [SELF, extra_package_repository_url] }
           implementation: playbooks/create.yml
         delete: playbooks/delete.yml

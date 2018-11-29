@@ -42,3 +42,11 @@
       pip:
         name: ansible
         version: "{{ANSIBLE_VERSION}}"
+      when: ANSIBLE_EXTRA_PACKAGE_REPOSITORY == ""
+
+    - name: install using pip package repository "{{ANSIBLE_EXTRA_PACKAGE_REPOSITORY}}"
+      pip:
+        name: ansible
+        version: "{{ANSIBLE_VERSION}}"
+        extra_args: --extra-index-url "{{ANSIBLE_EXTRA_PACKAGE_REPOSITORY}}"
+      when: ANSIBLE_EXTRA_PACKAGE_REPOSITORY != ""

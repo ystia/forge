@@ -34,6 +34,10 @@ node_types:
         type: version
         required: true
         default: 2.6.3
+      extra_package_repository_url:
+        description: "URL of package indexes where to find the ansible package, instead of the default Python Package repository"
+        type: string
+        default: ""
 
 relationship_types:
   org.ystia.ansible.pub.relationships.DependsOnAnsibleRuntime:
