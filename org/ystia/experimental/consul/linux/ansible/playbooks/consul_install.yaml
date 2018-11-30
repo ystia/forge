@@ -49,22 +49,20 @@
 
     - name: RedHat - install prerequisites
       yum:
-        name: "{{item}}"
+        name:
+          - zip
+          - unzip
         state: present
         update_cache: yes
-      with_items:
-        - zip
-        - unzip
       when: ansible_os_family == 'RedHat'
 
     - name: Debian - install prerequisites
       apt:
-        name: "{{item}}"
+        name:
+          - zip
+          - unzip
         state: present
         update_cache: yes
-      with_items:
-        - zip
-        - unzip
       when: ansible_os_family == 'Debian'
 
     - name: create Consul group
