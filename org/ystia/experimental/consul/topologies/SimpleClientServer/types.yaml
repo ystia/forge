@@ -17,8 +17,8 @@ tosca_definitions_version: alien_dsl_2_0_0
 
 
 metadata:
-  template_name: ConsulSimpleTopology
-  template_version: 0.1.0-SNAPSHOT
+  template_name: org.ystia.yorc.experimental.consul.topologies.simple
+  template_version: 2.1.0-SNAPSHOT
   template_author: admin
 
 description: "A simple topology used to demonstrate how to deploy a Consul cluster using Yorc"
