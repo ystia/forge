@@ -94,7 +94,6 @@
     - name:
       set_fact:
         subjectAltName: "{{ WAN_ADDRESS }}"
-      when:
       when: consul_secured and MODE == "server" and not(
           (WAN_ADDRESS is undefined)
           or
