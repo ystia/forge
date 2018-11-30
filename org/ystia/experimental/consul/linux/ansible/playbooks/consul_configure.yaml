@@ -23,6 +23,7 @@
   vars:
     consul_servers: []
     consul_secured: false
+    ca_provided: false
   tasks:
     - name: Setup base config for consul
       template:
@@ -35,10 +36,17 @@
       with_items: "{{ hostvars[inventory_hostname]  }}"
       when: MODE == "server" and item | match(NODE+'_.*_IP_ADDRESS')
 
+    - name: Check if CA provided
+      set_fact:
+        ca_provided: true
+      when: (CA_KEY is defined) and (CA_PEM is defined)
+            and not(CA_KEY is none) and not(CA_PEM is none)
+            and not(CA_KEY | trim == '') and not(CA_PEM | trim == '')
+
     - name: Check security requirement
       set_fact:
         consul_secured: true
-      when: TLS_ENABLED
+      when: TLS_ENABLED and ca_provided
 
     - name: Install servers config for consul
       template: 
@@ -129,14 +137,15 @@
 
     - name: Install CA key
       copy:
-        src: ca.key
-        dest: "{{ CONFIG_DIR }}"
+        dest: "{{ CONFIG_DIR }}/ca.key"
+        content: "{{ CA_KEY }}"
+        mode: 0600
       when: consul_secured
 
     - name: Install CA certificate
       copy:
-        src: ca.pem
-        dest: "{{ CONFIG_DIR }}"
+        dest: "{{ CONFIG_DIR }}/ca.pem"
+        content: "{{ CA_PEM }}"
       when: consul_secured
 
     - name: Generate an OpenSSL certificate

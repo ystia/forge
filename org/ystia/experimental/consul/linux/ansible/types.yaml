@@ -73,6 +73,8 @@ node_types:
             WEB_UI: { get_property: [SELF, web_ui] }
             TLS_ENABLED: { get_property: [SELF, tls_enabled] }
             TLS_FOR_CHECKS_ENABLED: { get_property: [SELF, tls_for_checks_enabled] }
+            CA_KEY: { get_property: [SELF, ca_key] }
+            CA_PEM: { get_property: [SELF, ca_pem] }
             CA_PASSPHRASE: { get_property: [SELF, ca_passphrase] }
             ENCRYPT_KEY: { get_property: [SELF, encrypt_key] }
             IP_ADDRESS: { get_attribute: [HOST, private_address] }
@@ -139,6 +141,8 @@ node_types:
             WEB_UI: { get_property: [SELF, web_ui] }
             TLS_ENABLED: { get_property: [SELF, tls_enabled] }
             TLS_FOR_CHECKS_ENABLED: { get_property: [SELF, tls_for_checks_enabled] }
+            CA_KEY: { get_property: [SELF, ca_key] }
+            CA_PEM: { get_property: [SELF, ca_pem] }
             CA_PASSPHRASE: { get_property: [SELF, ca_passphrase] }
             ENCRYPT_KEY: { get_property: [SELF, encrypt_key] }
             IP_ADDRESS: { get_attribute: [HOST, private_address] }
