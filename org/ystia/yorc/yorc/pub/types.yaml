@@ -173,6 +173,16 @@ node_types:
       private_key_content:
         description: "Content of the default ssh private key used to connect on computes. Stored as ~/.ssh/yorc.pem"
         type: string
+      ca_pem:
+        description: "PEM-encoded certificate authority content, used to check the authenticity of client and server connections"
+        type: string
+      ca_key:
+        description: "Certificate authority private key content"
+        type: string
+      ca_key_passphrase:
+        description: "Certificate authority private key passphrase"
+        type: string
+
     requirements:
     - consul:
         capability: org.alien4cloud.consul.pub.capabilities.ConsulAgent
@@ -200,12 +210,11 @@ capability_types:
   org.ystia.yorc.pub.capabilities.YorcRestAPI:
     derived_from: tosca.capabilities.Endpoint
     description: >
-      A ConsulAgent capability allows to binds to the Consul HTTP API.
-      Both agents and servers expose this capability
+      A YorcServer capability allowing to bind to the Yorc REST API.
     properties:
       port:
         type: integer
-        description: The port of the alien HTTP endpoint.
+        description: The port of the Yorc Server REST API endpoint.
         required: true
         default: 8800
         constraints:

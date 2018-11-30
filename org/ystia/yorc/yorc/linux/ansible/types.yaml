@@ -79,7 +79,12 @@ node_types:
         configure:
           inputs:
             REST_API_PORT: { get_property: [SELF, rest, port] }
+            REST_API_PROTOCOL: { get_property: [SELF, rest, protocol] }
+            IP_ADDRESS: { get_attribute: [HOST, private_address] }
             SSH_KEY: { get_property: [SELF, private_key_content] }
+            CA_PEM: { get_property: [SELF, ca_pem] }
+            CA_KEY: { get_property: [SELF, ca_key] }
+            CA_KEY_PASSPHRASE: { get_property: [SELF, ca_key_passphrase] }
           implementation: playbooks/configure.yml
         start: playbooks/start.yml
         stop: playbooks/stop.yml

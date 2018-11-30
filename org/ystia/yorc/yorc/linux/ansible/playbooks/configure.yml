@@ -61,3 +61,49 @@
         owner: yorc
         group: yorc
         mode: 0400
+
+    - name: "Copy certificate authority"
+      copy:
+        content: "{{ CA_PEM }}"
+        dest: "{{ CONFIG_DIR }}/yorc_server_ca.pem"
+        owner: yorc
+        group: yorc
+        mode: 0400
+      when: REST_API_PROTOCOL == "https"
+
+    - name: "Copy certificate authority private key"
+      copy:
+        content: "{{ CA_KEY }}"
+        dest: "{{ CONFIG_DIR }}/yorc_server_ca.key"
+        owner: yorc
+        group: yorc
+        mode: 0400
+      when: REST_API_PROTOCOL == "https"
+
+    - name: Generate an OpenSSL private key with default values (4096 bits, RSA).
+      openssl_privatekey:
+        path: "{{ CONFIG_DIR }}/yorc_server.key"
+      when: REST_API_PROTOCOL == "https"
+
+    - name: Get Host private IP address for which TLS connections are accepted
+      set_fact:
+        subjectAltName: "{{ IP_ADDRESS }}"
+      when: REST_API_PROTOCOL == "https"
+      
+    - name: Generate an OpenSSL CSR with subjectAltName
+      openssl_csr:
+        path: "{{ CONFIG_DIR }}/yorc_server.csr"
+        privatekey_path: "{{ CONFIG_DIR }}/yorc_server.key"
+        subjectAltName: 'IP:{{ subjectAltName }},IP:127.0.0.1,DNS:localhost'
+      when: REST_API_PROTOCOL == "https"
+
+    - name: Generate an OpenSSL certificate
+      openssl_certificate:
+        path: "{{ CONFIG_DIR }}/yorc_server.pem"
+        csr_path: "{{ CONFIG_DIR }}/yorc_server.csr"
+        ownca_path: "{{ CONFIG_DIR }}/yorc_server_ca.pem"
+        ownca_privatekey_path: "{{ CONFIG_DIR }}/yorc_server_ca.key"
+        ownca_privatekey_passphrase: "{{ CA_PASSPHRASE }}"
+        provider: ownca
+        subjectAltName: 'IP:{{ subjectAltName }},IP:127.0.0.1,DNS:localhost'
+      when: REST_API_PROTOCOL == "https"
