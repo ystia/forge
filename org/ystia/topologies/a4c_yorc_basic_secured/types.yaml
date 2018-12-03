@@ -68,7 +68,7 @@ topology_template:
       type: string
       required: true
       description: "Certificate authority private key content"
-    ca_key_passphrase:
+    ca_passphrase:
       type: string
       required: true
       description: "Certificate authority private key passphrase"
@@ -175,7 +175,7 @@ topology_template:
         private_key_content: { get_input: private_key_content }
         ca_pem: { get_input: ca_pem }
         ca_key: { get_input: ca_key }
-        ca_key_passphrase: { get_input: ca_key_passphrase }
+        ca_passphrase: { get_input: ca_passphrase }
       requirements:
       - hostedOnComputeHost:
           type_requirement: host
@@ -210,6 +210,12 @@ topology_template:
       properties:
         install_dnsmasq: true
         mode: server
+        ca_pem: { get_input: ca_pem }
+        ca_key: { get_input: ca_key }
+        ca_passphrase: { get_input: ca_passphrase }
+        tls_enabled: true
+        tls_for_checks_enabled: true
+        encrypt_key: "cg8StVXbQJ0gPvMd9o7yrg=="
         download_url: "https://releases.hashicorp.com/consul/1.2.3/consul_1.2.3_linux_amd64.zip"
         install_dir: "/usr/local/bin"
         data_dir: "/var/consul"
@@ -225,7 +231,7 @@ topology_template:
       capabilities:
         consul_agent:
           properties:
-            port: 8500
+            port: 8543
             protocol: tcp
             secure: false
             network_name: PRIVATE

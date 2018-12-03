@@ -179,7 +179,7 @@ node_types:
       ca_key:
         description: "Certificate authority private key content"
         type: string
-      ca_key_passphrase:
+      ca_passphrase:
         description: "Certificate authority private key passphrase"
         type: string
 

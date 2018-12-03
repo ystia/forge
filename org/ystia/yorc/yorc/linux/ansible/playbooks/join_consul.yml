@@ -14,6 +14,39 @@
 # limitations under the License.
 #
 
+- name: Install consul certificates
+  hosts: all
+  strategy: free
+  become: true
+  become_method: sudo
+  tasks:
+    - name: "Copy consul certificate authority and make it readable by yorc"
+      copy:
+        remote_src: yes
+        src: "{{ CONSUL_CONFIG_DIR }}/ca.pem"
+        dest: "{{ CONFIG_DIR }}/consul_ca.pem"
+        owner: yorc
+        group: yorc
+        mode: 0400
+      when: TLS_ENABLED == "true"
+    - name: "Copy consul certificate and make it readable by yorc"
+      copy:
+        remote_src: yes
+        src: "{{ CONSUL_CONFIG_DIR }}/consul.pem"
+        dest: "{{ CONFIG_DIR }}/consul.pem"
+        owner: yorc
+        group: yorc
+        mode: 0400
+      when: TLS_ENABLED == "true"
+    - name: "Copy consul key and make it readable by yorc"
+      copy:
+        remote_src: yes
+        src: "{{ CONSUL_CONFIG_DIR }}/consul.key"
+        dest: "{{ CONFIG_DIR }}/consul.key"
+        owner: yorc
+        group: yorc
+        mode: 0400
+      when: TLS_ENABLED == "true"
 
 - name: Setup Consul config
   hosts: all

@@ -80,6 +80,13 @@
         mode: 0400
       when: REST_API_PROTOCOL == "https"
 
+- name: Generate keys and certificates
+  hosts: all
+  strategy: free
+  become: true
+  become_user: yorc
+  become_method: sudo
+  tasks:
     - name: Generate an OpenSSL private key with default values (4096 bits, RSA).
       openssl_privatekey:
         path: "{{ CONFIG_DIR }}/yorc_server.key"

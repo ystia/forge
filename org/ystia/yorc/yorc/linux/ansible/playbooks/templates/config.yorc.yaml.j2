@@ -17,6 +17,8 @@ resources_prefix: yorc-
 http_port: "{{REST_API_PORT}}"
 server_id: "{{server_id}}"
 {% if  REST_API_PROTOCOL == "https" %}
+ssl_verify: true
 key_file: "{{CONFIG_DIR}}/yorc_server.key"
 cert_file: "{{CONFIG_DIR}}/yorc_server.pem"
+ca_file: "{{CONFIG_DIR}}/yorc_server_ca.pem"
 {% endif %}
