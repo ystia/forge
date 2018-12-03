@@ -148,12 +148,17 @@ This is the perfect place to begin with this sample.
 
 This topology define a Consul secured cluster with one data center.
 
-By default 3 consul servers and 2 consul agent are deployed. The security configuration properties with default values set are :
+By default 3 consul servers and 2 consul agent are deployed. The security configuration properties to be set are :
 
   - **tls_enabled** : **true**
-  - **tls_for_checks_enabled** : **true**for Consul agents
-  - **encrypt_key** : a generated key
-  - **ca_passphrase** : **yorc** (correspond to the pass phrase used to generate the CA key which is currently used to generate consul certificates)
+  - **tls_for_checks_enabled** : **true**
+  - **ca_key** : a String containing the CA key to be used to generated a certificate for the consul agents and servers
+  - **ca_pem** : a String containing the CA certificate to be used to generated a certificate for the consul agents and servers
+  - **ca_passphrase** : the pass phrase which was used to generate the CA key
+  - **tls_enabled** : key to encrypt gossip exchanges within the consul cluster (must be a 16-bytes, Base64 encoded key)
+
+  If the **tls_enabled** is set to **true**, and if the CA key, pem and pass phrase are provided, the generated configuration corresponds to a secured set-up.
+  In this case, the Consul configuration has a **https** port assigned to a port number which is provided by the **port** property of the **consul_agent** capability.
 
 ### MultiDCWithWAN topology
 
