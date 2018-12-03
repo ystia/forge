@@ -229,6 +229,13 @@ topology_template:
           capability: tosca.capabilities.Container
           relationship: tosca.relationships.HostedOn
       capabilities:
+        consul_server:
+          properties:
+            port: 8543
+            protocol: tcp
+            secure: false
+            network_name: PRIVATE
+            initiator: source
         consul_agent:
           properties:
             port: 8543
