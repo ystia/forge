@@ -117,7 +117,7 @@ topology_template:
             initiator: source
         consul_agent:
           properties:
-            port: 8500
+            port: 8543
             protocol: tcp
             secure: false
             network_name: PRIVATE
@@ -152,7 +152,7 @@ topology_template:
       capabilities:
         consul_agent:
           properties:
-            port: 8500
+            port: 8543
             protocol: tcp
             secure: false
             network_name: PRIVATE
