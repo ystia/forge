@@ -158,7 +158,7 @@ By default 3 consul servers and 2 consul agent are deployed. The security config
   - **tls_enabled** : key to encrypt gossip exchanges within the consul cluster (must be a 16-bytes, Base64 encoded key)
 
   If the **tls_enabled** is set to **true**, and if the CA key, pem and pass phrase are provided, the generated configuration corresponds to a secured set-up.
-  In this case, the Consul configuration has a **https** port assigned to a port number which is provided by the **port** property of the **consul_agent** capability.
+  In this case, the Consul configuration has a **https** port assigned to a port number which is provided by the **port** property of the **consul_agent** and/or **consul_server** capability.
 
 ### MultiDCWithWAN topology
 
