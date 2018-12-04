@@ -49,22 +49,20 @@
 
     - name: RedHat - install prerequisites
       yum:
-        name: "{{item}}"
+        name:
+          - zip
+          - unzip
         state: present
         update_cache: yes
-      with_items:
-        - zip
-        - unzip
       when: ansible_os_family == 'RedHat'
 
     - name: Debian - install prerequisites
       apt:
-        name: "{{item}}"
+        name:
+          - zip
+          - unzip
         state: present
         update_cache: yes
-      with_items:
-        - zip
-        - unzip
       when: ansible_os_family == 'Debian'
 
     - name: create Consul group
@@ -125,9 +123,22 @@
         enabled: yes
         state: stopped
 
-
     - name: Install consul maintenance script
       template: 
         src: consul_maintenance.sh.j2
         dest: "{{INSTALL_DIR}}/consul_maintenance.sh"
         mode: "u=rwx,g=rx,o=rx"
+
+    - name: Ensure pip is installed
+      easy_install:
+        name: pip
+        state: latest
+
+    - name: Install requirements
+      copy:
+        src: requirements.txt
+        dest: "{{ INSTALL_DIR }}"
+
+    - name: Install python requirements
+      pip:
+        requirements: "{{ INSTALL_DIR }}/requirements.txt"

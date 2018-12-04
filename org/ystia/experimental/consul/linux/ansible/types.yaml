@@ -71,6 +71,13 @@ node_types:
             DATACENTER: { get_property: [SELF, datacenter] }
             DOMAIN: { get_property: [SELF, domain] }
             WEB_UI: { get_property: [SELF, web_ui] }
+            TLS_ENABLED: { get_property: [SELF, tls_enabled] }
+            TLS_FOR_CHECKS_ENABLED: { get_property: [SELF, tls_for_checks_enabled] }
+            CA_KEY: { get_property: [SELF, ca_key] }
+            CA_PEM: { get_property: [SELF, ca_pem] }
+            CA_PASSPHRASE: { get_property: [SELF, ca_passphrase] }
+            ENCRYPT_KEY: { get_property: [SELF, encrypt_key] }
+            PORT: { get_property: [SELF, consul_server, port]}
             IP_ADDRESS: { get_attribute: [HOST, private_address] }
             WAN_ADDRESS: { get_attribute: [HOST, public_address] }
           implementation: playbooks/consul_configure.yaml
@@ -133,6 +140,13 @@ node_types:
             DATACENTER: { get_property: [SELF, datacenter] }
             DOMAIN: { get_property: [SELF, domain] }
             WEB_UI: { get_property: [SELF, web_ui] }
+            TLS_ENABLED: { get_property: [SELF, tls_enabled] }
+            TLS_FOR_CHECKS_ENABLED: { get_property: [SELF, tls_for_checks_enabled] }
+            CA_KEY: { get_property: [SELF, ca_key] }
+            CA_PEM: { get_property: [SELF, ca_pem] }
+            CA_PASSPHRASE: { get_property: [SELF, ca_passphrase] }
+            ENCRYPT_KEY: { get_property: [SELF, encrypt_key] }
+            PORT: { get_property: [SELF, consul_agent, port]}
             IP_ADDRESS: { get_attribute: [HOST, private_address] }
             WAN_ADDRESS: { get_attribute: [HOST, public_address] }
           implementation: playbooks/consul_configure.yaml
