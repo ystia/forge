@@ -2,11 +2,14 @@
 
 ## UNRELEASED
 
+### NEW FEATURES
+
+* Provide Consul components/topology allowing to install a secured Consul setup ([GH-28](https://github.com/ystia/forge/issues/28))
+* Support of Yorc bootstrap ([GH-32](https://github.com/ystia/forge/issues/32))
+
 ### IMPROVEMENTS
 
 * TerraformRuntime component should have a download URL in argument ([GH-22](https://github.com/ystia/forge/issues/22))
-* Provide Consul components/topology allowing to install a secured Consul setup ([GH-28](https://github.com/ystia/forge/issues/28))
-* Support of Yorc bootstrap ([GH-32](https://github.com/ystia/forge/issues/32))
 
 ## 2.1.0-M6 (November 16, 2018)
 
