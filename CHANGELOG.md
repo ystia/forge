@@ -2,7 +2,7 @@
 
 ## UNRELEASED
 
-### BUG FIXES
+### IMPROVEMENTS
 
 * TerraformRuntime component should have a download URL in argument ([GH-22](https://github.com/ystia/forge/issues/22))
 * Provide Consul components/topology allowing to install a secured Consul setup ([GH-28](https://github.com/ystia/forge/issues/28))
