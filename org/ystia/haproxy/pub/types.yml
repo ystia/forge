@@ -8,14 +8,14 @@ tosca_definitions_version: alien_dsl_2_0_0
 
 metadata:
   template_name: org.ystia.haproxy.pub
-  template_version: 2.1.0-M7
+  template_version: 2.1.0-SNAPSHOT
   template_author: Ystia
 
 description: Public interface types for HA Proxy support.
 
 imports:
   - tosca-normative-types:1.0.0-ALIEN20
-  - org.ystia.common:2.1.0-M7
+  - org.ystia.common:2.1.0-SNAPSHOT
 
 capability_types:
   org.ystia.haproxy.pub.capabilities.Container.HAProxy:
