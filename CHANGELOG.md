@@ -1,5 +1,7 @@
 # Ystia Forge Changelog
 
+## UNRELEASED
+
 ## 2.1.0-M7 (December 07, 2018)
 
 ### NEW FEATURES
