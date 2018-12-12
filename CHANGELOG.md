@@ -2,6 +2,10 @@
 
 ## UNRELEASED
 
+### BUG FIXES
+
+* Component NFS Client fails to mount directory exported by NFS server on GCP ([GH-38](https://github.com/ystia/forge/issues/38))
+
 ## 2.1.0-M7 (December 07, 2018)
 
 ### NEW FEATURES
