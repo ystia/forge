@@ -2,6 +2,11 @@
 
 ## UNRELEASED
 
+### DEPENDENCIES
+
+* Ystia Forge components require now Alien4Cloud 2.1.0-RC1
+* Ystia Forge components require now Alien4Cloud CSAR public library 2.1.0-RC1
+
 ### BUG FIXES
 
 * Component NFS Client fails to mount directory exported by NFS server on GCP ([GH-38](https://github.com/ystia/forge/issues/38))

@@ -6,11 +6,11 @@ metadata:
   template_author: alien4cloud
 
 imports:
-  - org.alien4cloud.alien4cloud.pub:2.1.0-SM7
-  - org.alien4cloud.alien4cloud.config.pub:2.1.0-SM7
-  - org.alien4cloud.alien4cloud.config.location:2.1.0-SM7
-  - org.alien4cloud.alien4cloud.config.location_resources.on_demand:2.1.0-SM7
-  - org.alien4cloud.alien4cloud.config.location_resources.autoconfig:2.1.0-SM7
+  - org.alien4cloud.alien4cloud.pub:2.1.0-RC1
+  - org.alien4cloud.alien4cloud.config.pub:2.1.0-RC1
+  - org.alien4cloud.alien4cloud.config.location:2.1.0-RC1
+  - org.alien4cloud.alien4cloud.config.location_resources.on_demand:2.1.0-RC1
+  - org.alien4cloud.alien4cloud.config.location_resources.autoconfig:2.1.0-RC1
   - tosca-normative-types:1.0.0-ALIEN20
   - yorc-types:1.0.0
   - org.ystia.yorc.pub:2.1.0-SNAPSHOT

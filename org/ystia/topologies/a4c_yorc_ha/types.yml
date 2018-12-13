@@ -9,13 +9,13 @@ description: ""
 
 imports:
   - tosca-normative-types:1.0.0-ALIEN20
-  - alien-extended-storage-types:2.1.0-SM7
+  - alien-extended-storage-types:2.1.0-RC1
 
-  - org.alien4cloud.java.pub:2.1.0-SM7
-  - org.alien4cloud.alien4cloud.pub:2.1.0-SM7
-  - org.alien4cloud.alien4cloud.webapp:2.1.0-SM7
-  - org.alien4cloud.java.jdk.linux:2.1.0-SM7
-  - org.alien4cloud.alien4cloud.config.pub:2.1.0-SM7
+  - org.alien4cloud.java.pub:2.1.0-RC1
+  - org.alien4cloud.alien4cloud.pub:2.1.0-RC1
+  - org.alien4cloud.alien4cloud.webapp:2.1.0-RC1
+  - org.alien4cloud.java.jdk.linux:2.1.0-RC1
+  - org.alien4cloud.alien4cloud.config.pub:2.1.0-RC1
 #  - org.alien4cloud.consul.pub:2.0.0-SNAPSHOT
 #  - org.alien4cloud.elasticsearch.pub:2.0.0-SNAPSHOT
 #  - org.alien4cloud.java.jmx.jolokia:2.0.0-SNAPSHOT
@@ -34,7 +34,7 @@ imports:
 
 repositories:
   fastconnect_nexus:
-    url: https://fastconnect.org/maven/service/local/repositories/opensource/content/alien4cloud/alien4cloud-dist/2.1.0-SM7
+    url: https://fastconnect.org/maven/service/local/repositories/opensource/content/alien4cloud/alien4cloud-dist/2.1.0-RC1
     type: http
 
 topology_template:
@@ -236,7 +236,7 @@ topology_template:
             initiator: source
       artifacts:
         alien_dist:
-          file: alien4cloud-dist-2.1.0-SM7-dist.tar.gz
+          file: alien4cloud-dist-2.1.0-RC1-dist.tar.gz
           type: tosca.artifacts.File
           repository: fastconnect_nexus
     YorcPlugin:
