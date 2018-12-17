@@ -1,6 +1,6 @@
 # Ystia Forge Changelog
 
-## UNRELEASED
+## 2.1.0-RC1 (December 17, 2018)
 
 ### DEPENDENCIES
 
