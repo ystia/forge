@@ -133,8 +133,9 @@ For the second method:
 
   - Repository URL: https://github.com/alien4cloud/csar-public-library.git
   - Credentials: *none*
-  - Branch: **v2.0.0**
+  - Branch: **v2.1.0**
   - Archives to import:
+
     - **org/alien4cloud/consul**
     - **org/alien4cloud/java**
     - **org/alien4cloud/elasticsearch**
