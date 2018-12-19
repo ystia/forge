@@ -2,6 +2,10 @@
 
 ## UNRELEASED
 
+### BUG FIXES
+
+* Forge components installing dnsmaq fail on RHEL 7.5  ([GH-44](https://github.com/ystia/forge/issues/44))
+
 ### DEPENDENCIES
 
 * Ystia Forge components require now Alien4Cloud 2.1.0
