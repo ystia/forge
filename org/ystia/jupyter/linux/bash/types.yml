@@ -42,7 +42,6 @@ node_types:
            It is your responsibility to provide an accessible download url and to store required artifact on it.
            You should specify only the base repository url.
          required: false
-         default: ""
          constraints:
            - pattern: ^(http|https|ftp)://.+/.*$
       irkernel:
