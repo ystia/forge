@@ -2,6 +2,11 @@
 
 ## UNRELEASED
 
+
+### BUG FIXES
+
+* Types definition issues detected when uploading forge github repository in Alien4Cloud ([GH-42](https://github.com/ystia/forge/issues/42))
+
 ### DEPENDENCIES
 
 * Ystia Forge components require now Alien4Cloud 2.1.0

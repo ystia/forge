@@ -23,7 +23,6 @@ node_types:
     metadata:
       icon: /images/dnsmasq-icon.png
     properties:
-      properties:
       domain:
         type: string
         default: ""

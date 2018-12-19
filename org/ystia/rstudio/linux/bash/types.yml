@@ -70,7 +70,6 @@ node_types:
           several components using the inputs feature.
           If you don't specify any value, it's set to 'https://download2.rstudio.org'.
         required: false
-        default: ""
         constraints:
           - pattern: ^(http|https|ftp)://.+/.*$
 # TODO Will be taken into account when MapR/Hortonworks will be migrated...
