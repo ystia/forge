@@ -30,9 +30,9 @@ node_types:
       component_version:
         type: version
         description: Version of the installed Kafka component
-        default: 0.10.2.1
+        default: 0.10.2.2
         constraints:
-          - valid_values: [0.10.2.1, 0.11.0.2]
+          - valid_values: [0.10.2.2, 0.11.0.3]
       scala_version:
         type: version
         description: Version of the scala imbedded

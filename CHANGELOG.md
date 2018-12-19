@@ -2,6 +2,10 @@
 
 ## UNRELEASED
 
+### BUG FIXES
+
+* Kafka download URLs no more valid ([GH-41](https://github.com/ystia/forge/issues/41))
+
 ### DEPENDENCIES
 
 * Ystia Forge components require now Alien4Cloud 2.1.0
