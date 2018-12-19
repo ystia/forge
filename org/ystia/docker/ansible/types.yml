@@ -29,7 +29,6 @@ node_types:
           docker package version
       repository_url:
         type: string
-        default: ""
         required: false
         description: >
           repository url to install docker from. This property is optional and the default value is 'https://download.docker.com/linux/centos/7/$basearch/stable'
@@ -38,7 +37,6 @@ node_types:
           - pattern: ".*https?://.*"
       docker_gpgkey:
         type: string
-        default: ""
         required: false
         description: >
          gpg key url to use for docker package installation. This property is optional and the default value is 'https://download.docker.com/linux/centos/gpg'

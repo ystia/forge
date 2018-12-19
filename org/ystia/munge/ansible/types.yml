@@ -22,7 +22,6 @@ node_types:
     metadata:
       icon: /images/munge-icon.png
     properties:
-      properties:
       key:
         type: string
         default: ""
