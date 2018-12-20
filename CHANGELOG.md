@@ -1,6 +1,6 @@
 # Ystia Forge Changelog
 
-## UNRELEASED
+## 2.1.0 (December 20, 2018)
 
 ### BUG FIXES
 
