@@ -4,6 +4,7 @@
 
 ### BUG FIXES
 
+* Kafka download URLs no more valid ([GH-41](https://github.com/ystia/forge/issues/41))
 * Types definition issues detected when uploading forge github repository in Alien4Cloud ([GH-42](https://github.com/ystia/forge/issues/42))
 * Forge components installing dnsmaq fail on RHEL 7.5  ([GH-44](https://github.com/ystia/forge/issues/44))
 
