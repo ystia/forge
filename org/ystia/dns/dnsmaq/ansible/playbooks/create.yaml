@@ -1,0 +1,56 @@
+#
+# Ystia Forge
+# Copyright (C) 2018 Bull S. A. S. - Bull, Rue Jean Jaures, B.P.68, 78340, Les Clayes-sous-Bois, France.
+# Use of this source code is governed by Apache 2 LICENSE that can be found in the LICENSE file.
+#
+
+
+- name: Install Dnsmasq
+  hosts: all
+  become: true
+  vars:
+    upstream_servers: []
+  tasks:
+    - name: Backup original resolve.conf
+      copy:
+        src: /etc/resolv.conf
+        remote_src: yes
+        dest: /etc/resolv.conf.ori
+
+    - name: Set upstream servers fact
+      set_fact:
+        upstream_servers: "{{UPSTREAM_SERVERS | from_json}}"
+      when: UPSTREAM_SERVERS|default("") != "" 
+      
+    - name: Dnsmasq Install
+      import_role:
+        name: jriguera.dnsmasq
+      vars:
+        dnsmasq_resolvconf: True
+        dnsmasq_conf_resolv: "/etc/resolv.conf.ori"
+        dnsmasq_conf_log: "DAEMON"
+        dnsmasq_dhcp: False
+        dnsmasq_host_domain: "{{DOMAIN}}"
+        dnsmasq_tftp: False
+        dnsmasq_conf_servers: "{{upstream_servers}}"
+        dnsmasq_conf_hosts:
+          - ["{{ ansible_default_ipv4.address }}", "{{ ansible_hostname }}", "{{ ansible_fqdn }}" ]
+
+    - name: Copy systemd auto reload of Dnsmasq on /etc/hosts changed 
+      copy:
+        src: "{{ item }}"
+        dest: /etc/systemd/system/
+      with_items:
+        - hosts-watcher.path
+        - hosts-watcher.service
+      when: ansible_service_mgr == "systemd"
+    
+    - name: Enable systemd auto reload of Dnsmasq on /etc/hosts changed 
+      systemd:
+        name: hosts-watcher.path
+        state: started
+        enabled: yes
+        daemon_reload: yes
+      when: ansible_service_mgr == "systemd"
+    
+    

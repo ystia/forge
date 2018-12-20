@@ -1,0 +1,72 @@
+#
+# Ystia Forge
+# Copyright (C) 2018 Bull S. A. S. - Bull, Rue Jean Jaures, B.P.68, 78340, Les Clayes-sous-Bois, France.
+# Use of this source code is governed by Apache 2 LICENSE that can be found in the LICENSE file.
+#
+
+
+- name: Install Munge
+  hosts: all
+  become: true
+  tasks:
+    
+    - name: Install Munge (Debian)
+      package: name={{ item }}
+      with_items:
+        - munge
+        - libmunge-dev
+        - libmunge2
+      when: ansible_os_family == 'Debian'
+
+    - name: Add Epel directory to install Munge
+      yum: 
+        name: https://dl.fedoraproject.org/pub/epel/epel-release-latest-7.noarch.rpm
+      when: ansible_os_family == 'RedHat'
+
+    - name: Install Munge
+      yum: name=munge,munge-libs
+      when: ansible_os_family == 'RedHat'
+
+    - name: Munge Key install
+      copy:
+        content: "{{ KEY }}"
+        dest: /etc/munge/munge-b64.key
+        owner: munge
+        group: munge
+        mode: 0400
+      when: 
+        - KEY is defined 
+        - KEY != ''
+    
+    - name: "Decode key"
+      shell: > 
+        cat /etc/munge/munge-b64.key | base64 -d > /etc/munge/munge.key ;
+        rm /etc/munge/munge-b64.key
+      when: 
+        - KEY is defined 
+        - KEY != ''
+
+    - name: Munge Key generation
+      shell: >
+        dd if=/dev/urandom bs=1 count=1024 > /etc/munge/munge.key 
+      when: KEY is not defined or KEY == ''
+
+    - name: Set Munge key permissions
+      file:
+        path: /etc/munge/munge.key
+        owner: munge
+        group: munge
+        mode: 0400
+
+    - name: Munge configuration
+      file:
+        path: /var/run/munge
+        state: directory
+        owner: munge
+        group: munge
+        mode: 0755
+
+    - name: Enable munge service
+      service: 
+        name: munge
+        enabled: yes

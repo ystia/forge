@@ -8,18 +8,18 @@ tosca_definitions_version: alien_dsl_2_0_0
 
 metadata:
   template_name: org.ystia.kibana.linux.bash
-  template_version: 2.0.0
+  template_version: 2.1.0
   template_author: Ystia
 
 description:
 
 imports:
   - tosca-normative-types:1.0.0-ALIEN20
-  - org.ystia.common:2.0.0
-  - org.ystia.consul.pub:2.0.0
-  - org.ystia.java.pub:2.0.0
-  - org.ystia.kibana.pub:2.0.0
-  - org.ystia.elasticsearch.pub:2.0.0
+  - org.ystia.common:2.1.0
+  - org.ystia.consul.pub:2.1.0
+  - org.ystia.java.pub:2.1.0
+  - org.ystia.kibana.pub:2.1.0
+  - org.ystia.elasticsearch.pub:2.1.0
 
 node_types:
   org.ystia.kibana.linux.bash.nodes.Kibana:
@@ -175,7 +175,7 @@ relationship_types:
         post_configure_source:
           implementation: relationships/elasticsearch/kibana_to_elasticsearch_post_config_source.sh
           inputs:
-            cluster_name: { get_property: [ TARGET, cluster_name ] }
+            cluster_name: { get_property: [ TARGET, search_resource, cluster_name ] }
             kibanaIp: { get_attribute: [ SOURCE, ip_address] }
             elasticsearchIp: { get_attribute: [ TARGET, ip_address] }
             ELASTICSEARCH_HEAP_SIZE: { get_property: [SOURCE, es_heap_size] }

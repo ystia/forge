@@ -1,0 +1,49 @@
+tosca_definitions_version: alien_dsl_2_0_0
+
+#
+# Ystia Forge
+# Copyright (C) 2018 Bull S. A. S. - Bull, Rue Jean Jaures, B.P.68, 78340, Les Clayes-sous-Bois, France.
+# Use of this source code is governed by Apache 2 LICENSE that can be found in the LICENSE file.
+#
+
+metadata:
+  template_name: org.ystia.dns.dnsmasq.ansible
+  template_version: 2.1.0
+  template_author: Ystia
+
+
+imports:
+  - tosca-normative-types:1.0.0-ALIEN20
+  - yorc-types:1.0.0
+  - org.ystia.dns.pub:2.1.0
+
+node_types:
+  org.ystia.dns.dnsmasq.ansible.nodes.Dnsmasq:
+    derived_from: org.ystia.dns.pub.nodes.DnsServer
+    metadata:
+      icon: /images/dnsmasq-icon.png
+    properties:
+      domain:
+        type: string
+        default: ""
+        required: false
+        description: >
+          Local domain name.
+
+          Most queries for names within this domain can use short names relative to the local domain. If no domain entry is present,
+          the domain is determined from the local hostname returned by gethostname(2); the domain part is taken to be everything after
+          the first '.'. Finally, if the hostname does not contain a domain part, the root domain is assumed.
+      upstream_servers:
+        type: list
+        required: false
+        entry_schema:
+          type: string
+        description: >
+          Optional list of servers to relay non locally resolvable requests
+    interfaces:
+      Standard:
+        create:
+          inputs:
+            DOMAIN: {get_property: [SELF, domain]}
+            UPSTREAM_SERVERS: {get_property: [SELF, upstream_servers]}
+          implementation: playbooks/create.yaml

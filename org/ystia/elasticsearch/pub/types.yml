@@ -8,15 +8,40 @@ tosca_definitions_version: alien_dsl_2_0_0
 
 metadata:
   template_name: org.ystia.elasticsearch.pub
-  template_version: 2.0.0
+  template_version: 2.1.0
   template_author: Ystia
 
 description: Public interface types for Elasticsearch support.
 
 imports:
   - tosca-normative-types:1.0.0-ALIEN20
-  - org.ystia.common:2.0.0
+  - org.ystia.common:2.1.0
+  - org.ystia.consul.pub:2.1.0
+
+node_types:
+  org.ystia.elasticsearch.pub.nodes.AbstractElasticSearch:
+    derived_from: org.ystia.consul.pub.nodes.ConsulUser
+    abstract: true
+    tags:
+      icon: /images/elasticsearch-icon.png
+    attributes:
+      api: 
+        type: string
+    capabilities:
+      search_resource: org.ystia.elasticsearch.pub.capabilities.SearchEndpoint
 
 capability_types:
   org.ystia.elasticsearch.pub.capabilities.SearchEndpoint:
     derived_from: tosca.capabilities.Endpoint
+    properties:
+      port:
+        type: integer
+        default: 9200
+        constraints:
+          - equal: 9200
+      cluster_name:
+        type: string
+        default: ystia
+        description: >
+          Cluster name identifies your Elasticsearch cluster for auto-discovery.
+          If you're running multiple clusters on the same network, make sure you're using unique names.

@@ -1,0 +1,66 @@
+#
+# Copyright 2018 Bull S.A.S. Atos Technologies - Bull, Rue Jean Jaures, B.P.68, 78340, Les Clayes-sous-Bois, France.
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+#
+
+
+- name: Setup Kubernetes config
+  hosts: all
+  strategy: free
+  become_user: yorc
+  become: true
+  tasks:
+    - name: "Ensures {{ CONFIG_DIR }}/kubernetes dir exists"
+      file:
+        path: "{{ CONFIG_DIR }}/kubernetes"
+        state: directory
+
+    - name: "Copy ca.pem"
+      copy:
+        content: "{{ CA }}"
+        dest: "{{ CONFIG_DIR }}/kubernetes/ca.pem"
+
+    - name: "Copy client.crt"
+      copy:
+        content: "{{ CERT }}"
+        dest: "{{ CONFIG_DIR }}/kubernetes/client.crt"
+
+    - name: "Copy client.key"
+      copy:
+        content: "{{ KEY }}"
+        dest: "{{ CONFIG_DIR }}/kubernetes/client.key"
+
+    - name: "get current config of Yorc"
+      shell: "cat {{ CONFIG_DIR }}/config.yorc.yaml"
+      register: result
+
+    - set_fact:
+        yorcConfig: "{{ result.stdout | from_yaml }}"
+
+    - set_fact:
+        tmp: >
+            { "infrastructures": { "kubernetes": {
+                "master_url": "{{ MASTER_URL }}",
+                "ca_file": "{{ CONFIG_DIR }}/kubernetes/ca.pem",
+                "cert_file": "{{ CONFIG_DIR }}/kubernetes/client.crt",
+                "key_file": "{{ CONFIG_DIR }}/kubernetes/client.key",
+                "insecure": "{{ INSECURE }}"
+            } } }
+    - set_fact:
+        yorcConfig: "{{ yorcConfig | combine(tmp, recursive=True) }}"
+
+    - name: "Output config to file {{ CONFIG_DIR }}/config.yorc.yaml"
+      copy:
+        content: "{{ yorcConfig | to_yaml }}"
+        dest: "{{ CONFIG_DIR }}/config.yorc.yaml"

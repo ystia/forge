@@ -8,19 +8,19 @@ tosca_definitions_version: alien_dsl_2_0_0
 
 metadata:
   template_name: org.ystia.logstash.linux.bash
-  template_version: 2.0.0
+  template_version: 2.1.0
   template_author: Ystia
 
 description:
 
 imports:
   - tosca-normative-types:1.0.0-ALIEN20
-  - org.ystia.common:2.0.0
-  - org.ystia.consul.pub:2.0.0
-  - org.ystia.java.pub:2.0.0
-  - org.ystia.kafka.pub:2.0.0
-  - org.ystia.elasticsearch.pub:2.0.0
-  - org.ystia.logstash.pub:2.0.0
+  - org.ystia.common:2.1.0
+  - org.ystia.consul.pub:2.1.0
+  - org.ystia.java.pub:2.1.0
+  - org.ystia.kafka.pub:2.1.0
+  - org.ystia.elasticsearch.pub:2.1.0
+  - org.ystia.logstash.pub:2.1.0
 
 node_types:
   org.ystia.logstash.linux.bash.nodes.Logstash:
@@ -595,12 +595,25 @@ relationship_types:
     derived_from: org.ystia.relationships.ConnectsTo
     description: Connects Logstash to ElasticSearch
     valid_target_types: [ org.ystia.elasticsearch.pub.capabilities.SearchEndpoint ]
+    properties:
+      proxy:
+        description:
+          Allows to specify a proxy to use to connect to ElasticSearch
+        type: string
+        required: false
+        default: ""
+        constraints:
+          - pattern: "^(https?://.+)?"
     interfaces:
       Configure:
           pre_configure_source:
             inputs:
               LOGSTASH_HOME: { get_attribute: [SOURCE, ls_home] }
-              cluster_name: { get_property: [ TARGET, cluster_name ] }
+              cluster_name: { get_property: [ TARGET, search_resource, cluster_name ] }
+              ES_CAP_IP: { get_attribute: [ TARGET, search_resource, ip_address ] }
+              ES_IP: { get_attribute: [ TARGET, private_address ] }
+              ES_PUBLIC_IP: { get_attribute: [ TARGET, public_address ] }
+              PROXY: { get_property: [SELF, proxy] }
             implementation: relationships/elasticsearch/configure.sh
     artifacts:
       - scripts:

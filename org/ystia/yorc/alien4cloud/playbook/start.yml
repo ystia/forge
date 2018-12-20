@@ -1,0 +1,4 @@
+
+- import_playbook: ./upload_plugin.yml
+
+- import_playbook: ./create_orchestrator.yml

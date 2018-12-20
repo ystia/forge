@@ -1,0 +1,33 @@
+- name: Get Yorc Config
+  hosts: all
+  strategy: linear
+  become: true
+  tasks:
+      - set_fact:
+          file_dir: "/tmp/a4cPlaybookRegistry/{{ SOURCE_NODE }}/{{ SOURCE_INSTANCE }}/connect_yorc/inputs"
+
+      - name: "Ensure <{{ file_dir }}> exists"
+        file:
+          path: "{{ file_dir }}"
+          state: directory
+
+      - name: "Echo <{{ yorc_url_ha }}> in file <{{ file_dir }}/yorc_url>"
+        shell: "echo '{{ yorc_url_ha }}' > {{ file_dir }}/yorc_url"
+        when:  not(
+          (yorc_address_ha is undefined)
+          or
+          (yorc_address_ha is none)
+          or
+          (yorc_address_ha | trim == '')
+          )
+
+      - name: "Echo <{{ yorc_url }}> in file <{{ file_dir }}/yorc_url>"
+        shell: "echo '{{ yorc_url }}' > {{ file_dir }}/yorc_url"
+        when:  (
+          (yorc_address_ha is undefined)
+          or
+          (yorc_address_ha is none)
+          or
+          (yorc_address_ha | trim == '')
+          )
+

@@ -8,22 +8,22 @@ tosca_definitions_version: alien_dsl_2_0_0
 
 metadata:
   template_name: org.ystia.samples.topologies.elk_nifi
-  template_version: 2.0.0
+  template_version: 2.1.0
   template_author: Ystia
 
 
 imports:
   - tosca-normative-types:1.0.0-ALIEN20
-  - org.ystia.common:2.0.0
-  - org.ystia.consul.pub:2.0.0
-  - org.ystia.consul.linux.bash:2.0.0
-  - org.ystia.java.pub:2.0.0
-  - org.ystia.java.linux.bash:2.0.0
-  - org.ystia.elasticsearch.pub:2.0.0
-  - org.ystia.elasticsearch.linux.bash:2.0.0
-  - org.ystia.kibana.pub:2.0.0
-  - org.ystia.kibana.linux.bash:2.0.0
-  - org.ystia.nifi.linux.bash:2.0.0
+  - org.ystia.common:2.1.0
+  - org.ystia.consul.pub:2.1.0
+  - org.ystia.consul.linux.bash:2.1.0
+  - org.ystia.java.pub:2.1.0
+  - org.ystia.java.linux.bash:2.1.0
+  - org.ystia.elasticsearch.pub:2.1.0
+  - org.ystia.elasticsearch.linux.bash:2.1.0
+  - org.ystia.kibana.pub:2.1.0
+  - org.ystia.kibana.linux.bash:2.1.0
+  - org.ystia.nifi.linux.bash:2.1.0
 
 topology_template:
   description: A topology template to connect NiFi with Elasticsearch and Kibana
@@ -107,12 +107,15 @@ topology_template:
         repository: { get_input: es_repository }
         curator_repository_url: { get_input: es_curator_repository_url }
         curator_repository_key_url: { get_input: es_curator_repository_key_url }
-        cluster_name: nifi
       requirements:
         - host:
             node: Java_ES
         - consul:
             node: Consul_ES
+      capabilities:
+        search_resource:
+          properties:
+            cluster_name: nifi
 
     # VM for Kibana
 

@@ -1,0 +1,10 @@
+#jinja2: trim_blocks: "true", lstrip_blocks: "true"
+# {{ ansible_managed }}
+
+{% if DOMAIN|default("") != "" -%}
+domain {{ DOMAIN }}
+{% endif -%}
+
+{% if SEARCH|default("") != "" %}
+search {{ SEARCH }}
+{% endif %}

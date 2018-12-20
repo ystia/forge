@@ -1,0 +1,86 @@
+tosca_definitions_version: alien_dsl_2_0_0
+
+#
+# Ystia Forge
+# Copyright (C) 2018 Bull S. A. S. - Bull, Rue Jean Jaures, B.P.68, 78340, Les Clayes-sous-Bois, France.
+# Use of this source code is governed by Apache 2 LICENSE that can be found in the LICENSE file.
+#
+
+metadata:
+  template_name: org.ystia.dns.resolvconf.ansible
+  template_version: 2.1.0
+  template_author: Ystia
+
+
+imports:
+  - tosca-normative-types:1.0.0-ALIEN20
+  - yorc-types:1.0.0
+  - org.ystia.dns.pub:2.1.0
+
+node_types:
+  org.ystia.dns.resolvconf.ansible.Resolvconf:
+    derived_from: tosca.nodes.SoftwareComponent
+    metadata:
+      icon: /images/dns-icon.png
+    properties:
+      domain:
+        type: string
+        default: ""
+        required: false
+        description: >
+          Local domain name.
+
+          Most queries for names within this domain can use short names relative to the local domain. If no domain entry is present,
+          the domain is determined from the local hostname returned by gethostname(2); the domain part is taken to be everything after
+          the first '.'. Finally, if the hostname does not contain a domain part, the root domain is assumed.
+      search:
+        type: string
+        default: ""
+        required: false
+        description: >
+          Search list for host-name lookup (space-separated).
+
+          The search list is normally determined from the local domain name; by default, it contains only the local domain name. 
+          This may be changed by listing the desired domain search path following the search keyword with spaces or tabs separating
+          the names. Resolver queries having fewer than ndots dots (default is 1) in them will be attempted using each component of
+          the search path in turn until a match is found. For environments with multiple subdomains please read options ndots:n below
+          to avoid man-in-the-middle attacks and unnecessary traffic for the root-dns-servers. Note that this process may be slow and
+          will generate a lot of network traffic if the servers for the listed domains are not local, and that queries will time out
+          if no server is available for one of the domains. The search list is currently limited to six domains with a total of
+          256 characters.
+    attributes:
+      hostname: { get_operation_output: [SELF, Standard, configure, HOSTNAME] }
+    requirements:
+      - dns_server: 
+          capability: org.ystia.dns.pub.capabilities.DnsEndpoint
+          relationship: org.ystia.dns.resolvconf.ansible.relationships.ConnectsTo
+          occurrences: [1, UNBOUNDED] 
+    interfaces:
+      Standard:
+        configure:
+          inputs:
+            DOMAIN: { get_property: [SELF, domain]}
+            SEARCH: { get_property: [SELF, search]}
+          implementation: playbooks/configure.yaml
+          
+    
+relationship_types:
+  org.ystia.dns.resolvconf.ansible.relationships.ConnectsTo:
+    derived_from: tosca.relationships.ConnectsTo
+    interfaces:
+      Configure:
+        inputs:
+          IP_ADDRESS: {get_attribute: [TARGET, private_address]}
+        add_target: playbooks/add_target_dns_server.yaml
+        remove_target: playbooks/remove_target_dns_server.yaml
+        add_source:
+          inputs:
+            HOSTNAME: {get_attribute: [SOURCE, hostname]}
+            IP_ADDRESS: {get_attribute: [SOURCE, private_address]}
+          implementation: playbooks/add_host.yaml
+        remove_source:
+          inputs:
+            HOSTNAME: {get_attribute: [SOURCE, hostname]}
+            IP_ADDRESS: {get_attribute: [SOURCE, private_address]}
+          implementation: playbooks/remove_host.yaml
+          

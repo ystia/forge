@@ -1,0 +1,86 @@
+tosca_definitions_version: alien_dsl_2_0_0
+
+#
+# Ystia Forge
+# Copyright (C) 2018 Bull S. A. S. - Bull, Rue Jean Jaures, B.P.68, 78340, Les Clayes-sous-Bois, France.
+# Use of this source code is governed by Apache 2 LICENSE that can be found in the LICENSE file.
+#
+
+metadata:
+  template_name: org.ystia.slurm.ansible
+  template_version: 2.1.0
+  template_author: Ystia
+
+description: public implementation for Slurm support.
+
+
+imports:
+  - tosca-normative-types:1.0.0-ALIEN20
+  - yorc-types:1.0.0
+  - org.ystia.slurm.pub:2.1.0
+
+node_types:    
+  org.ystia.slurm.ansible.nodes.SlurmController:
+    derived_from: org.ystia.slurm.pub.nodes.SlurmController
+    attributes:
+      hostname: { get_operation_output: [SELF, Standard, create, HOSTNAME] }
+    interfaces:
+      Standard:
+        create: 
+          inputs:
+            DOWNLOAD_URL: {get_property: [SELF, download_url]}
+          implementation: playbooks/create.yaml
+        configure:
+          inputs:
+            HOSTNAME: {get_attribute: [SELF, hostname]}
+            CLUSTER_NAME: {get_property: [SELF, cluster_name]}
+            SLURM_CTLD_PORT: {get_property: [SELF, slurmctl_endpoint, port]}
+          implementation: playbooks/configure-ctld.yaml
+        start: playbooks/start-ctld.yaml
+        stop: playbooks/stop-ctld.yaml
+  
+  org.ystia.slurm.ansible.nodes.SlurmDaemon:
+    derived_from: org.ystia.slurm.pub.nodes.SlurmDaemon
+    attributes:
+      hostname: { get_operation_output: [SELF, Standard, create, HOSTNAME] }
+      sockets: { get_operation_output: [SELF, Standard, configure, sockets] }
+      cores_per_socket: { get_operation_output: [SELF, Standard, configure, cores_per_socket] }
+      threads_per_core: { get_operation_output: [SELF, Standard, configure, threads_per_core] }
+      real_memory: { get_operation_output: [SELF, Standard, configure, real_memory] }
+    interfaces:
+      Standard:
+        create: 
+          inputs:
+            DOWNLOAD_URL: {get_property: [SELF, download_url]}
+          implementation: playbooks/create.yaml
+        start: playbooks/start-daemon.yaml
+        stop: playbooks/stop-daemon.yaml
+        configure:
+          inputs:
+            SLURM_DAEMON_PORT: {get_property: [SELF, slurmd_endpoint, port]}
+            hostname: {get_attribute: [SELF, hostname]}
+          implementation: playbooks/configure-daemon.yaml
+    requirements:
+      - slurmctl:
+          capability: org.ystia.slurm.pub.capabilities.SlurmControllerEndpoint
+          relationship: org.ystia.slurm.ansible.relationships.SlurmDaemonConnectsTo
+          occurrences: [1, 1] 
+
+relationship_types:
+  org.ystia.slurm.ansible.relationships.SlurmDaemonConnectsTo:
+    derived_from: tosca.relationships.ConnectsTo
+    interfaces:
+      Configure:
+        post_configure_source:
+          inputs:
+            CONTROLLER_HOST: {get_attribute: [TARGET, hostname]}
+            CLUSTER_NAME: {get_property: [TARGET, cluster_name]}
+          implementation: playbooks/post_configure_daemon.yaml
+        add_source:
+          inputs:
+            hostname: {get_attribute: [SOURCE, hostname]}
+            sockets: {get_attribute: [SOURCE, sockets]}
+            cores_per_socket: {get_attribute: [SOURCE, cores_per_socket]}
+            threads_per_core: {get_attribute: [SOURCE, threads_per_core]}
+            real_memory: {get_attribute: [SOURCE, real_memory]}
+          implementation: playbooks/add_source_daemon.yaml

@@ -1,0 +1,39 @@
+#
+# Ystia Forge
+# Copyright (C) 2018 Bull S. A. S. - Bull, Rue Jean Jaures, B.P.68, 78340, Les Clayes-sous-Bois, France.
+# Use of this source code is governed by Apache 2 LICENSE that can be found in the LICENSE file.
+#
+
+- name: Register Slurm Daemon on Slurm Controller
+  hosts: all
+  strategy: linear
+  become: true
+  tasks:
+
+    - name: Set controller node
+      lineinfile:
+        path: "/etc/slurm/slurm.conf"
+        line: "NodeName={{ hostname }} Sockets={{ sockets }} CoresPerSocket={{ cores_per_socket }} ThreadsPerCore={{ threads_per_core }} RealMemory={{ real_memory }} State=UNKNOWN"
+
+    - name: Remove dummy node
+      lineinfile:
+        path: "/etc/slurm/slurm.conf"
+        line: "NodeName=127.0.0.1 Sockets=1 CoresPerSocket=1 ThreadsPerCore=1 RealMemory=1 State=DOWN"
+        state: absent
+
+    - name: Set nodes on partition
+      shell: >
+        egrep "^NodeName=" /etc/slurm/slurm.conf | cut -d ' ' -f 1 | cut -d '=' -f 2 | xargs nodeset -f 
+      register: nodeset_result
+
+    - name: Setup partition
+      lineinfile:
+        path: "/etc/slurm/slurm.conf"
+        regexp: '^PartitionName=all'
+        line: "PartitionName=all Nodes={{nodeset_result.stdout_lines[0]}} Default=YES MaxTime=INFINITE State=UP"
+
+    - name: Start Slurm Controller
+      service:
+        name: slurmctld
+        state: restarted
+
