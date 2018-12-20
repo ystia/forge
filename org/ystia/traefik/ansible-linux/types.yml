@@ -8,7 +8,7 @@ tosca_definitions_version: alien_dsl_2_0_0
 
 metadata:
   template_name: org.ystia.traefik.ansible-linux
-  template_version: 2.1.0
+  template_version: 2.1.1-SNAPSHOT
   template_author: Ystia
 
 description: Traefik reverse proxy implementation using Ansible on Linux
@@ -16,7 +16,7 @@ description: Traefik reverse proxy implementation using Ansible on Linux
 imports:
   - tosca-normative-types:1.0.0-ALIEN20
   - yorc-types:1.0.0
-  - org.ystia.traefik.pub:2.1.0
+  - org.ystia.traefik.pub:2.1.1-SNAPSHOT
 
 node_types:
   org.ystia.traefik.ansible-linux.nodes.Traefik:

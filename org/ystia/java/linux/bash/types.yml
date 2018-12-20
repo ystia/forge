@@ -8,15 +8,15 @@ tosca_definitions_version: alien_dsl_2_0_0
 
 metadata:
   template_name: org.ystia.java.linux.bash
-  template_version: 2.1.0
+  template_version: 2.1.1-SNAPSHOT
   template_author: Ystia
 
 description: Allow to select a Java version to install on a system and to host other components requiring Java on top of it
 
 imports:
   - tosca-normative-types:1.0.0-ALIEN20
-  - org.ystia.common:2.1.0
-  - org.ystia.java.pub:2.1.0
+  - org.ystia.common:2.1.1-SNAPSHOT
+  - org.ystia.java.pub:2.1.1-SNAPSHOT
 
 node_types:
   org.ystia.java.linux.bash.nodes.Java:
