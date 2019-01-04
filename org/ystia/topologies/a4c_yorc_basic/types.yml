@@ -14,15 +14,15 @@ imports:
 - org.alien4cloud.alien4cloud.webapp:2.1.0
 - org.alien4cloud.java.jdk.linux:2.1.0
 
-- org.ystia.terraform.linux.terraform:2.1.0-SNAPSHOT
-- org.ystia.yorc.alien4cloud:2.1.0-SNAPSHOT
-- org.ystia.ansible.linux.ansible:2.1.0-SNAPSHOT
-- org.ystia.terraform.pub:2.1.0-SNAPSHOT
-- org.ystia.yorc.linux.ansible:2.1.0-SNAPSHOT
-- org.ystia.yorc.experimental.consul.linux.ansible:2.1.0-SNAPSHOT
-- org.ystia.yorc.pub:2.1.0-SNAPSHOT
-- org.ystia.ansible.pub:2.1.0-SNAPSHOT
-- org.ystia.yorc.experimental.consul.pub:2.1.0-SNAPSHOT
+- org.ystia.terraform.linux.terraform:2.1.0
+- org.ystia.yorc.alien4cloud:2.1.0
+- org.ystia.ansible.linux.ansible:2.1.0
+- org.ystia.terraform.pub:2.1.0
+- org.ystia.yorc.linux.ansible:2.1.0
+- org.ystia.yorc.experimental.consul.linux.ansible:2.1.0
+- org.ystia.yorc.pub:2.1.0
+- org.ystia.ansible.pub:2.1.0
+- org.ystia.yorc.experimental.consul.pub:2.1.0
 
 
 repositories:
