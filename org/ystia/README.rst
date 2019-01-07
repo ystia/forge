@@ -133,8 +133,9 @@ For the second method:
 
   - Repository URL: https://github.com/alien4cloud/csar-public-library.git
   - Credentials: *none*
-  - Branch: **v2.0.0**
+  - Branch: **v2.1.0**
   - Archives to import:
+
     - **org/alien4cloud/consul**
     - **org/alien4cloud/java**
     - **org/alien4cloud/elasticsearch**
@@ -300,7 +301,7 @@ Message brokers
 ===============
 
 +-----------+-------------------+------------------------------+
-| **Kafka** | *org/ystia/kafka* | version 0.10.2.1 or 0.11.0.2 |
+| **Kafka** | *org/ystia/kafka* | version 0.10.2.2 or 0.11.0.3 |
 +-----------+-------------------+------------------------------+
 | **NiFi**  | *org/ystia/nifi*  | version 1.1.2                |
 +-----------+-------------------+------------------------------+

@@ -17,13 +17,13 @@ tosca_definitions_version: alien_dsl_2_0_0
 
 metadata:
   template_name: org.ystia.ansible.linux.ansible
-  template_version: 2.1.0-SNAPSHOT
+  template_version: 2.2.0-SNAPSHOT
   template_author: yorc
 
 imports:
   - tosca-normative-types:1.0.0-ALIEN20
   - yorc-types:1.0.0
-  - org.ystia.ansible.pub:2.1.0-SNAPSHOT
+  - org.ystia.ansible.pub:2.2.0-SNAPSHOT
 
 node_types:
   org.ystia.ansible.linux.ansible.nodes.AnsibleRuntime:
@@ -33,5 +33,6 @@ node_types:
         create:
           inputs:
             ANSIBLE_VERSION: { get_property: [SELF, component_version] }
+            ANSIBLE_EXTRA_PACKAGE_REPOSITORY: { get_property: [SELF, extra_package_repository_url] }
           implementation: playbooks/create.yml
         delete: playbooks/delete.yml

@@ -17,14 +17,14 @@ tosca_definitions_version: alien_dsl_2_0_0
 
 metadata:
   template_name: org.ystia.yorc.pub
-  template_version: 2.1.0-SNAPSHOT
+  template_version: 2.2.0-SNAPSHOT
   template_author: yorc
 
 imports:
   - tosca-normative-types:1.0.0-ALIEN20
-  - org.ystia.yorc.experimental.consul.pub:2.1.0-SNAPSHOT
-  - org.ystia.ansible.pub:2.1.0-SNAPSHOT
-  - org.ystia.terraform.pub:2.1.0-SNAPSHOT
+  - org.ystia.yorc.experimental.consul.pub:2.2.0-SNAPSHOT
+  - org.ystia.ansible.pub:2.2.0-SNAPSHOT
+  - org.ystia.terraform.pub:2.2.0-SNAPSHOT
 
 node_types:
   org.ystia.yorc.pub.infrastructure.GoogleConfig:
@@ -34,19 +34,19 @@ node_types:
     abstract: true
     properties:
       project:
-        description: "The Google Cloud project to use."
+        description: "Google Cloud project"
         type: string
         required: true
       region:
-        description: "The Google Compute Engine region to use."
+        description: "Google Compute Engine region"
         type: string
         required: false
       application_credentials:
-        description: "Path to file containing service account private keys in JSON format."
+        description: "Path to file containing service account private keys in JSON format"
         type: string
         required: false
       credentials:
-        description: "Content of file containing service account private keys."
+        description: "Content of file containing service account private keys"
         type: string
         required: false
     requirements:
@@ -61,26 +61,26 @@ node_types:
     abstract: true
     properties:
       auth_url:
-        description: "The authentication url for OpenStack (should be the Keystone endpoint ie: http://your-openstack:5000/v2.0)."
+        description: "Authentication url for OpenStack (should be the Keystone endpoint ie: http://your-openstack:5000/v2.0)"
         type: string
         required: true
       tenant_name:
-        description: "The OpenStack tenant name to use."
+        description: "OpenStack tenant name"
         type: string
         required: true
       user_name:
-        description: "The OpenStack user name to use."
+        description: "OpenStack user name"
         type: string
         required: true
       password:
-        description: "The OpenStack password to use."
+        description: "OpenStack password"
         type: string
         required: true
       private_network_name:
-        description: "The name of private network to use as primary adminstration network between Yorc and Compute instances. It should be a private network accessible by this instance of Yorc."
+        description: "Name of private network to use as primary administration network between Yorc and Compute instances. It should be a private network accessible by this instance of Yorc."
         type: string
       default_security_groups:
-        description: "Default security groups to be used when creating a Compute instance."
+        description: "Default security groups to be used when creating a Compute instance"
         type: list
         required: false
         entry_schema:
@@ -98,15 +98,15 @@ node_types:
     abstract: true
     properties:
       access_key:
-        description: "The AWS access key credential."
+        description: "AWS access key credentials"
         type: string
         required: true
       secret_key:
-        description: "The AWS secret key credential."
+        description: "AWS secret key credentials"
         type: string
         required: true
       region:
-        description: "The AWS region to use."
+        description: "AWS region"
         type: string
         required: true
     requirements:
@@ -143,6 +143,20 @@ node_types:
         capability: org.ystia.yorc.pub.capabilities.YorcConfigContainer
         relationship: org.ystia.yorc.pub.relationships.YorcConfigHostedOnYorc
         occurrences: [ 1, 1 ]
+
+  org.ystia.yorc.pub.infrastructure.HostsPoolConfig:
+    derived_from: tosca.nodes.Root
+    description: |
+      Hosts Pool Infrastructure configuration for Yorc
+    abstract: true
+    properties:
+      hosts:
+        type: string
+        description: "Yaml description of Hosts in the Pool"
+    requirements:
+      - yorc:
+          capability: org.ystia.yorc.pub.capabilities.YorcConfigContainer
+          relationship: org.ystia.yorc.pub.relationships.YorcConfigHostedOnYorc
 
   org.ystia.yorc.pub.nodes.YorcServer:
     derived_from: tosca.nodes.SoftwareComponent

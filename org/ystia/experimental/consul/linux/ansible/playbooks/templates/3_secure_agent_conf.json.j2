@@ -14,9 +14,13 @@ See the License for the specific language governing permissions and
 limitations under the License.
 #}
 {
-  "domain": "{{ DOMAIN }}",
-  "data_dir": "{{ DATA_DIR }}",
-  "ui": {{ WEB_UI }},
-  "client_addr": "0.0.0.0",
-  "advertise_addr": "{{ IP_ADDRESS }}"
+  "key_file": "{{ CONFIG_DIR }}/consul.key",
+  "cert_file": "{{ CONFIG_DIR }}/consul.pem",
+  "ca_file": "{{ CONFIG_DIR }}/ca.pem",
+  "verify_incoming_rpc": true,
+  "verify_outgoing": true,
+  "enable_agent_tls_for_checks": {{ TLS_FOR_CHECKS_ENABLED }},
+  "ports": {
+      "https": {{ PORT }}
+  }
 }

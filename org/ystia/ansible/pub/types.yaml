@@ -17,7 +17,7 @@ tosca_definitions_version: alien_dsl_2_0_0
 
 metadata:
   template_name: org.ystia.ansible.pub
-  template_version: 2.1.0-SNAPSHOT
+  template_version: 2.2.0-SNAPSHOT
   template_author: yorc
 
 imports:
@@ -34,6 +34,10 @@ node_types:
         type: version
         required: true
         default: 2.6.3
+      extra_package_repository_url:
+        description: "URL of package indexes where to find the ansible package, instead of the default Python Package repository"
+        type: string
+        default: ""
 
 relationship_types:
   org.ystia.ansible.pub.relationships.DependsOnAnsibleRuntime:

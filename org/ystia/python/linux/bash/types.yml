@@ -8,15 +8,15 @@ tosca_definitions_version: alien_dsl_2_0_0
 
 metadata:
   template_name: org.ystia.python.linux.bash
-  template_version: 2.1.0-SNAPSHOT
+  template_version: 2.2.0-SNAPSHOT
   template_author: Ystia
 
 description: Anaconda-Python for linux system
 
 imports:
   - tosca-normative-types:1.0.0-ALIEN20
-  - org.ystia.common:2.1.0-SNAPSHOT
-  - org.ystia.python.pub:2.1.0-SNAPSHOT
+  - org.ystia.common:2.2.0-SNAPSHOT
+  - org.ystia.python.pub:2.2.0-SNAPSHOT
 
 
 node_types:
@@ -39,7 +39,6 @@ node_types:
            It is your responsibility to provide an accessible download url and to store required artifact on it.
            You should specify only the base repository url.
          required: false
-         default: ""
          constraints:
            - pattern: ^(http|https|ftp)://.+/.*$
       nlp_twitter:
