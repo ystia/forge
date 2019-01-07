@@ -2,32 +2,32 @@ tosca_definitions_version: alien_dsl_2_0_0
 
 metadata:
   template_name: org.ystia.topologies.a4c_yorc_basic_secured
-  template_version: 2.1.0-SNAPSHOT
+  template_version: 2.2.0-SNAPSHOT
   template_author: Ystia
 
 description: "Full stack setup on a single node, secured"
 
 imports:
-- tosca-normative-types:1.0.0-ALIEN20
+  - tosca-normative-types:1.0.0-ALIEN20
 
-- org.alien4cloud.alien4cloud.pub:2.1.0-SM7
-- org.alien4cloud.alien4cloud.webapp:2.1.0-SM7
-- org.alien4cloud.java.jdk.linux:2.1.0-SM7
+  - org.alien4cloud.alien4cloud.pub:2.2.0-SNAPSHOT
+  - org.alien4cloud.alien4cloud.webapp:2.2.0-SNAPSHOT
+  - org.alien4cloud.java.jdk.linux:2.2.0-SNAPSHOT
 
-- org.ystia.terraform.linux.terraform:2.1.0-SNAPSHOT
-- org.ystia.yorc.alien4cloud:2.1.0-SNAPSHOT
-- org.ystia.ansible.linux.ansible:2.1.0-SNAPSHOT
-- org.ystia.terraform.pub:2.1.0-SNAPSHOT
-- org.ystia.yorc.linux.ansible:2.1.0-SNAPSHOT
-- org.ystia.yorc.experimental.consul.linux.ansible:2.1.0-SNAPSHOT
-- org.ystia.yorc.pub:2.1.0-SNAPSHOT
-- org.ystia.ansible.pub:2.1.0-SNAPSHOT
-- org.ystia.yorc.experimental.consul.pub:2.1.0-SNAPSHOT
+  - org.ystia.terraform.linux.terraform:2.2.0-SNAPSHOT
+  - org.ystia.yorc.alien4cloud:2.2.0-SNAPSHOT
+  - org.ystia.ansible.linux.ansible:2.2.0-SNAPSHOT
+  - org.ystia.terraform.pub:2.2.0-SNAPSHOT
+  - org.ystia.yorc.linux.ansible:2.2.0-SNAPSHOT
+  - org.ystia.yorc.experimental.consul.linux.ansible:2.2.0-SNAPSHOT
+  - org.ystia.yorc.pub:2.2.0-SNAPSHOT
+  - org.ystia.ansible.pub:2.2.0-SNAPSHOT
+  - org.ystia.yorc.experimental.consul.pub:2.2.0-SNAPSHOT
 
 
 repositories:
   fastconnect_nexus:
-    url: https://fastconnect.org/maven/service/local/repositories/opensource/content/alien4cloud/alien4cloud-dist/2.1.0-SM7
+    url: https://fastconnect.org/maven/service/local/repositories/opensource/content/alien4cloud/alien4cloud-dist/2.1.0
     type: http
 
 topology_template:
@@ -133,7 +133,7 @@ topology_template:
             initiator: source
       artifacts:
         alien_dist:
-          file: alien4cloud-dist-2.1.0-SM7-dist.tar.gz
+          file: alien4cloud-dist-2.1.0-dist.tar.gz
           type: tosca.artifacts.File
           repository: fastconnect_nexus
     AnsibleRuntime:
@@ -149,7 +149,7 @@ topology_template:
     YorcPlugin:
       type: org.ystia.yorc.alien4cloud.nodes.YorcPlugin
       properties:
-        download_url: "https://github.com/ystia/yorc-a4c-plugin/releases/download/v3.1.0-M5/alien4cloud-yorc-plugin-3.1.0-M5.zip"
+        download_url: "https://dl.bintray.com/ystia/yorc-a4c-plugin/snapshots/develop/:alien4cloud-yorc-plugin-distribution-3.2.0-SNAPSHOT.zip"
         name: Yorc
         discriminator: yorc
         pluginId: "alien4cloud-yorc-plugin"
@@ -168,7 +168,7 @@ topology_template:
     YorcServer:
       type: org.ystia.yorc.linux.ansible.nodes.YorcServer
       properties:
-        download_url: "https://github.com/ystia/yorc/releases/download/v3.1.0-M5/yorc-3.1.0-M5.tgz"
+        download_url: "https://dl.bintray.com/ystia/yorc-engine/snapshots/develop/yorc-3.2.0-SNAPSHOT.tgz"
         install_dir: "/usr/local/bin"
         config_dir: "/etc/yorc"
         data_dir: "/var/yorc"
