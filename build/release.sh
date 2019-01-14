@@ -110,17 +110,18 @@ if [[ "develop" == "${branch}" ]] && [[ -z "${prerelease}" ]]; then
     # create release branch
     releaseBranch="release/${major}.${minor}"
     git checkout -b "${releaseBranch}"
+    sed -i -e "s@svg?branch=[^)]*@svg?branch=${releaseBranch}@g" README.md
+    git commit -m "Update travis links in readme for release ${version}" README.md
 fi
 
 # Now checks are passed then update version, tag and cleanup :)
-# Now checks are passed then tag, build, release and cleanup :)
 cherries=()
 # Update changelog Release date
-if [[ -e CHANGELOG.md ]]; then
-    sed -i -e "s/^## UNRELEASED.*$/## ${version} ($(LC_ALL=C date +'%B %d, %Y'))/g" CHANGELOG.md
-    git commit -m "Update changelog for release ${version}" CHANGELOG.md
-    cherries+=("$(git log -1 --pretty=format:"%h")")
-fi
+sed -i -e "s/^## UNRELEASED.*$/## ${version} ($(LC_ALL=C date +'%B %d, %Y'))/g" CHANGELOG.md
+# Update readme for Release number
+sed -i -e "s@download.svg?version=[^)]*@download.svg?version=${version}@g" -e "s@distributions/[^/]*/link@distributions/${version}/link@g" README.md
+git commit -m "Update changelog and readme for release ${version}" CHANGELOG.md README.md
+cherries+=("$(git log -1 --pretty=format:"%h")")
 
 # Update version
 sed -i -e "/${componentVersionName}: /c${componentVersionName}: ${version}" versions.yaml
@@ -135,11 +136,9 @@ git commit -m "Prepare release ${version}"
 git tag -a v${version} -m "Release tag v${version}"
 
 # Update changelog Release date
-if [[ -e CHANGELOG.md ]]; then
-    sed -i -e "2a## UNRELEASED\n" CHANGELOG.md
-    git commit -m "Update changelog for future release" CHANGELOG.md
-    cherries+=("$(git log -1 --pretty=format:"%h")")
-fi
+sed -i -e "2a## UNRELEASED\n" CHANGELOG.md
+git commit -m "Update changelog for future release" CHANGELOG.md
+cherries+=("$(git log -1 --pretty=format:"%h")")
 
 # Update version
 nextDevelopmentVersion=""
