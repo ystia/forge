@@ -2,6 +2,17 @@
 
 ## UNRELEASED
 
+### DEPENDENCIES
+
+* Ystia Forge components require now Alien4Cloud CSAR public library 2.2.0-SNAPSHOT
+
+### BUG FIXES
+
+* Several wrong version referenced for csar-public-lib components ([GH-58](https://github.com/ystia/forge/issues/58))
+
+
+## 2.1.0 (December 20, 2018)
+
 ### BUG FIXES
 
 * Kafka download URLs no more valid ([GH-41](https://github.com/ystia/forge/issues/41))
