@@ -127,7 +127,7 @@ topology_template:
             user: admin
             password: admin
             port: 8080
-            protocol: https
+            protocol: http
             secure: false
             network_name: PRIVATE
             initiator: source
@@ -138,8 +138,6 @@ topology_template:
           repository: fastconnect_nexus
     AnsibleRuntime:
       type: org.ystia.ansible.linux.ansible.nodes.AnsibleRuntime
-      properties:
-        component_version: "2.7.2"
       requirements:
       - hostedOnComputeHost:
           type_requirement: host
@@ -149,7 +147,7 @@ topology_template:
     YorcPlugin:
       type: org.ystia.yorc.alien4cloud.nodes.YorcPlugin
       properties:
-        download_url: "https://dl.bintray.com/ystia/yorc-a4c-plugin/snapshots/develop/:alien4cloud-yorc-plugin-distribution-3.2.0-SNAPSHOT.zip"
+        download_url: "https://dl.bintray.com/ystia/yorc-a4c-plugin/snapshots/develop/alien4cloud-yorc-plugin-distribution-3.2.0-SNAPSHOT.zip"
         name: Yorc
         discriminator: yorc
         pluginId: "alien4cloud-yorc-plugin"

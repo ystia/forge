@@ -1,5 +1,5 @@
 {#
-Copyright 2018 Bull S.A.S. Atos Technologies - Bull, Rue Jean Jaures, B.P.68, 78340, Les Clayes-sous-Bois, France.
+Copyright 2019 Bull S.A.S. Atos Technologies - Bull, Rue Jean Jaures, B.P.68, 78340, Les Clayes-sous-Bois, France.
 
 Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License.
@@ -13,12 +13,10 @@ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 See the License for the specific language governing permissions and
 limitations under the License.
 #}
-resources_prefix: yorc-
-http_port: "{{REST_API_PORT}}"
-server_id: "{{server_id}}"
+yorc_api: "localhost:{{REST_API_PORT}}"
 {% if  REST_API_PROTOCOL == "https" %}
-ssl_verify: true
-key_file: "{{CONFIG_DIR}}/yorc_server.key"
-cert_file: "{{CONFIG_DIR}}/yorc_server.pem"
+ssl_enabled: true
+key_file: "{{CONFIG_DIR}}/yorc_client.key"
+cert_file: "{{CONFIG_DIR}}/yorc_client.pem"
 ca_file: "{{CONFIG_DIR}}/yorc_ca.pem"
 {% endif %}
