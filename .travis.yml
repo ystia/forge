@@ -11,19 +11,12 @@ env:
 
 script:
   - bash build/zip_csar.sh
-
+  - bash build/deploy_artifactory.sh
 
 before_deploy:
   - "bash ./build/pre_bintray_release.sh"
 
 deploy:
-  - provider: script
-    script: bash build/deploy_artifactory.sh
-    on:
-      all_branches: true
-    skip_cleanup: true
-
-  
   - provider: bintray
     file: "build/bintray_release.json"
     user: "loicalbertin"
