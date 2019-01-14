@@ -33,7 +33,7 @@ node_types:
         description: The URL used to download the Yorc plugin zip.
         type: string
         required: true
-        default: https://github.com/ystia/yorc-a4c-plugin/releases/download/v3.0.0/alien4cloud-yorc-plugin-3.0.0.zip
+        default: https://dl.bintray.com/ystia/yorc-a4c-plugin/releases/alien4cloud-yorc-plugin-3.1.0.zip
       name:
         type: string
         required: true
