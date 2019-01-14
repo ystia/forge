@@ -24,8 +24,8 @@ description: "Consul Server exposing a service to Applications"
 
 imports:
   - tosca-normative-types:1.0.0-ALIEN20
-  - org.ystia.yorc.experimental.consul.linux.ansible:2.1.0-SNAPSHOT
-  - org.ystia.yorc.experimental.consul.pub:2.1.0-SNAPSHOT
+  - org.ystia.yorc.experimental.consul.linux.ansible:2.2.0-SNAPSHOT
+  - org.ystia.yorc.experimental.consul.pub:2.2.0-SNAPSHOT
 
 topology_template:
   # Other applications can reference the following Abstract Node Type
