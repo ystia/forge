@@ -11,11 +11,11 @@ imports:
   - tosca-normative-types:1.0.0-ALIEN20
   - alien-extended-storage-types:2.1.0
 
-  - org.alien4cloud.java.pub:2.1.0
-  - org.alien4cloud.alien4cloud.pub:2.1.0
-  - org.alien4cloud.alien4cloud.webapp:2.1.0
-  - org.alien4cloud.java.jdk.linux:2.1.0
-  - org.alien4cloud.alien4cloud.config.pub:2.1.0
+  - org.alien4cloud.java.pub:2.2.0-SNAPSHOT
+  - org.alien4cloud.alien4cloud.pub:2.2.0-SNAPSHOT
+  - org.alien4cloud.alien4cloud.webapp:2.2.0-SNAPSHOT
+  - org.alien4cloud.java.jdk.linux:2.2.0-SNAPSHOT
+  - org.alien4cloud.alien4cloud.config.pub:2.2.0-SNAPSHOT
 #  - org.alien4cloud.consul.pub:2.0.0-SNAPSHOT
 #  - org.alien4cloud.elasticsearch.pub:2.0.0-SNAPSHOT
 #  - org.alien4cloud.java.jmx.jolokia:2.0.0-SNAPSHOT
