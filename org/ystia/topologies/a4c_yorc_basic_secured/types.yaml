@@ -147,7 +147,7 @@ topology_template:
     YorcPlugin:
       type: org.ystia.yorc.alien4cloud.nodes.YorcPlugin
       properties:
-        download_url: "https://dl.bintray.com/ystia/yorc-a4c-plugin/snapshots/develop/alien4cloud-yorc-plugin-distribution-3.2.0-SNAPSHOT.zip"
+        download_url: "https://ystia.jfrog.io/ystia/binaries/ystia/yorc-a4c-plugin/dist/develop/alien4cloud-yorc-plugin-3.2.0-SNAPSHOT.zip"
         name: Yorc
         discriminator: yorc
         pluginId: "alien4cloud-yorc-plugin"
@@ -166,7 +166,7 @@ topology_template:
     YorcServer:
       type: org.ystia.yorc.linux.ansible.nodes.YorcServer
       properties:
-        download_url: "https://dl.bintray.com/ystia/yorc-engine/snapshots/develop/yorc-3.2.0-SNAPSHOT.tgz"
+        download_url: "https://ystia.jfrog.io/ystia/binaries/ystia/yorc/dist/develop/yorc-3.2.0-SNAPSHOT.tgz"
         install_dir: "/usr/local/bin"
         config_dir: "/etc/yorc"
         data_dir: "/var/yorc"
