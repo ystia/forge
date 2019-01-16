@@ -98,6 +98,9 @@ topology_template:
         context_root: "/"
         component_version: "2.0.0"
         data_dir: "/opt/alien4cloud/data"
+        ca_pem: { get_input: ca_pem }
+        ca_key: { get_input: ca_key }
+        ca_passphrase: { get_input: ca_passphrase }
       requirements:
       - javaSoftwareHostedOnJdkOracleJdkJdk:
           type_requirement: java
