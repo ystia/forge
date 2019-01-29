@@ -9,7 +9,7 @@ description: ""
 
 imports:
   - tosca-normative-types:1.0.0-ALIEN20
-  - alien-extended-storage-types:2.1.0
+  - alien-extended-storage-types:2.1.1
 
   - org.alien4cloud.java.pub:2.2.0-SNAPSHOT
   - org.alien4cloud.alien4cloud.pub:2.2.0-SNAPSHOT
