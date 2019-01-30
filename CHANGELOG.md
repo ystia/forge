@@ -4,6 +4,7 @@
 
 ### DEPENDENCIES
 
+* Ystia Forge components require now Alien4Cloud 2.1.1 ([GH-64](https://github.com/ystia/forge/issues/64))
 * Ystia Forge components require now Alien4Cloud CSAR public library 2.2.0-SNAPSHOT
 
 ### BUG FIXES
