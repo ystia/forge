@@ -202,6 +202,10 @@ topology_template:
         component_version: "2.0.0"
         data_dir: "/opt/alien4cloud/data"
       requirements:
+      - consul:
+          node: ConsulAgentA4C
+          capability: org.alien4cloud.consul.pub.capabilities.ConsulAgent
+          relationship: org.alien4cloud.consul.relationships.ConnectToConsulAgent
       - javaSoftwareHostedOnJdkOracleJdkJdk:
           type_requirement: java
           node: OracleJDK
