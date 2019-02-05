@@ -27,7 +27,7 @@
 
     "files":
         [
-        {"includePattern": "build/csars/(.*\\.zip)", "uploadPattern": "$1"}
+        {"includePattern": "build/csars/(.*\\.zip)", "uploadPattern": "${VERSION_NAME}/$1"}
         ],
     "publish": true
 }
