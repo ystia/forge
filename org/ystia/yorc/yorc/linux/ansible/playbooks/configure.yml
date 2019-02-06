@@ -99,9 +99,9 @@
         path: "{{ CONFIG_DIR }}/yorc_server.key"
       when: REST_API_PROTOCOL == "https"
 
-    - name: Get Host private IP address for which TLS connections are accepted
+    - name: Get Host private IP address and DNS hostname for which TLS connections are accepted
       set_fact:
-        subjectAltName: "IP:{{ IP_ADDRESS }},IP:127.0.0.1,DNS:localhost"
+        subjectAltName: "IP:{{ IP_ADDRESS }},IP:127.0.0.1,DNS:localhost,DNS:yorc.service.consul"
       when: REST_API_PROTOCOL == "https"
       
     - name: Generate an OpenSSL CSR with subjectAltName for the server
