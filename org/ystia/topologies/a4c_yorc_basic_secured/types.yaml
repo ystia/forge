@@ -72,6 +72,10 @@ topology_template:
       type: string
       required: true
       description: "Certificate authority private key passphrase"
+    encrypt_key:
+      type: string
+      required: true
+      description: "16-bytes, Base64 encoded value of encryption key used to encrypt Consul network traffic"
   node_templates:
     OracleJDK:
       type: org.alien4cloud.java.jdk.linux.nodes.OracleJDK
@@ -216,7 +220,7 @@ topology_template:
         ca_passphrase: { get_input: ca_passphrase }
         tls_enabled: true
         tls_for_checks_enabled: true
-        encrypt_key: "cg8StVXbQJ0gPvMd9o7yrg=="
+        encrypt_key: { get_input: encrypt_key }
         download_url: "https://releases.hashicorp.com/consul/1.2.3/consul_1.2.3_linux_amd64.zip"
         install_dir: "/usr/local/bin"
         data_dir: "/var/consul"
