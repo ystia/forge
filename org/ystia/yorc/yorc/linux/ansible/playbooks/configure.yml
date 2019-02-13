@@ -103,7 +103,12 @@
       set_fact:
         subjectAltName: "IP:{{ IP_ADDRESS }},IP:127.0.0.1,DNS:localhost,DNS:yorc.service.consul"
       when: REST_API_PROTOCOL == "https"
-      
+
+    - name: Add Host public IP address to subjectAltName
+      set_fact:
+        subjectAltName: "IP:{{ PUBLIC_ADDRESS }},{{ subjectAltName }}"
+      when: REST_API_PROTOCOL == "https" and PUBLIC_ADDRESS != ''
+
     - name: Generate an OpenSSL CSR with subjectAltName for the server
       openssl_csr:
         path: "{{ CONFIG_DIR }}/yorc_server.csr"

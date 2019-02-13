@@ -95,6 +95,7 @@ node_types:
             REST_API_PORT: { get_property: [SELF, rest, port] }
             REST_API_PROTOCOL: { get_property: [SELF, rest, protocol] }
             IP_ADDRESS: { get_attribute: [HOST, private_address] }
+            PUBLIC_ADDRESS: { get_attribute: [HOST, public_address] }
             SSH_KEY: { get_property: [SELF, private_key_content] }
             CA_PEM: { get_property: [SELF, ca_pem] }
             CA_KEY: { get_property: [SELF, ca_key] }
