@@ -2,6 +2,10 @@
 
 ## UNRELEASED
 
+### ENHANCEMENTS
+
+* Provide forge components/topology allowing to install a secured Yorc setup ([GH-37](https://github.com/ystia/forge/issues/37))
+
 ### DEPENDENCIES
 
 * Ystia Forge components require now Alien4Cloud 2.1.1 ([GH-64](https://github.com/ystia/forge/issues/64))

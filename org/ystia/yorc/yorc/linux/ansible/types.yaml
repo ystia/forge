@@ -93,7 +93,13 @@ node_types:
         configure:
           inputs:
             REST_API_PORT: { get_property: [SELF, rest, port] }
+            REST_API_PROTOCOL: { get_property: [SELF, rest, protocol] }
+            IP_ADDRESS: { get_attribute: [HOST, private_address] }
+            PUBLIC_ADDRESS: { get_attribute: [HOST, public_address] }
             SSH_KEY: { get_property: [SELF, private_key_content] }
+            CA_PEM: { get_property: [SELF, ca_pem] }
+            CA_KEY: { get_property: [SELF, ca_key] }
+            CA_PASSPHRASE: { get_property: [SELF, ca_passphrase] }
           implementation: playbooks/configure.yml
         start: playbooks/start.yml
         stop: playbooks/stop.yml
@@ -120,8 +126,10 @@ relationship_types:
       Configure:
         pre_configure_source:
           inputs:
-            CONSUL_SCHEME: "http"
             CONSUL_PORT: { get_property: [TARGET, consul_agent, port] }
+            TLS_ENABLED: { get_property: [TARGET, tls_enabled] }
+            CONSUL_CONFIG_DIR: { get_property: [TARGET, config_dir] }
+            CONFIG_DIR: { get_property: [SOURCE, config_dir] }
           implementation: playbooks/join_consul.yml
   org.ystia.yorc.linux.ansible.relationships.DependsOnFilessystem:
     derived_from: tosca.relationships.DependsOn
