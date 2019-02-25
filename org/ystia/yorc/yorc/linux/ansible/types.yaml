@@ -137,7 +137,7 @@ relationship_types:
       Configure:
         post_configure_source:
           inputs:
-            SERVER_ADDRESS: { get_attribute: [HOST, private_address] }
+            SERVER_ADDRESS: { get_attribute: [TARGET, private_address] }
             CONFIG_DIR: { get_property: [SOURCE, config_dir] }
           implementation: playbooks/configure_vault.yml
   org.ystia.yorc.linux.ansible.relationships.DependsOnFilessystem:
