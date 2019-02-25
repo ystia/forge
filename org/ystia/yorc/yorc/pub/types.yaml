@@ -205,6 +205,10 @@ node_types:
         capability: org.alien4cloud.consul.pub.capabilities.ConsulAgent
         relationship: org.ystia.yorc.pub.relationships.JoinConsulAgent
         occurrences: [ 1, 1 ]
+    - vault:
+        capability: org.alien4cloud.vault.pub.capabilities.VaultServer
+        relationship: org.ystia.yorc.pub.relationships.ConnectsToVaultServer
+        occurrences: [ 0, 1 ]
     - ansible:
         capability: tosca.capabilities.Node
         relationship: org.ystia.ansible.pub.relationships.DependsOnAnsibleRuntime
@@ -255,3 +259,8 @@ relationship_types:
     description: >
       Connects Yorc to a FileSystem (BlockStorage, NFS...)
     valid_target_types: [ alien.nodes.LinuxFileSystem ]
+  org.ystia.yorc.pub.relationships.ConnectsToVaultServer:
+    derived_from: tosca.relationships.ConnectsTo
+    description: >
+      Connects to a Vault Server
+    valid_target_types: [ org.alien4cloud.vault.pub.capabilities.VaultServer ]

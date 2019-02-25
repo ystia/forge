@@ -13,7 +13,8 @@ imports:
   - org.alien4cloud.alien4cloud.pub:2.2.0-SNAPSHOT
   - org.alien4cloud.alien4cloud.webapp:2.2.0-SNAPSHOT
   - org.alien4cloud.java.jdk.linux:2.2.0-SNAPSHOT
-
+  - org.alien4cloud.vault.pub:2.2.0-SNAPSHOT
+  - org.alien4cloud.vault.vault_sh:2.2.0-SNAPSHOT
   - org.ystia.terraform.linux.terraform:2.2.0-SNAPSHOT
   - org.ystia.yorc.alien4cloud:2.2.0-SNAPSHOT
   - org.ystia.ansible.linux.ansible:2.2.0-SNAPSHOT
@@ -192,6 +193,11 @@ topology_template:
           node: ConsulServer
           capability: org.alien4cloud.consul.pub.capabilities.ConsulAgent
           relationship: org.ystia.yorc.linux.ansible.relationships.JoinConsulAgent
+      - connectToVaultServer:
+          type_requirement: vault
+          node: VaultServer
+          capability: org.alien4cloud.vault.pub.capabilities.VaultServer
+          relationship: org.ystia.yorc.linux.ansible.relationships.ConnectsToVaultServer
       - dependsOnAnsibleRuntimeAnsibleRuntimeFeature:
           type_requirement: ansible
           node: AnsibleRuntime
@@ -248,6 +254,25 @@ topology_template:
             secure: false
             network_name: PRIVATE
             initiator: source
+    VaultServer:
+      type: org.alien4cloud.vault.vault_sh.nodes.VaultServer
+      properties:
+        port: 8200
+        download_url: "https://releases.hashicorp.com/vault/0.8.3/vault_0.8.3_linux_amd64.zip"
+        install_dir: "/var/vault"
+        auto_unsealed: true
+        ca_pem: { get_input: ca_pem }
+        ca_key: { get_input: ca_key }
+        ca_passphrase: { get_input: ca_passphrase }
+      requirements:
+        - consul:
+            node: ConsulServer
+            capability: org.alien4cloud.consul.pub.capabilities.ConsulAgent
+            relationship: org.alien4cloud.vault.relationships.ConnectToConsulAgent
+        - host:
+            node: A4C_Yorc
+            capability: tosca.capabilities.Container
+            relationship: tosca.relationships.HostedOn
     TerraformRuntime:
       type: org.ystia.terraform.linux.terraform.nodes.TerraformRuntime
       properties:
