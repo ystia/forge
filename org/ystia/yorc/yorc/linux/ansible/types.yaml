@@ -138,6 +138,7 @@ relationship_types:
         post_configure_source:
           inputs:
             SERVER_ADDRESS: { get_attribute: [TARGET, private_address] }
+            TLS_DISABLED: { get_property: [TARGET, tls_disable] }
             CONFIG_DIR: { get_property: [SOURCE, config_dir] }
           implementation: playbooks/configure_vault.yml
   org.ystia.yorc.linux.ansible.relationships.DependsOnFilessystem:

@@ -28,11 +28,21 @@
     - set_fact:
         yorcConfig: "{{ result.stdout | from_yaml }}"
 
+    - name: Set Vault scheme to https
+      set_fact:
+        vault_scheme: "https"
+      when: TLS_DISABLED == "false"
+
+    - name: Set Vault scheme to http
+      set_fact:
+        vault_scheme: "http"
+      when: TLS_DISABLED == "true"
+
     - set_fact:
         tmp: >
           { "vault": {
               "type": "hashicorp",
-              "address": "{{ SERVER_ADDRESS }}",
+              "address": "{{ vault_scheme }}:{{ SERVER_ADDRESS }}",
               "ca_cert": "{{ CONFIG_DIR }}/yorc_ca.pem",
               "client_cert": "{{ CONFIG_DIR }}/yorc_client.pem",
               "client_key": "{{ CONFIG_DIR }}/yorc_client.key"
