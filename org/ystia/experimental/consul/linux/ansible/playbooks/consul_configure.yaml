@@ -155,5 +155,5 @@
         ownca_privatekey_path: "{{ CONFIG_DIR }}/ca.key"
         ownca_privatekey_passphrase: "{{ CA_PASSPHRASE }}"
         provider: ownca
-        subjectAltName: 'IP:{{ subjectAltName }},IP:127.0.0.1,DNS:localhost'
+        subjectAltName: '{{ subjectAltName }},IP:127.0.0.1,DNS:localhost'
       when: consul_secured
