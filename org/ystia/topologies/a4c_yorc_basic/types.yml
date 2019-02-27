@@ -27,7 +27,7 @@ imports:
 
 repositories:
   fastconnect_nexus:
-    url: https://fastconnect.org/maven/service/local/repositories/opensource/content/alien4cloud/alien4cloud-dist/2.1.0
+    url: https://fastconnect.org/maven/service/local/repositories/opensource/content/alien4cloud/alien4cloud-dist/2.1.1
     type: http
 
 topology_template:
@@ -121,7 +121,7 @@ topology_template:
             initiator: source
       artifacts:
         alien_dist:
-          file: alien4cloud-dist-2.1.0-dist.tar.gz
+          file: alien4cloud-dist-2.1.1-dist.tar.gz
           type: tosca.artifacts.File
           repository: fastconnect_nexus
     AnsibleRuntime:
