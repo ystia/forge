@@ -258,7 +258,7 @@ topology_template:
       type: org.alien4cloud.vault.vault_sh.nodes.VaultServer
       properties:
         port: 8200
-        download_url: "https://releases.hashicorp.com/vault/0.8.3/vault_0.8.3_linux_amd64.zip"
+        download_url: "https://releases.hashicorp.com/vault/1.0.3/vault_1.0.3_linux_amd64.zip"
         install_dir: "/var/vault"
         auto_unsealed: true
         ca_pem: { get_input: ca_pem }
