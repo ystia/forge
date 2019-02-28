@@ -42,10 +42,10 @@
         tmp: >
           { "vault": {
               "type": "hashicorp",
-              "address": "{{ vault_scheme }}:{{ SERVER_ADDRESS }}",
+              "address": "{{ vault_scheme }}://{{ SERVER_ADDRESS }}:{{ SERVER_PORT }}",
               "ca_cert": "{{ CONFIG_DIR }}/yorc_ca.pem",
-              "client_cert": "{{ CONFIG_DIR }}/yorc_client.pem",
-              "client_key": "{{ CONFIG_DIR }}/yorc_client.key"
+              "client_cert": "{{ CONFIG_DIR }}/yorc_server.pem",
+              "client_key": "{{ CONFIG_DIR }}/yorc_server.key"
           } }
     - set_fact:
         yorcConfig: "{{ yorcConfig | combine(tmp, recursive=True) }}"

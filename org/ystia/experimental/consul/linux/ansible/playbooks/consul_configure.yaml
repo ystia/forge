@@ -156,4 +156,6 @@
         ownca_privatekey_passphrase: "{{ CA_PASSPHRASE }}"
         provider: ownca
         subjectAltName: '{{ subjectAltName }},IP:127.0.0.1,DNS:localhost'
+        extended_key_usage:
+          - serverAuth
       when: consul_secured

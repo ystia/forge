@@ -138,6 +138,7 @@ relationship_types:
         post_configure_source:
           inputs:
             SERVER_ADDRESS: { get_attribute: [TARGET, private_address] }
+            SERVER_PORT: { get_attribute: [TARGET, port] }
             TLS_DISABLED: { get_property: [TARGET, tls_disable] }
             CONFIG_DIR: { get_property: [SOURCE, config_dir] }
           implementation: playbooks/configure_vault.yml
