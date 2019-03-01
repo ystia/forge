@@ -23,4 +23,5 @@
     - name: start Yorc
       systemd:
         name: yorc
+        daemon_reload: yes
         state: started
