@@ -78,7 +78,7 @@
       template: 
         src: yorc.service.j2
         dest: "/etc/systemd/system/yorc.service"
-        mode: "u=rw,g=rw,o=r"
+        mode: 0600
 
     - name: Enable Yorc Systemd Service
       systemd:

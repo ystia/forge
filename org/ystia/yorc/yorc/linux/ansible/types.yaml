@@ -140,6 +140,8 @@ relationship_types:
             SERVER_ADDRESS: { get_attribute: [TARGET, private_address] }
             SERVER_PORT: { get_attribute: [TARGET, port] }
             TLS_DISABLED: { get_property: [TARGET, tls_disable] }
+            TOKEN_ENCRYPTED: { get_attribute: [TARGET, vault_token_encrypted] }
+            PASSPHRASE: { get_property: [TARGET, ca_passphrase] }
             CONFIG_DIR: { get_property: [SOURCE, config_dir] }
           implementation: playbooks/configure_vault.yml
   org.ystia.yorc.linux.ansible.relationships.DependsOnFilessystem:

@@ -54,3 +54,23 @@
       copy:
         content: "{{ yorcConfig | to_yaml }}"
         dest: "{{ CONFIG_DIR }}/config.yorc.yaml"
+
+- name: Update yorc service
+  hosts: all
+  strategy: free
+  become: true
+  become_method: sudo
+  tasks:
+    - name: Get vault token
+      shell: "echo {{ TOKEN_ENCRYPTED }} | openssl enc -d -aes256 -base64  -pass pass:{{ PASSPHRASE }}"
+      register: tokenDecrypted
+    - name: Set vault token in yorc service environment
+      replace:
+        path: /etc/systemd/system/yorc.service
+        regexp: 'YORC_VAULT_TOKEN='
+        replace: "YORC_VAULT_TOKEN={{ tokenDecrypted.stdout_lines[0] }}"
+    - name: Add vault private address to NO_PROXY list
+      replace:
+        path: /etc/systemd/system/yorc.service
+        regexp: 'NO_PROXY='
+        replace: "NO_PROXY={{ SERVER_ADDRESS }},"
