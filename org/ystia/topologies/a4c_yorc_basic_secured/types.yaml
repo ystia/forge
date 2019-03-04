@@ -319,13 +319,18 @@ topology_template:
         password: { get_input: os_password }
         private_network_name: { get_input: os_private_network_name }
         default_security_groups: { get_input: os_default_security_groups }
-
+        use_vault: true
       requirements:
       - yorcConfigOpenstackHostedOnYorcYorcServerConfig:
           type_requirement: host
           node: YorcServer
           capability: org.ystia.yorc.pub.capabilities.YorcConfigContainer
           relationship: org.ystia.yorc.linux.ansible.relationships.YorcConfigOpenstackHostedOnYorc
+      - openstackSecretsHostedOnVault:
+          type_requirement: host
+          node: VaultServer
+          capability: org.alien4cloud.vault.pub.capabilities.VaultServer
+          relationship: org.ystia.yorc.linux.ansible.relationships.OpenstackSecretOnVault
   outputs:
     Alien4Cloud_alien_url:
       value: { get_attribute: [ Alien4Cloud, alien_url ] }
