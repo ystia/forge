@@ -27,9 +27,10 @@
 
     - set_fact:
         yorcConfig: "{{ result.stdout | from_yaml }}"
-
+  
     - set_fact:
-        tmp: '{ "infrastructures": { "aws": { "access_key": "{{ ACCESS_KEY }}", "secret_key": "{{ SECRET_KEY }}", "region": "{{ REGION }}" } } }'
+        tmp: '{ "infrastructures": { "aws": { "access_key": "ACCESS_KEY_YORC_SUBSTITUTION", "secret_key": "SECRET_KEY_YORC_SUBSTITUTION", "region": "{{ REGION }}" } } }'
+
     - set_fact:
         yorcConfig: "{{ yorcConfig | combine(tmp, recursive=True) }}"
 
@@ -37,3 +38,29 @@
       copy:
         content: "{{ yorcConfig | to_yaml }}"
         dest: "{{ CONFIG_DIR }}/config.yorc.yaml"
+
+    - name: Set AWS secret access key
+      replace:
+        path: "{{ CONFIG_DIR }}/config.yorc.yaml"
+        regexp: 'ACCESS_KEY_YORC_SUBSTITUTION'
+        replace: "'{{ '{{' }} secret \"/secret/yorc/aws\" \"data=access_key\" | print {{ '}}' }}'"
+      when: USE_VAULT == "true"
+    - name: Set AWS access key
+      replace:
+        path: "{{ CONFIG_DIR }}/config.yorc.yaml"
+        regexp: 'ACCESS_KEY_YORC_SUBSTITUTION'
+        replace: "{{ ACCESS_KEY }}"
+      when: USE_VAULT == "false"
+
+    - name: Set AWS secret key from vault
+      replace:
+        path: "{{ CONFIG_DIR }}/config.yorc.yaml"
+        regexp: 'SECRET_KEY_YORC_SUBSTITUTION'
+        replace: "'{{ '{{' }} secret \"/secret/yorc/aws\" \"data=secret_key\" | print {{ '}}' }}'"
+      when: USE_VAULT == "true"
+    - name: Set AWS secret key
+      replace:
+        path: "{{ CONFIG_DIR }}/config.yorc.yaml"
+        regexp: 'SECRET_KEY_YORC_SUBSTITUTION'
+        replace: "{{ SECRET_KEY }}"
+      when: USE_VAULT == "false"
