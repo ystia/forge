@@ -59,7 +59,7 @@
       replace:
         path: "{{ CONFIG_DIR }}/config.yorc.yaml"
         regexp: 'OPENSTACK_USER_NAME_YORC_SUBSTITUTION'
-        replace: "{{ '{{' }} secret \"/secret/yorc/openstack\" \"data=user_name\" | print {{ '}}' }}"
+        replace: "'{{ '{{' }} secret \"/secret/yorc/openstack\" \"data=user_name\" | print {{ '}}' }}'"
       when: USE_VAULT == "true"
     - name: Set OpenStack user name
       replace:
@@ -72,7 +72,7 @@
       replace:
         path: "{{ CONFIG_DIR }}/config.yorc.yaml"
         regexp: 'OPENSTACK_TENANT_NAME_YORC_SUBSTITUTION'
-        replace: "{{ '{{' }} secret \"/secret/yorc/openstack\" \"data=tenant_name\" | print {{ '}}' }}"
+        replace: "'{{ '{{' }} secret \"/secret/yorc/openstack\" \"data=tenant_name\" | print {{ '}}' }}'"
       when: USE_VAULT == "true"
     - name: Set OpenStack tenant name
       replace:
@@ -85,7 +85,7 @@
       replace:
         path: "{{ CONFIG_DIR }}/config.yorc.yaml"
         regexp: 'OPENSTACK_PASSWORD_YORC_SUBSTITUTION'
-        replace: "{{ '{{' }} secret \"/secret/yorc/openstack\" \"data=password\" | print {{ '}}' }}"
+        replace: "'{{ '{{' }} secret \"/secret/yorc/openstack\" \"data=password\" | print {{ '}}' }}'"
       when: USE_VAULT == "true"
     - name: Set OpenStack password
       replace:
