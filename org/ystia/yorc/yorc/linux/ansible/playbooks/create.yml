@@ -28,7 +28,7 @@
   become: true
   become_method: sudo
   tasks:
-   
+
     - name: create Yorc group
       group: name=yorc
 
@@ -61,6 +61,14 @@
         group: yorc
         mode: "u=rwx,g=rwx,o=rx"
 
+    - name: Setup permissions on log dir
+      file:
+        path: "{{LOG_DIR}}"
+        state: directory
+        owner: yorc
+        group: yorc
+        mode: "u=rwx,g=rwx,o=rx"
+
     - name: Download Yorc binary
       get_url:
         url: "{{DOWNLOAD_URL}}"
@@ -75,7 +83,7 @@
         mode: "u=rx,g=rx,o=rx"
 
     - name: Install Yorc systemd unit
-      template: 
+      template:
         src: yorc.service.j2
         dest: "/etc/systemd/system/yorc.service"
         mode: "u=rw,g=rw,o=r"

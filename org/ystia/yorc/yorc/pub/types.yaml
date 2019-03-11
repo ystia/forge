@@ -184,6 +184,11 @@ node_types:
         type: string
         required: true
         default: /var/yorc
+      workers_number:
+        description: The number of workers to handle executions
+        type: integer
+        required: true
+        default: 30
       private_key_content:
         description: "Content of the default ssh private key used to connect on computes. Stored as ~/.ssh/yorc.pem"
         type: string

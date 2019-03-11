@@ -26,10 +26,11 @@ Environment="NO_PROXY={% if ansible_env['NO_PROXY'] is defined %}{{ansible_env['
 User=yorc
 Group=yorc
 Restart=on-failure
-ExecStart={{INSTALL_DIR}}/yorc server -c {{CONFIG_DIR}}/config.yorc.yaml
+ExecStart=/bin/bash -c '{{INSTALL_DIR}}/yorc server -c {{CONFIG_DIR}}/config.yorc.yaml 2>&1 >> {{LOG_DIR}}/yorc.log'
 KillSignal=SIGINT
 TimeoutStopSec=360
 WorkingDirectory=/var/yorc
+LimitNOFILE=65536
 
 [Install]
 WantedBy=multi-user.target

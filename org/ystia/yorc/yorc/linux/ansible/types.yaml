@@ -26,7 +26,8 @@ imports:
   - yorc-types:1.0.0
   - org.ystia.yorc.pub:2.2.0-SNAPSHOT
   - org.ystia.yorc.experimental.consul.pub:2.2.0-SNAPSHOT
-
+  - org.alien4cloud.statsd.pub:2.2.0-SNAPSHOT
+  - org.alien4cloud.grafana.pub:2.2.0-SNAPSHOT
 
 node_types:
   org.ystia.yorc.infrastructure.GoogleConfig:
@@ -80,12 +81,38 @@ node_types:
     description: Yorc server instance
     metadata:
       icon: "yorcicon.png"
+    properties:
+      log_dir:
+        type: string
+        required: true
+        default: "/var/log/yorc"
+      ansible_use_openssh:
+        description: |
+          Prefer OpenSSH over Paramiko a Python implementation of SSH (the default) to provision remote hosts.
+          OpenSSH have several optimization like reusing connections that should improve preformance but may lead to issues on older systems.
+        type: boolean
+        required: true
+        default: true
+      ansible_connection_retries:
+        description: |
+          Number of retries in case of Ansible SSH connection failure.
+        type: integer
+        required: true
+        default: 3
+      ansible_hosted_operations_unsandboxed_operations_allowed:
+        description: |
+          This option control if operations can be executed directly on the system that hosts Yorc if no default sandbox is defined.
+          This is not permitted by default.
+        type: boolean
+        required: true
+        default: false
     interfaces:
       Standard:
         inputs:
           CONFIG_DIR: { get_property: [SELF, config_dir] }
           INSTALL_DIR: { get_property: [SELF, install_dir] }
           DATA_DIR: { get_property: [SELF, data_dir] }
+          LOG_DIR: { get_property: [SELF, log_dir] }
         create:
           inputs:
             DOWNLOAD_URL: { get_property: [SELF, download_url] }
@@ -96,6 +123,10 @@ node_types:
             REST_API_PROTOCOL: { get_property: [SELF, rest, protocol] }
             IP_ADDRESS: { get_attribute: [HOST, private_address] }
             PUBLIC_ADDRESS: { get_attribute: [HOST, public_address] }
+            WORKERS_NUMBER: { get_property: [SELF, workers_number] }
+            ANSIBLE_USE_OPENSSH: { get_property: [SELF, ansible_use_openssh] }
+            ANSIBLE_CONNECTION_RETRIES: { get_property: [SELF, ansible_connection_retries] }
+            ANSIBLE_HOSTED_OPERATIONS_UNSANDBOXED_OPERATIONS_ALLOWED: { get_property: [SELF, ansible_hosted_operations_unsandboxed_operations_allowed] }
             SSH_KEY: { get_property: [SELF, private_key_content] }
             CA_PEM: { get_property: [SELF, ca_pem] }
             CA_KEY: { get_property: [SELF, ca_key] }
@@ -118,6 +149,10 @@ node_types:
           capability: tosca.capabilities.Node
           relationship: org.ystia.yorc.linux.ansible.relationships.DependsOnTerraformRuntime
           occurrences: [ 1, 1 ]
+      - statsd:
+          capability: org.alien4cloud.statsd.pub.capabilities.StatsdEndpoint
+          relationship: org.ystia.yorc.linux.ansible.relationships.ConnectsToStatsd
+          occurrences: [ 0, 1 ]
 
 relationship_types:
   org.ystia.yorc.linux.ansible.relationships.JoinConsulAgent:
@@ -231,3 +266,16 @@ relationship_types:
             DATA_DIR: { get_property: [TARGET, data_dir] }
             HOSTS_POOL: { get_property: [SOURCE, hosts] }
           implementation: playbooks/configure_hostspool.yml
+
+  org.ystia.yorc.linux.ansible.relationships.ConnectsToStatsd:
+    derived_from: tosca.relationships.ConnectsTo
+    description: >
+      When Yorc is connected to statsd, we fill it's telemetry configuration
+    interfaces:
+      Configure:
+        post_configure_source:
+          inputs:
+            CONFIG_DIR: { get_property: [SOURCE, config_dir] }
+            STATSD_IP_ADDRESS: { get_attribute: [TARGET, statsd_endpoint, ip_address] }
+            STATSD_IP_PORT: { get_attribute: [TARGET, statsd_endpoint, port] }
+          implementation: playbooks/configure_telemetry_statsd.yml

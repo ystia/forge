@@ -14,6 +14,7 @@ See the License for the specific language governing permissions and
 limitations under the License.
 #}
 resources_prefix: yorc-
+workers_number: {{WORKERS_NUMBER}}
 http_port: "{{REST_API_PORT}}"
 server_id: "{{server_id}}"
 {% if  REST_API_PROTOCOL == "https" %}
@@ -22,3 +23,8 @@ key_file: "{{CONFIG_DIR}}/yorc_server.key"
 cert_file: "{{CONFIG_DIR}}/yorc_server.pem"
 ca_file: "{{CONFIG_DIR}}/yorc_ca.pem"
 {% endif %}
+ansible:
+  use_openssh: {{ANSIBLE_USE_OPENSSH}}
+  connection_retries: {{ANSIBLE_CONNECTION_RETRIES}}
+  hosted_operations:
+    unsandboxed_operations_allowed: {{ANSIBLE_HOSTED_OPERATIONS_UNSANDBOXED_OPERATIONS_ALLOWED}}
