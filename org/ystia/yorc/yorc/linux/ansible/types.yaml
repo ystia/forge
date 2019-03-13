@@ -106,6 +106,12 @@ node_types:
         type: boolean
         required: true
         default: false
+      resources_prefix:
+        type: string
+        description: |
+          Specify a prefix that will be used for names when creating resources such as Compute instances or volumes.
+        required: true
+        default: "yorc-"
     interfaces:
       Standard:
         inputs:
@@ -124,6 +130,7 @@ node_types:
             IP_ADDRESS: { get_attribute: [HOST, private_address] }
             PUBLIC_ADDRESS: { get_attribute: [HOST, public_address] }
             WORKERS_NUMBER: { get_property: [SELF, workers_number] }
+            RESOURCES_PREFIX: { get_property: [SELF, resources_prefix] }
             ANSIBLE_USE_OPENSSH: { get_property: [SELF, ansible_use_openssh] }
             ANSIBLE_CONNECTION_RETRIES: { get_property: [SELF, ansible_connection_retries] }
             ANSIBLE_HOSTED_OPERATIONS_UNSANDBOXED_OPERATIONS_ALLOWED: { get_property: [SELF, ansible_hosted_operations_unsandboxed_operations_allowed] }
