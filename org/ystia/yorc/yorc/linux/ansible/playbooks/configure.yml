@@ -107,7 +107,7 @@
     - name: Add Host public IP address to subjectAltName
       set_fact:
         subjectAltName: "IP:{{ PUBLIC_ADDRESS }},{{ subjectAltName }}"
-      when: REST_API_PROTOCOL == "https" and PUBLIC_ADDRESS != ''
+      when: REST_API_PROTOCOL == "https" and PUBLIC_ADDRESS is defined and PUBLIC_ADDRESS != ''
 
     - name: Generate an OpenSSL CSR with subjectAltName for the server
       openssl_csr:

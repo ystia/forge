@@ -88,12 +88,12 @@
 
     - name:
       set_fact:
-        subjectAltName: "{{ IP_ADDRESS }}"
+        subjectAltName: "IP:{{ IP_ADDRESS }}"
       when: consul_secured
 
     - name:
       set_fact:
-        subjectAltName: "{{ WAN_ADDRESS }}"
+        subjectAltName: "{{ subjectAltName }},IP:{{ WAN_ADDRESS }}"
       when: consul_secured and MODE == "server" and not(
           (WAN_ADDRESS is undefined)
           or
@@ -131,7 +131,7 @@
         country_name: "FR"
         organization_name: "Atos"
         common_name: "127.0.0.1"
-        subjectAltName: 'IP:{{ subjectAltName }},IP:127.0.0.1,DNS:localhost'
+        subjectAltName: '{{ subjectAltName }},IP:127.0.0.1,DNS:localhost'
       when: consul_secured
 
     - name: Install CA key
@@ -155,5 +155,7 @@
         ownca_privatekey_path: "{{ CONFIG_DIR }}/ca.key"
         ownca_privatekey_passphrase: "{{ CA_PASSPHRASE }}"
         provider: ownca
-        subjectAltName: 'IP:{{ subjectAltName }},IP:127.0.0.1,DNS:localhost'
+        subjectAltName: '{{ subjectAltName }},IP:127.0.0.1,DNS:localhost'
+        extended_key_usage:
+          - serverAuth
       when: consul_secured

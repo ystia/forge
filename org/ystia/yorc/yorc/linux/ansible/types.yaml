@@ -36,6 +36,10 @@ node_types:
         capability: org.ystia.yorc.pub.capabilities.YorcConfigContainer
         relationship: org.ystia.yorc.linux.ansible.relationships.YorcConfigGoogleHostedOnYorc
         occurrences: [ 1, 1 ]
+    - vault:
+        capability: org.alien4cloud.vault.pub.capabilities.VaultServer
+        relationship: org.ystia.yorc.linux.ansible.relationships.GoogleSecretsOnVault
+        occurrences: [ 0, 1 ]
 
   org.ystia.yorc.infrastructure.OpenStackConfig:
     derived_from: org.ystia.yorc.pub.infrastructure.OpenStackConfig
@@ -44,6 +48,10 @@ node_types:
         capability: org.ystia.yorc.pub.capabilities.YorcConfigContainer
         relationship: org.ystia.yorc.linux.ansible.relationships.YorcConfigOpenstackHostedOnYorc
         occurrences: [ 1, 1 ]
+    - vault:
+        capability: org.alien4cloud.vault.pub.capabilities.VaultServer
+        relationship: org.ystia.yorc.linux.ansible.relationships.OpenstackSecretsOnVault
+        occurrences: [ 0, 1 ]
 
   org.ystia.yorc.infrastructure.AWSConfig:
     derived_from: org.ystia.yorc.pub.infrastructure.AWSConfig
@@ -52,6 +60,10 @@ node_types:
         capability: org.ystia.yorc.pub.capabilities.YorcConfigContainer
         relationship: org.ystia.yorc.linux.ansible.relationships.YorcConfigAWSHostedOnYorc
         occurrences: [ 1, 1 ]
+    - vault:
+        capability: org.alien4cloud.vault.pub.capabilities.VaultServer
+        relationship: org.ystia.yorc.linux.ansible.relationships.AWSSecretsOnVault
+        occurrences: [ 0, 1 ]
 
   org.ystia.yorc.infrastructure.KubernetesConfig:
     derived_from: org.ystia.yorc.pub.infrastructure.KubernetesConfig
@@ -74,6 +86,10 @@ node_types:
       - yorc:
           capability: org.ystia.yorc.pub.capabilities.YorcConfigContainer
           relationship: org.ystia.yorc.linux.ansible.relationships.YorcConfigHostsPoolHostedOnYorc
+    - vault:
+        capability: org.alien4cloud.vault.pub.capabilities.VaultServer
+        relationship: org.ystia.yorc.linux.ansible.relationships.HostsPoolSecretsOnVault
+        occurrences: [ 0, 1 ]
 
   org.ystia.yorc.linux.ansible.nodes.YorcServer:
     derived_from: org.ystia.yorc.pub.nodes.YorcServer
@@ -110,6 +126,10 @@ node_types:
           # Override parent requirement relationship
           relationship: org.ystia.yorc.linux.ansible.relationships.JoinConsulAgent
           occurrences: [ 1, 1 ]
+      - vault:
+          capability: org.alien4cloud.vault.pub.capabilities.VaultServer
+          relationship: org.ystia.yorc.linux.ansible.relationships.ConnectsToVaultServer
+          occurrences: [ 0, 1 ]
       - work_directory:
           capability: tosca.capabilities.Node
           relationship: org.ystia.yorc.linux.ansible.relationships.DependsOnFilessystem
@@ -131,6 +151,20 @@ relationship_types:
             CONSUL_CONFIG_DIR: { get_property: [TARGET, config_dir] }
             CONFIG_DIR: { get_property: [SOURCE, config_dir] }
           implementation: playbooks/join_consul.yml
+  org.ystia.yorc.linux.ansible.relationships.ConnectsToVaultServer:
+    derived_from: org.ystia.yorc.pub.relationships.ConnectsToVaultServer
+    interfaces:
+      Configure:
+        post_configure_source:
+          inputs:
+            SERVER_ADDRESS: { get_attribute: [TARGET, private_address] }
+            SERVER_PORT: { get_attribute: [TARGET, port] }
+            TLS_DISABLED: { get_property: [TARGET, tls_disable] }
+            TOKEN_ENCRYPTED: { get_attribute: [TARGET, vault_token_encrypted] }
+            PASSPHRASE: { get_property: [TARGET, ca_passphrase] }
+            CONFIG_DIR: { get_property: [SOURCE, config_dir] }
+          implementation: playbooks/configure_vault.yml
+
   org.ystia.yorc.linux.ansible.relationships.DependsOnFilessystem:
     derived_from: tosca.relationships.DependsOn
     description: >
@@ -167,7 +201,22 @@ relationship_types:
             PROJECT: { get_property: [SOURCE, project] }
             REGION: { get_property: [SOURCE, region] }
             CREDENTIALS: { get_property: [SOURCE, credentials] }
+            USE_VAULT: { get_property: [SOURCE, use_vault] }
           implementation: playbooks/configure_google.yml
+  org.ystia.yorc.linux.ansible.relationships.GoogleSecretsOnVault:
+    derived_from: org.ystia.yorc.pub.relationships.SaveSecretsToVault
+    interfaces:
+      Configure:
+        post_configure_source:
+          inputs:
+            SERVER_ADDRESS: { get_attribute: [TARGET, private_address] }
+            SERVER_PORT: { get_attribute: [TARGET, port] }
+            TLS_DISABLED: { get_property: [TARGET, tls_disable] }
+            TOKEN_ENCRYPTED: { get_attribute: [TARGET, vault_token_encrypted] }
+            PASSPHRASE: { get_property: [TARGET, ca_passphrase] }
+            CONFIG_DIR: { get_property: [SOURCE, config_dir] }
+            CREDENTIALS: { get_property: [SOURCE, credentials] }
+          implementation: playbooks/configure_google_secrets.yml
   org.ystia.yorc.linux.ansible.relationships.YorcConfigOpenstackHostedOnYorc:
     derived_from: tosca.relationships.HostedOn
     description: >
@@ -177,15 +226,33 @@ relationship_types:
       Configure:
         post_configure_target:
           inputs:
-            CONFIG_DIR: { get_property: [SOURCE, config_dir] }
-            DATA_DIR: { get_property: [SOURCE, data_dir] }
+            CONFIG_DIR: { get_property: [TARGET, config_dir] }
+            DATA_DIR: { get_property: [TARGET, data_dir] }
             AUTH_URL: { get_property: [SOURCE, auth_url] }
             TENANT_NAME: { get_property: [SOURCE, tenant_name] }
             USER_NAME: { get_property: [SOURCE, user_name] }
             PASSWORD: { get_property: [SOURCE, password] }
             PRIVATE_NETWORK_NAME: { get_property: [SOURCE, private_network_name] }
             DEFAULT_SECURITY_GROUPS: { get_property: [SOURCE, default_security_groups] }
+            USE_VAULT: { get_property: [SOURCE, use_vault] }
           implementation: playbooks/configure_openstack.yml
+
+  org.ystia.yorc.linux.ansible.relationships.OpenstackSecretsOnVault:
+    derived_from: org.ystia.yorc.pub.relationships.SaveSecretsToVault
+    interfaces:
+      Configure:
+        post_configure_source:
+          inputs:
+            SERVER_ADDRESS: { get_attribute: [TARGET, private_address] }
+            SERVER_PORT: { get_attribute: [TARGET, port] }
+            TLS_DISABLED: { get_property: [TARGET, tls_disable] }
+            TOKEN_ENCRYPTED: { get_attribute: [TARGET, vault_token_encrypted] }
+            PASSPHRASE: { get_property: [TARGET, ca_passphrase] }
+            CONFIG_DIR: { get_property: [SOURCE, config_dir] }
+            TENANT_NAME: { get_property: [SOURCE, tenant_name] }
+            USER_NAME: { get_property: [SOURCE, user_name] }
+            PASSWORD: { get_property: [SOURCE, password] }
+          implementation: playbooks/configure_openstack_secrets.yml
 
   org.ystia.yorc.linux.ansible.relationships.YorcConfigKubernetesHostedOnYorc:
     derived_from: tosca.relationships.HostedOn
@@ -217,7 +284,24 @@ relationship_types:
             ACCESS_KEY: { get_property: [SOURCE, access_key] }
             SECRET_KEY: { get_property: [SOURCE, secret_key] }
             REGION: { get_property: [SOURCE, region] }
+            USE_VAULT: { get_property: [SOURCE, use_vault] }
           implementation: playbooks/configure_aws.yml
+
+  org.ystia.yorc.linux.ansible.relationships.AWSSecretsOnVault:
+    derived_from: org.ystia.yorc.pub.relationships.SaveSecretsToVault
+    interfaces:
+      Configure:
+        post_configure_source:
+          inputs:
+            SERVER_ADDRESS: { get_attribute: [TARGET, private_address] }
+            SERVER_PORT: { get_attribute: [TARGET, port] }
+            TLS_DISABLED: { get_property: [TARGET, tls_disable] }
+            TOKEN_ENCRYPTED: { get_attribute: [TARGET, vault_token_encrypted] }
+            PASSPHRASE: { get_property: [TARGET, ca_passphrase] }
+            CONFIG_DIR: { get_property: [SOURCE, config_dir] }
+            ACCESS_KEY: { get_property: [SOURCE, access_key] }
+            SECRET_KEY: { get_property: [SOURCE, secret_key] }
+          implementation: playbooks/configure_aws_secrets.yml
 
   org.ystia.yorc.linux.ansible.relationships.YorcConfigHostsPoolHostedOnYorc:
     derived_from: org.ystia.yorc.pub.relationships.YorcConfigHostedOnYorc
@@ -230,4 +314,19 @@ relationship_types:
             CONFIG_DIR: { get_property: [TARGET, config_dir] }
             DATA_DIR: { get_property: [TARGET, data_dir] }
             HOSTS_POOL: { get_property: [SOURCE, hosts] }
+            USE_VAULT: { get_property: [SOURCE, use_vault] }
           implementation: playbooks/configure_hostspool.yml
+  org.ystia.yorc.linux.ansible.relationships.HostsPoolSecretsOnVault:
+    derived_from: org.ystia.yorc.pub.relationships.SaveSecretsToVault
+    interfaces:
+      Configure:
+        post_configure_source:
+          inputs:
+            SERVER_ADDRESS: { get_attribute: [TARGET, private_address] }
+            SERVER_PORT: { get_attribute: [TARGET, port] }
+            TLS_DISABLED: { get_property: [TARGET, tls_disable] }
+            TOKEN_ENCRYPTED: { get_attribute: [TARGET, vault_token_encrypted] }
+            PASSPHRASE: { get_property: [TARGET, ca_passphrase] }
+            CONFIG_DIR: { get_property: [SOURCE, config_dir] }
+            HOSTS_POOL: { get_property: [SOURCE, hosts] }
+          implementation: playbooks/configure_hostspool_secrets.yml

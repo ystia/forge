@@ -22,6 +22,7 @@ metadata:
 
 imports:
   - tosca-normative-types:1.0.0-ALIEN20
+  - org.alien4cloud.vault.pub:2.2.0-SNAPSHOT
   - org.ystia.yorc.experimental.consul.pub:2.2.0-SNAPSHOT
   - org.ystia.ansible.pub:2.2.0-SNAPSHOT
   - org.ystia.terraform.pub:2.2.0-SNAPSHOT
@@ -49,6 +50,10 @@ node_types:
         description: "Content of file containing service account private keys"
         type: string
         required: false
+      use_vault:
+        description: "Use vault to reference secrets in configuration"
+        type: boolean
+        default: true
     requirements:
     - host:
         capability: org.ystia.yorc.pub.capabilities.YorcConfigContainer
@@ -84,12 +89,19 @@ node_types:
         type: list
         required: false
         entry_schema:
-          type: string
+      use_vault:
+        description: "Use vault to reference secrets in configuration"
+        type: boolean
+        default: true
     requirements:
     - host:
         capability: org.ystia.yorc.pub.capabilities.YorcConfigContainer
         relationship: org.ystia.yorc.pub.relationships.YorcConfigHostedOnYorc
         occurrences: [ 1, 1 ]
+    - vault:
+        capability: org.alien4cloud.vault.pub.capabilities.VaultServer
+        relationship: org.ystia.yorc.pub.relationships.SaveSecretsToVaultServer
+        occurrences: [ 0, 1 ]
 
   org.ystia.yorc.pub.infrastructure.AWSConfig:
     derived_from: tosca.nodes.Root
@@ -109,6 +121,10 @@ node_types:
         description: "AWS region"
         type: string
         required: true
+      use_vault:
+        description: "Use vault to reference secrets in configuration"
+        type: boolean
+        default: true
     requirements:
     - host:
         capability: org.ystia.yorc.pub.capabilities.YorcConfigContainer
@@ -153,6 +169,10 @@ node_types:
       hosts:
         type: string
         description: "Yaml description of Hosts in the Pool"
+      use_vault:
+        description: "Use vault to reference secrets in configuration"
+        type: boolean
+        default: true
     requirements:
       - yorc:
           capability: org.ystia.yorc.pub.capabilities.YorcConfigContainer
@@ -205,6 +225,10 @@ node_types:
         capability: org.alien4cloud.consul.pub.capabilities.ConsulAgent
         relationship: org.ystia.yorc.pub.relationships.JoinConsulAgent
         occurrences: [ 1, 1 ]
+    - vault:
+        capability: org.alien4cloud.vault.pub.capabilities.VaultServer
+        relationship: org.ystia.yorc.pub.relationships.ConnectsToVaultServer
+        occurrences: [ 0, 1 ]
     - ansible:
         capability: tosca.capabilities.Node
         relationship: org.ystia.ansible.pub.relationships.DependsOnAnsibleRuntime
@@ -255,3 +279,13 @@ relationship_types:
     description: >
       Connects Yorc to a FileSystem (BlockStorage, NFS...)
     valid_target_types: [ alien.nodes.LinuxFileSystem ]
+  org.ystia.yorc.pub.relationships.ConnectsToVaultServer:
+    derived_from: tosca.relationships.ConnectsTo
+    description: >
+      Connects to a Vault Server
+    valid_target_types: [ org.alien4cloud.vault.pub.capabilities.VaultServer ]
+  org.ystia.yorc.pub.relationships.SaveSecretsToVault:
+    derived_from: tosca.relationships.HostedOn
+    description: >
+      Saves secrets to a Vault Server
+    valid_target_types: [ org.alien4cloud.vault.pub.capabilities.VaultServer ]

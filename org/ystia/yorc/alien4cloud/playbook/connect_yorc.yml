@@ -1,7 +1,6 @@
 - name: Get Yorc Config
   hosts: all
   strategy: linear
-  become: true
   tasks:
     - set_fact:
         file_dir: "/tmp/a4cPlaybookRegistry/{{ SOURCE_NODE }}/{{ SOURCE_INSTANCE }}/connect_yorc/inputs"

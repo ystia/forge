@@ -33,9 +33,15 @@
         content: "{{ CREDENTIALS }}"
         dest: "{{ CONFIG_DIR }}/creds.json"
         mode: 0700
+      when: USE_VAULT == "false"
 
     - set_fact:
         tmp: '{ "infrastructures": { "google": { "project": "{{ PROJECT }}", "region": "{{ REGION }}", "application_credentials": "{{ CONFIG_DIR }}/creds.json" } } }'
+      when: USE_VAULT == "false"
+    - set_fact:
+        tmp: '{ "infrastructures": { "google": { "project": "{{ PROJECT }}", "region": "{{ REGION }}", "credentials": "GOOGLE_CREDS_YORC_SUBSTITUTION" } } }'
+      when: USE_VAULT == "true"
+
     - set_fact:
         yorcConfig: "{{ yorcConfig | combine(tmp, recursive=True) }}"
 
@@ -43,3 +49,10 @@
       copy:
         content: "{{ yorcConfig | to_yaml }}"
         dest: "{{ CONFIG_DIR }}/config.yorc.yaml"
+
+    - name: Set Google secret credentials
+      replace:
+        path: "{{ CONFIG_DIR }}/config.yorc.yaml"
+        regexp: 'GOOGLE_CREDS_YORC_SUBSTITUTION'
+        replace: "'{{ '{{' }} secret \"/secret/yorc/google\" \"data=credentials\" | print {{ '}}' }}'"
+      when: USE_VAULT == "true"
