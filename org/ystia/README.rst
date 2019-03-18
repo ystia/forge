@@ -60,7 +60,7 @@ To simplify topology creation, Ystia Forge provides **topology templates** that 
 .. _Træfik: https://traefik.io/
 
 
-The current version of **Ystia Forge** is **develop**. The last stable release is **1.4.0**.
+The current version of **Ystia Forge** is **develop**. The last stable release is **2.1.0**.
 
 
 .. *********************************************************************************************************************
@@ -100,7 +100,7 @@ Ystia contains the following products:
   It allows them to define application architectures and to deploy those applications on pre-configured locations.
 - Ystia_Orchestrator_ is an engine allowing to orchestrate application deployment.
 
-.. _Ystia_Orchestrator: http://TODO_TO_BE_COMPLETED/
+.. _Ystia_Orchestrator: https://yorc.readthedocs.io/en/stable/
 .. _Alien4Cloud: http://alien4cloud.github.io/
 
 
