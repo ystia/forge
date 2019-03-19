@@ -15,6 +15,7 @@
 ### BUG FIXES
 
 * Several wrong version referenced for csar-public-lib components ([GH-58](https://github.com/ystia/forge/issues/58))
+* Jupyter depends on EPEL repository but do not ensure that it is installed ([GH-70](https://github.com/ystia/forge/issues/70))
 
 
 ## 2.1.0 (December 20, 2018)
