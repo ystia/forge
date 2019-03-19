@@ -23,7 +23,7 @@ fi
 
 ENV_JUPYTER_FILE=$HOME/.jupyter/ystia_env4jupyter.sh
 
-sudo yum install -y wget
+sudo yum install -y wget epel-release
 
 jupyter notebook --generate-config
 echo "c.NotebookApp.ip = '*'" >> $HOME/.jupyter/jupyter_notebook_config.py
