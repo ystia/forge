@@ -29,9 +29,9 @@ node_types:
       component_version:
         type: version
         description: The installed Anaconda Python version
-        default: 2.7.14
+        default: 2.7.15
         constraints:
-          - valid_values: [2.7.14]
+          - valid_values: [2.7.15]
       repository:
          type: string
          description: >

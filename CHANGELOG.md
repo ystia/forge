@@ -14,6 +14,7 @@
 
 ### BUG FIXES
 
+* Install a newer version of Anaconda (Python Component) in order to fix dependencies issues ([GH-69](https://github.com/ystia/forge/issues/69))
 * Several wrong version referenced for csar-public-lib components ([GH-58](https://github.com/ystia/forge/issues/58))
 
 
