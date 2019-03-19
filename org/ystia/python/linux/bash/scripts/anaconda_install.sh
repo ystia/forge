@@ -30,7 +30,7 @@ fi
 
 
 INSTALL_DIR=$HOME/anaconda2
-ANACONDA_INSTALLER_NAME="Anaconda2-5.1.0-Linux-x86_64.sh"
+ANACONDA_INSTALLER_NAME="Anaconda2-2018.12-Linux-x86_64.sh"
 
 
 # Install bzip2 for anaconda and wget

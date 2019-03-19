@@ -14,9 +14,9 @@
 
 ### BUG FIXES
 
+* Install a newer version of Anaconda (Python Component) in order to fix dependencies issues ([GH-69](https://github.com/ystia/forge/issues/69))
 * Several wrong version referenced for csar-public-lib components ([GH-58](https://github.com/ystia/forge/issues/58))
 * Jupyter depends on EPEL repository but do not ensure that it is installed ([GH-70](https://github.com/ystia/forge/issues/70))
-
 
 ## 2.1.0 (December 20, 2018)
 
@@ -30,7 +30,6 @@
 
 * Ystia Forge components require now Alien4Cloud 2.1.0
 * Ystia Forge components require now Alien4Cloud CSAR public library 2.1.0
-
 
 ## 2.1.0-RC1 (December 17, 2018)
 
