@@ -88,8 +88,8 @@ node_types:
         default: "/var/log/yorc"
       ansible_use_openssh:
         description: |
-          Prefer OpenSSH over Paramiko a Python implementation of SSH (the default) to provision remote hosts.
-          OpenSSH have several optimization like reusing connections that should improve preformance but may lead to issues on older systems.
+          Prefer OpenSSH over Paramiko, a Python implementation of SSH (the default), to provision remote hosts.
+          OpenSSH has several optimizations like reusing connections that should improve preformance but may lead to issues on older systems.
         type: boolean
         required: true
         default: true
@@ -101,7 +101,7 @@ node_types:
         default: 3
       ansible_hosted_operations_unsandboxed_operations_allowed:
         description: |
-          This option control if operations can be executed directly on the system that hosts Yorc if no default sandbox is defined.
+          This option controls if operations can be executed directly on the system that hosts Yorc if no default sandbox is defined.
           This is not permitted by default.
         type: boolean
         required: true
