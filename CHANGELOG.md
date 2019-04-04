@@ -2,6 +2,10 @@
 
 ## UNRELEASED
 
+### NEW COMPONENTS
+
+* SSL Certificates Generator component ([GH-78](https://github.com/ystia/forge/issues/78))
+
 ### ENHANCEMENTS
 
 * Add a vault in secured full stack topology ([GH-67](https://github.com/ystia/forge/issues/67))

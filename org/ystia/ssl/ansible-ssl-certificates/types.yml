@@ -1,0 +1,113 @@
+tosca_definitions_version: alien_dsl_2_0_0
+
+#
+# Ystia Forge
+# Copyright (C) 2018 Bull S. A. S. - Bull, Rue Jean Jaures, B.P.68, 78340, Les Clayes-sous-Bois, France.
+# Use of this source code is governed by Apache 2 LICENSE that can be found in the LICENSE file.
+#
+
+metadata:
+  template_name: org.ystia.ssl.ansible.certificates
+  template_version: 2.2.0-SNAPSHOT
+  template_author: Ystia
+
+description: Generate Certificates using Ansible
+
+imports:
+  - tosca-normative-types:1.0.0-ALIEN20
+  - yorc-types:1.0.0
+
+node_types:
+  org.ystia.ssl.ansible.certificates.nodes.SSLCertificateGenerator:
+    derived_from: tosca.nodes.SoftwareComponent
+    metadata:
+      icon: /icons/ssl-certificate.png
+    properties:
+      common_name:
+        type: string
+        description: Certificate common name
+      key_path:
+        type: string
+        description: Path of a directory where private keys should be stored.
+      certificate_path:
+        type: string
+        description: Path of a directory where certificates should be stored.
+      linux_owner:
+        type: string
+        description: >
+          Linux user that should be the owner of the certificates and keys. This user should have rights to write on 
+          certificate_path and key_path. By default it is the user used to connect to the machine.
+        required: false
+        default: ""
+      key_name: 
+        type: string
+        required: false
+        description: Name including extention of the private key file. By default it will be the node template within the topology + '.key'
+        default: "" 
+      certificate_name: 
+        type: string
+        required: false
+        description: Name including extention of the certificate file. By default it will be the node template within the topology + '.pem'
+        default: "" 
+      private_key: 
+        type: string
+        required: false
+        description: Content of a private key to use to generate the certificate
+        default: "" 
+      extra_sub_alt_name:
+        type: string
+        required: false
+        default: ""
+        description: Optional coma separated list of subject alternative names (format is 'IP:<An IP Address>,DNS:<A DNS Name>')
+      extended_key_usage:
+        type: list
+        entry_schema:
+          type: string
+        description: Additional restrictions (e.g. client authentication, server authentication) on the allowed purposes for which the public key may be used.
+        required: false
+        default: []
+      ca_key:
+        type: string
+        description: Private key of the Certificate Authority
+        # TODO make it optional by generating a CA if needed
+        required: true
+        #default: ""
+      ca_certificate:
+        type: string
+        description: Certificate Authority certificate
+        # TODO make it optional by generating a CA if needed
+        required: true
+        #default: ""
+      ca_passphrase:
+        type: string
+        description: Pass pharse for the Certificate Authority private key
+        default: ""
+        required: false
+    interfaces:
+      Standard:
+        create: playbooks/create.yml
+        configure:
+          inputs:
+            KEY_NAME: { get_property: [SELF, key_name] }
+            CERTIFICATE_NAME: { get_property: [SELF, certificate_name] }
+            KEY_PATH: { get_property: [SELF, key_path] }
+            CERTIFICATE_PATH: { get_property: [SELF, certificate_path] }
+            GEN_CERT_BECOME_USER: { get_property: [SELF, linux_owner] }
+            PRIVATE_KEY: { get_property: [SELF, private_key] }
+            EXTRA_SUB_ALT_NAME: { get_property: [SELF, extra_sub_alt_name] }
+            COMMON_NAME: { get_property: [SELF, common_name] }
+            CA_KEY: { get_property: [SELF, ca_key] }
+            CA_CERTIFICATE: { get_property: [SELF, ca_certificate] }
+            CA_PASSPHRASE: { get_property: [SELF, ca_passphrase] }
+            EXTENDED_KEY_USAGE: { get_property: [SELF, extended_key_usage]}
+            IP_ADDRESS: { get_attribute: [HOST, ip_address] }
+            PUBLIC_ADDRESS: { get_attribute: [HOST, public_address] }
+          implementation: playbooks/configure.yml
+        delete:
+          inputs:
+            KEY_NAME: { get_property: [SELF, key_name] }
+            CERTIFICATE_NAME: { get_property: [SELF, certificate_name] }
+            KEY_PATH: { get_property: [SELF, key_path] }
+            CERTIFICATE_PATH: { get_property: [SELF, certificate_path] }
+            GEN_CERT_BECOME_USER: { get_property: [SELF, linux_owner] }
+          implementation: playbooks/delete.yml
