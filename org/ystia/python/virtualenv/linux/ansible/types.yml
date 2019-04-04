@@ -1,0 +1,65 @@
+tosca_definitions_version: alien_dsl_2_0_0
+
+#
+# Ystia Forge
+# Copyright (C) 2018 Bull S. A. S. - Bull, Rue Jean Jaures, B.P.68, 78340, Les Clayes-sous-Bois, France.
+# Use of this source code is governed by Apache 2 LICENSE that can be found in the LICENSE file.
+#
+
+metadata:
+  template_name: org.ystia.python.virtualenv.linux.ansible
+  template_version: 2.2.0-SNAPSHOT
+  template_author: Ystia
+
+description: Python VirtualEnv for linux system
+
+imports:
+  - tosca-normative-types:1.0.0-ALIEN20
+  - yorc-types:1.0.0
+  - org.ystia.python.pub:2.2.0-SNAPSHOT
+
+
+node_types:
+  org.ystia.python.virtualenv.linux.ansible.nodes.Python:
+    derived_from: tosca.nodes.SoftwareComponent
+    description: Python in a virtualenv component for linux
+    tags:
+      icon: /images/python-logo.png
+    properties:
+      component_version:
+        type: version
+        description: The installed Python version should be the version of the python executable eg 3.5 for python3.5
+        default: 2.7
+      packages:
+        type: list
+        entry_schema:
+          type: string
+        description: Install additionnal package
+        required: false
+      pip_index_url:
+        type: string
+        description: >
+          allows to set a custom index url for pip.
+          This allows offline installations for instance.
+        default: ""
+        required: false
+    attributes:
+      virtualenv_path: { get_operation_output: [SELF, Standard, create, VIRTUAL_ENV_PATH] }
+    capabilities:
+      python_host:
+        type: org.ystia.python.pub.capabilities.PythonHosting
+        occurrences: [0,unbounded]
+    interfaces:
+      Standard:
+        create:
+          inputs:
+            VERSION: { get_property: [SELF, component_version] }
+            PACKAGES: { get_property: [SELF, packages] }
+            PIP_INDEX_URL: { get_property: [SELF, pip_index_url] }
+          implementation: playbooks/create.yaml
+        delete:
+          inputs:
+            VIRTUAL_ENV_PATH: { get_attribute: [SELF, virtualenv_path] }
+          implementation: playbooks/delete.yaml
+
+

@@ -2,6 +2,10 @@
 
 ## UNRELEASED
 
+### NEW COMPONENTS
+
+* Python VirtualEnv component ([GH-74](https://github.com/ystia/forge/issues/74))
+
 ### ENHANCEMENTS
 
 * Add a vault in secured full stack topology ([GH-67](https://github.com/ystia/forge/issues/67))
