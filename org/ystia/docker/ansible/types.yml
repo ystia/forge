@@ -14,6 +14,7 @@ metadata:
 imports:
   - tosca-normative-types:1.0.0-ALIEN20
   - yorc-types:1.0.0
+  - docker-types:2.1.1
 
 node_types:
   org.ystia.docker.ansible.nodes.Docker:
@@ -43,6 +44,8 @@ node_types:
          on Redhat systems and 'https://download.docker.com/linux/ubuntu/gpg' on Debian ones.
         constraints:
           - pattern: ".*https?://.*"
+    capabilities:
+       host: org.alien4cloud.extended.container.capabilities.ApplicationHost
     interfaces:
       Standard:
         create:

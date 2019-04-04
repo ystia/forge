@@ -2,6 +2,10 @@
 
 ## UNRELEASED
 
+### NEW COMPONENTS
+
+* Deploy Docker containers in pure TOSCA ([GH-76](https://github.com/ystia/forge/issues/76))
+
 ### ENHANCEMENTS
 
 * Add a vault in secured full stack topology ([GH-67](https://github.com/ystia/forge/issues/67))
