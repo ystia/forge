@@ -25,7 +25,8 @@ node_types:
       auto_remove:
         type: boolean
         description: >
-          enable auto-removal of the container on daemon side when the container's process exits
+          enable auto-removal of the container on daemon side when the container's process exits.
+          This property is incompatible with a "restart_policy" set to "on-failure", "unless-stopped" or "always".
         default: false
       cleanup:
         type: boolean
