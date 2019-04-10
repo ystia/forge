@@ -101,7 +101,7 @@ node_types:
         occurrences: [ 1, 1 ]
     - vault:
         capability: org.alien4cloud.vault.pub.capabilities.VaultServer
-        relationship: org.ystia.yorc.pub.relationships.SaveSecretsToVaultServer
+        relationship: org.ystia.yorc.pub.relationships.SaveSecretsToVault
         occurrences: [ 0, 1 ]
 
   org.ystia.yorc.pub.infrastructure.AWSConfig:
