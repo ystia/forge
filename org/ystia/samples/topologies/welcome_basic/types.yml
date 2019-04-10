@@ -51,3 +51,41 @@ topology_template:
       description: The URL to access the Welcome page
       value: { get_attribute: [ Welcome, url ] }
 
+  workflows:
+    stopWebServer:
+      steps:
+        Welcome_stopping:
+          target: Welcome
+          activities:
+            - set_state: stopping
+          on_success:
+            - Welcome_stop
+        Welcome_stopped:
+          target: Welcome
+          activities:
+            - set_state: stopped
+        Welcome_stop:
+          target: Welcome
+          activities:
+            - call_operation: Standard.stop
+          on_success:
+            - Welcome_stopped
+    startWebServer:
+      steps:
+        Welcome_started:
+          target: Welcome
+          activities:
+            - set_state: started
+        Welcome_start:
+          target: Welcome
+          activities:
+            - call_operation: Standard.start
+          on_success:
+            - Welcome_started
+        Welcome_starting:
+          target: Welcome
+          activities:
+            - set_state: starting
+          on_success:
+            - Welcome_start
+

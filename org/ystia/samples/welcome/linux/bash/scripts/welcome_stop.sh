@@ -10,8 +10,7 @@ source ${utils_scripts}/utils.sh
 log begin
 
 SAMPLEWEBSERVER_SRC=SampleWebServer.py
-SAMPLEWEBSERVER_PID=${scripts}/SampleWebServer.pid
-PID=`cat ${SAMPLEWEBSERVER_PID} 2>/dev/null`
+PID=`pgrep -f ${SAMPLEWEBSERVER_SRC} 2>/dev/null`
 if [ -n "${PID}" ]
 then
     kill -15 ${PID}
