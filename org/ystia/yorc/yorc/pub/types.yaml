@@ -290,11 +290,3 @@ relationship_types:
     description: >
       Saves secrets to a Vault Server
     valid_target_types: [ org.alien4cloud.vault.pub.capabilities.VaultServer ]
-  org.ystia.yorc.pub.relationships.SaveSecretsToVault:
-    derived_from: tosca.relationships.HostedOn
-    description: >
-      Saves secrets to a Vault Server
-    valid_target_types: [ org.alien4cloud.vault.pub.capabilities.VaultServer ]
-
-
-
