@@ -42,7 +42,8 @@
         dnsmasq_conf_no_hosts: True
         dnsmasq_conf_servers:
           - [ "/{{DOMAIN}}/127.0.0.1#8600" ]
-        dnsmasq_resolvconf: False
+        dnsmasq_resolvconf: True
+        dnsmasq_conf_resolv: "/etc/resolv.conf.ori"
         dnsmasq_conf_log: "DAEMON"
       when: INSTALL_DNSMASQ == "true"
 
