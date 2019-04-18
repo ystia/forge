@@ -2,6 +2,10 @@
 
 ## UNRELEASED
 
+### NEW COMPONENTS
+
+* Deploy Docker containers in pure TOSCA ([GH-76](https://github.com/ystia/forge/issues/76))
+
 ### ENHANCEMENTS
 
 * Update Ansible version to 2.7.9 ([GH-83](https://github.com/ystia/forge/issues/83))

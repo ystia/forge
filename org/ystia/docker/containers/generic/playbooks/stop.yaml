@@ -1,0 +1,18 @@
+#
+# Ystia Forge
+# Copyright (C) 2018 Bull S. A. S. - Bull, Rue Jean Jaures, B.P.68, 78340, Les Clayes-sous-Bois, France.
+# Use of this source code is governed by Apache 2 LICENSE that can be found in the LICENSE file.
+#
+
+
+- name: Stop Docker Container
+  hosts: all
+  become: true
+  vars:
+    ansible_python_interpreter: "/usr/local/docker-py-env/bin/python"
+  tasks:
+  - name: Stop docker container
+    docker_container: 
+      name: "{{CONTAINER_ID}}"
+      state: stopped
+
