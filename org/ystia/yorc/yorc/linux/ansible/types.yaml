@@ -86,10 +86,10 @@ node_types:
       - yorc:
           capability: org.ystia.yorc.pub.capabilities.YorcConfigContainer
           relationship: org.ystia.yorc.linux.ansible.relationships.YorcConfigHostsPoolHostedOnYorc
-    - vault:
-        capability: org.alien4cloud.vault.pub.capabilities.VaultServer
-        relationship: org.ystia.yorc.linux.ansible.relationships.HostsPoolSecretsOnVault
-        occurrences: [ 0, 1 ]
+      - vault:
+          capability: org.alien4cloud.vault.pub.capabilities.VaultServer
+          relationship: org.ystia.yorc.linux.ansible.relationships.HostsPoolSecretsOnVault
+          occurrences: [ 0, 1 ]
 
   org.ystia.yorc.linux.ansible.nodes.YorcServer:
     derived_from: org.ystia.yorc.pub.nodes.YorcServer
