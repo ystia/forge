@@ -27,6 +27,20 @@ imports:
   - org.ystia.ansible.pub:2.2.0-SNAPSHOT
   - org.ystia.terraform.pub:2.2.0-SNAPSHOT
 
+data_types:
+  org.ystia.yorc.datatypes.ansible.inventory.Section:
+    derived_from: tosca.datatypes.Root
+    properties:
+      header:
+        type: string
+        required: true
+        description: "Ansible inventory section header"
+      variables:
+        type: list
+        description: "List of variables to add to Ansible inventory section"
+        entry_schema:
+          type: string
+        required: false
 node_types:
   org.ystia.yorc.pub.infrastructure.GoogleConfig:
     derived_from: tosca.nodes.Root
@@ -178,6 +192,28 @@ node_types:
       - yorc:
           capability: org.ystia.yorc.pub.capabilities.YorcConfigContainer
           relationship: org.ystia.yorc.pub.relationships.YorcConfigHostedOnYorc
+
+  org.ystia.yorc.pub.ansible.Config:
+    derived_from: tosca.nodes.Root
+    description: |
+      Ansible configuration for Yorc
+    abstract: true
+    properties:
+      use_openssh:
+        description: "Use OpenSSH instead of Paramiko"
+        type: boolean
+        default: false
+      inventory:
+        description: "Variables to add to Ansible inventory"
+        type: list
+        entry_schema:
+          type: org.ystia.yorc.datatypes.ansible.inventory.Section
+        required: false
+    requirements:
+      - host:
+          capability: org.ystia.yorc.pub.capabilities.YorcConfigContainer
+          relationship: org.ystia.yorc.pub.relationships.YorcConfigHostedOnYorc
+          occurrences: [ 1, 1 ]
 
   org.ystia.yorc.pub.nodes.YorcServer:
     derived_from: tosca.nodes.SoftwareComponent
