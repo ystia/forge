@@ -2,6 +2,12 @@
 
 ## UNRELEASED
 
+### NEW COMPONENTS
+
+* SSL Certificates Generator component ([GH-78](https://github.com/ystia/forge/issues/78))
+* Deploy Docker containers in pure TOSCA ([GH-76](https://github.com/ystia/forge/issues/76))
+* Docker Registry ([GH-80](https://github.com/ystia/forge/issues/80))
+
 ### ENHANCEMENTS
 
 * Update Ansible version to 2.7.9 ([GH-83](https://github.com/ystia/forge/issues/83))
