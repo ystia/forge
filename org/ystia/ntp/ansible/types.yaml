@@ -16,7 +16,7 @@ description: ansible implementation for NTP support.
 
 imports:
   - tosca-normative-types:1.0.0-ALIEN20
-  - yorc-types:1.0.0
+  - yorc-types:1.1.0
   - org.ystia.ntp.pub:2.2.0-SNAPSHOT
 
 node_types:

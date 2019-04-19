@@ -17,7 +17,7 @@ imports:
   - org.ystia.dns.resolvconf.ansible:2.2.0-SNAPSHOT
   - org.ystia.dns.pub:2.2.0-SNAPSHOT
   - org.ystia.dns.dnsmasq.ansible:2.2.0-SNAPSHOT
-  - yorc-types:1.0.0
+  - yorc-types:1.1.0
 
 topology_template:
   inputs:

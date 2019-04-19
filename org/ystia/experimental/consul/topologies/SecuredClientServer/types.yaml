@@ -28,7 +28,7 @@ imports:
   - org.ystia.yorc.experimental.consul.linux.ansible:2.2.0-SNAPSHOT
   - org.ystia.yorc.experimental.consul.pub:2.2.0-SNAPSHOT
   - org.alien4cloud.consul.pub:2.2.0-SNAPSHOT
-  - yorc-types:1.0.0
+  - yorc-types:1.1.0
 
 topology_template:
   node_templates:

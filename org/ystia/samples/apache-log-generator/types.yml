@@ -15,7 +15,7 @@ description: Ystia Fake apache log generator (from Github https://github.com/kir
 
 imports:
   - tosca-normative-types:1.0.0-ALIEN20
-  - yorc-types:1.0.0
+  - yorc-types:1.1.0
   - org.ystia.kibana.pub:2.2.0-SNAPSHOT
   - org.ystia.kibana.linux.bash:2.2.0-SNAPSHOT
   
