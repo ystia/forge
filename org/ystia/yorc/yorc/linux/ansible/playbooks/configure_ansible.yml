@@ -20,6 +20,18 @@
   strategy: free
   become_user: yorc
   become: true
+  vars:
+    lock_file: "{{ CONFIG_DIR }}//config.lock"
+  pre_tasks:
+    - name: check for lock file after delay to let infra config tasks run
+      wait_for:
+        path: "{{ lock_file }}"
+        state: absent
+        delay: 5
+    - name: create lock file
+      file:
+        path: "{{ lock_file }}"
+        state: touch
   tasks:
     - name: "get current config of Yorc"
       shell: "cat {{ CONFIG_DIR }}/config.yorc.yaml"
@@ -50,4 +62,8 @@
       copy:
         content: "{{ yorcConfig | to_yaml }}"
         dest: "{{ CONFIG_DIR }}/config.yorc.yaml"
-
+  post_tasks:
+    - name: remove lock file
+      file:
+        path: "{{ lock_file }}"
+        state: absent
