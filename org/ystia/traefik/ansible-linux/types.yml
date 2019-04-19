@@ -15,7 +15,7 @@ description: Traefik reverse proxy implementation using Ansible on Linux
 
 imports:
   - tosca-normative-types:1.0.0-ALIEN20
-  - yorc-types:1.0.0
+  - yorc-types:1.1.0
   - org.ystia.traefik.pub:2.2.0-SNAPSHOT
 
 node_types:

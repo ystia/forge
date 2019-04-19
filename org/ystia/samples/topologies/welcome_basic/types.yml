@@ -52,6 +52,12 @@ topology_template:
       value: { get_attribute: [ Welcome, url ] }
 
   workflows:
+    killWebServer:
+      steps:
+        Welcome_stop:
+          target: Welcome
+          activities:
+            - call_operation: Standard.stop
     stopWebServer:
       steps:
         Welcome_stopping:
