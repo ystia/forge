@@ -1,0 +1,47 @@
+#
+# Copyright 2019 Bull S.A.S. Atos Technologies - Bull, Rue Jean Jaures, B.P.68, 78340, Les Clayes-sous-Bois, France.
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+#
+
+- name: Delete Certificates
+  hosts: all
+  strategy: free
+  become: "{{GEN_CERT_BECOME_USER != ''}}"
+  become_user: "{{GEN_CERT_BECOME_USER}}"
+  vars:
+    key_name: "{{NODE}}.key"
+    cert_name: "{{NODE}}.pem"
+    extended_key_usage: []
+  tasks:
+    - name: Set key name
+      set_fact:
+        key_name: "{{KEY_NAME}}"
+      when: KEY_NAME is defined and KEY_NAME == ''
+
+    - name: Set certificate name
+      set_fact:
+        cert_name: "{{CERTIFICATE_NAME}}"
+      when: CERTIFICATE_NAME is defined and CERTIFICATE_NAME == ''
+
+    - name: Delete Keys & Certificates
+      file:
+        name: "{{ item }}"
+        state: absent
+      loop: 
+        - "{{CERTIFICATE_PATH}}/{{NODE}}-ca.pem"
+        - "{{KEY_PATH}}/{{NODE}}-ca.key"
+        - "{{ KEY_PATH }}/{{key_name}}"
+        - "{{ CERTIFICATE_PATH }}/{{cert_name}}.csr"
+        - "{{ CERTIFICATE_PATH }}/{{cert_name}}"
+
