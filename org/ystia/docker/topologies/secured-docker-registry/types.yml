@@ -15,7 +15,7 @@ imports:
   - docker-types:2.1.1
   - org.ystia.docker.ansible:2.2.0-SNAPSHOT
   - org.ystia.docker.containers.docker.registry:2.2.0-SNAPSHOT
-  - yorc-types:1.0.0
+  - yorc-types:1.1.0
 
 topology_template:
   inputs:
