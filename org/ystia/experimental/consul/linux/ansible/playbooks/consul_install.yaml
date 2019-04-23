@@ -28,6 +28,16 @@
   become: true
   become_method: sudo
   tasks:
+    - name: Ubuntu - install prerequisites (acl needed by Ansible to become an unprivileged user)
+      apt:
+        name:
+          - acl
+          - unzip
+          - zip
+        state: present
+        update_cache: yes
+      when: ansible_distribution == 'Ubuntu'
+
     - name: Backup original resolve.conf
       copy:
         src: /etc/resolv.conf
@@ -64,16 +74,6 @@
         state: present
         update_cache: yes
       when: ansible_os_family == 'Debian'
-
-    - name: Ubuntu - install prerequisites (acl needed by Ansible to become an unprivileged user)
-      apt:
-        name:
-          - zip
-          - unzip
-          - acl
-        state: present
-        update_cache: yes
-      when: ansible_distribution == 'Ubuntu'
 
     - name: create Consul group
       group: name=consul
