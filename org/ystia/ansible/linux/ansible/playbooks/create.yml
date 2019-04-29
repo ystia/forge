@@ -33,10 +33,23 @@
         state: present
       with_items: "{{install_packages}}"
 
-    - name: Install pip
+    - name: Check if distribution has easy_install or needs a pip3 installation
+      set_fact:
+        easy_install_available: "{{ ansible_distribution != 'Ubuntu' or ansible_distribution_major_version is version(18, '<') }}"
+
+    - name: Ensure pip is installed using easy_install when availabe
       easy_install:
         name: pip
         state: latest
+      when: easy_install_available
+
+    - name: Install python3-pip when easy_install in not available
+      apt:
+        name:
+          - python3-pip
+        state: present
+        update_cache: yes
+      when: not easy_install_available
 
     - name: install using pip
       pip:

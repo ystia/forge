@@ -15,7 +15,7 @@
 #
 
 
-- name: Setup Kubernetes config
+- name: Setup Yorc Ansible configuration
   hosts: all
   strategy: free
   become_user: yorc
@@ -23,35 +23,16 @@
   vars:
     lock_file: "{{ CONFIG_DIR }}//config.lock"
   pre_tasks:
-    - name: check for lock file
+    - name: check for lock file after delay to let infra config tasks run
       wait_for:
         path: "{{ lock_file }}"
         state: absent
+        delay: 5
     - name: create lock file
       file:
         path: "{{ lock_file }}"
         state: touch
   tasks:
-    - name: "Ensures {{ CONFIG_DIR }}/kubernetes dir exists"
-      file:
-        path: "{{ CONFIG_DIR }}/kubernetes"
-        state: directory
-
-    - name: "Copy ca.pem"
-      copy:
-        content: "{{ CA }}"
-        dest: "{{ CONFIG_DIR }}/kubernetes/ca.pem"
-
-    - name: "Copy client.crt"
-      copy:
-        content: "{{ CERT }}"
-        dest: "{{ CONFIG_DIR }}/kubernetes/client.crt"
-
-    - name: "Copy client.key"
-      copy:
-        content: "{{ KEY }}"
-        dest: "{{ CONFIG_DIR }}/kubernetes/client.key"
-
     - name: "get current config of Yorc"
       shell: "cat {{ CONFIG_DIR }}/config.yorc.yaml"
       register: result
@@ -59,15 +40,21 @@
     - set_fact:
         yorcConfig: "{{ result.stdout | from_yaml }}"
 
-    - set_fact:
+    - name: "Set Ansible configuration"
+      set_fact:
         tmp: >
-            { "infrastructures": { "kubernetes": {
-                "master_url": "{{ MASTER_URL }}",
-                "ca_file": "{{ CONFIG_DIR }}/kubernetes/ca.pem",
-                "cert_file": "{{ CONFIG_DIR }}/kubernetes/client.crt",
-                "key_file": "{{ CONFIG_DIR }}/kubernetes/client.key",
-                "insecure": "{{ INSECURE }}"
-            } } }
+          { "ansible": { "use_openssh": {{ USE_OPENSSH }} } }
+      when: INVENTORY == ''
+
+    - name: "Set Ansible configuration with inventory {{ INVENTORY }}"
+      set_fact:
+        tmp: >
+          { "ansible": {
+            "use_openssh": {{ USE_OPENSSH }},
+            "inventory": {{ INVENTORY }}
+          } }
+      when: INVENTORY != ''
+
     - set_fact:
         yorcConfig: "{{ yorcConfig | combine(tmp, recursive=True) }}"
 

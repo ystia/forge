@@ -20,6 +20,17 @@
   strategy: free
   become_user: yorc
   become: true
+  vars:
+    lock_file: "{{ CONFIG_DIR }}//config.lock"
+  pre_tasks:
+    - name: check for lock file
+      wait_for:
+        path: "{{ lock_file }}"
+        state: absent
+    - name: create lock file
+      file:
+        path: "{{ lock_file }}"
+        state: touch
   tasks:
     - name: "get current config of Yorc"
       shell: "cat {{ CONFIG_DIR }}/config.yorc.yaml"
@@ -56,3 +67,8 @@
         regexp: 'GOOGLE_CREDS_YORC_SUBSTITUTION'
         replace: "'{{ '{{' }} secret \"/secret/yorc/google\" \"data=credentials\" | print {{ '}}' }}'"
       when: USE_VAULT == "true"
+  post_tasks:
+    - name: remove lock file
+      file:
+        path: "{{ lock_file }}"
+        state: absent

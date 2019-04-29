@@ -28,6 +28,19 @@
   become: true
   become_method: sudo
   tasks:
+    - name: Ubuntu - install prerequisites (acl needed by Ansible to become an unprivileged user)
+      apt:
+        name:
+          - acl
+          - unzip
+          - zip
+        state: present
+        update_cache: yes
+      register: apt_res
+      retries: 3
+      until: apt_res is success
+      when: ansible_distribution == 'Ubuntu'
+
     - name: Backup original resolve.conf
       copy:
         src: /etc/resolv.conf
@@ -129,10 +142,23 @@
         dest: "{{INSTALL_DIR}}/consul_maintenance.sh"
         mode: "u=rwx,g=rx,o=rx"
 
-    - name: Ensure pip is installed
+    - name: Check if distribution has easy_install or needs a pip3 installation
+      set_fact:
+        easy_install_available: "{{ ansible_distribution != 'Ubuntu' or ansible_distribution_major_version is version(18, '<') }}"
+
+    - name: Ensure pip is installed using easy_install when availabe
       easy_install:
         name: pip
         state: latest
+      when: easy_install_available
+
+    - name: Install python3-pip when easy_install in not available
+      apt:
+        name:
+          - python3-pip
+        state: present
+        update_cache: yes
+      when: not easy_install_available
 
     - name: Install requirements
       copy:

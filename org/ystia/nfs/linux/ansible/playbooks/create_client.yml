@@ -20,13 +20,21 @@
   become: true
   become_method: sudo
   tasks:
-    - name: Install nfs-utils
+    - name: RedHat - install prerequisites
       yum:
-        name: "{{item}}"
+        name:
+          - nfs-utils
         state: present
         update_cache: yes
-      with_items:
-      - nfs-utils
+      when: ansible_os_family == 'RedHat'
+
+    - name: Debian/Ubuntu - install prerequisites
+      apt:
+        name:
+          - nfs-common
+        state: present
+        update_cache: yes
+      when: ansible_os_family == 'Debian' or ansible_distribution == 'Ubuntu'
 
     - name: Create shared directory
       file:
