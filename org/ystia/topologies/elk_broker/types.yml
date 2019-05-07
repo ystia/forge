@@ -91,8 +91,10 @@ topology_template:
 
     Compute_ES:
       type: tosca.nodes.Compute
-      properties:
-        mem_size: 12GB
+      capabilities:
+        host:
+          properties:
+            mem_size: 12 GB # is a property of the hot capability, isn't it?
       requirements:
         - network:
             node: Network
@@ -152,8 +154,8 @@ topology_template:
             node: Elasticsearch
     KibanaDashboard:
       type: org.ystia.kibana.linux.bash.nodes.KibanaDashboard
-      properties:
-        repository: { get_input: kbn_repository }
+#      properties:
+#        repository: { get_input: kbn_repository } # This property is undefined in the KibanaDashboard node type, isn't it?
       requirements:
         - host:
             node: Kibana

@@ -11,7 +11,7 @@ metadata:
   template_version: 2.2.0-SNAPSHOT
   template_author: Ystia
 
-description:
+description: '' # instead of null, isn't it?
 
 imports:
   - tosca-normative-types:1.0.0-ALIEN20

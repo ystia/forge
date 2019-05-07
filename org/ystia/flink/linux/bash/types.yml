@@ -44,7 +44,7 @@ node_types:
         type: integer
         description: >
           JVM heap size (in megabytes) for the JobManager
-        default: "512"
+        default: 512 # integer instead of string, isn't it?
       repository:
         type: string
         default: http://archive.apache.org/dist/flink
@@ -118,7 +118,7 @@ node_types:
           This value should be as large as possible.
           If the cluster is exclusively running Flink, the total amount of available memory per machine minus some memory for the operating system (maybe 1-2 GB)
           is a good value.
-        default: "512"
+        default: 512 # should be an integer instead of a string, shouldn't it?
       taskmanager_numberOfTaskSlots:
         type: integer
         description: >

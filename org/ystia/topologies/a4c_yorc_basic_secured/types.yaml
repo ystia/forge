@@ -327,7 +327,7 @@ topology_template:
           capability: org.ystia.yorc.pub.capabilities.YorcConfigContainer
           relationship: org.ystia.yorc.linux.ansible.relationships.YorcConfigOpenstackHostedOnYorc
       - openstackSecretsHostedOnVault:
-          type_requirement: host
+          type_requirement: vault
           node: VaultServer
           capability: org.alien4cloud.vault.pub.capabilities.VaultServer
           relationship: org.ystia.yorc.linux.ansible.relationships.OpenstackSecretsOnVault

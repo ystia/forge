@@ -213,7 +213,7 @@ node_types:
     derived_from: org.ystia.kubernetes.pub.nodes.KubernetesApp
     tags:
       icon: /images/kubernetes-app-icon.png
-    properties:
+#    properties: isn't it?
     interfaces:
       Standard:
         inputs:

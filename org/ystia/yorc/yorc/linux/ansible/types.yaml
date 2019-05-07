@@ -349,4 +349,5 @@ relationship_types:
             USE_OPENSSH: { get_property: [SOURCE, use_openssh] }
             INVENTORY: { get_property: [SOURCE, inventory] }
           implementation: playbooks/configure_ansible.yml
-    valid_source_types: ["org.ystia.yorc.pub.nodes.YorcServer"]
+# valid_source_types is not a relationship definition keyword
+#   valid_source_types: ["org.ystia.yorc.pub.nodes.YorcServer"]

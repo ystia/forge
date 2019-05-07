@@ -39,6 +39,7 @@ topology_template:
         - network:
             node: Network
             relationship: tosca.relationships.Network
+        - local_storage: BlockStorage # Replace requirements of Blockage.
       capabilities:
         os:
           properties:
@@ -54,11 +55,12 @@ topology_template:
       type: tosca.nodes.BlockStorage
       properties:
         size: "10 GB"
-      requirements:
-        - attachment:
-            node: Compute
-            capability: tosca.capabilities.Attachment
-            relationship: tosca.relationships.AttachTo
+# attachment is not a requirement of BlocStorage
+#      requirements:
+#        - attachment:
+#            node: Compute
+#            capability: tosca.capabilities.Attachment
+#            relationship: tosca.relationships.AttachTo
     LinuxFileSystem:
       type: alien.nodes.LinuxFileSystem
       properties:
@@ -70,7 +72,7 @@ topology_template:
             node: BlockStorage
     RStudio:
       type: org.ystia.rstudio.linux.bash.nodes.RStudio
-      properties:
+      properties: {} # instead of null or remove this line, isn't it?
       requirements:
         - host:
             node: Java
