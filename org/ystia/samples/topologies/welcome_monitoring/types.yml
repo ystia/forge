@@ -30,63 +30,63 @@ topology_template:
       properties:
         ip_version: 4
 
-    # VM for Welcome
+    # VM for MntWelcome
 
-    Compute:
+    MntCompute:
       type: tosca.nodes.Compute
       requirements:
         - network:
             node: Network
             relationship: tosca.relationships.Network
-    Welcome:
+    MntWelcome:
       type: org.ystia.samples.welcome.linux.bash.nodes.Welcome
       requirements:
         - host:
-            node: Compute
+            node: MntCompute
 
   policies:
     - HTTPMonitoring:
         type: yorc.policies.monitoring.HTTPMonitoring
-        targets: [ Welcome ]
+        targets: [ MntWelcome ]
         properties:
           scheme: http
           port: 8111
           time_interval: 5s
     - TCPMonitoring:
         type: yorc.policies.monitoring.TCPMonitoring
-        targets: [ Compute ]
+        targets: [ MntCompute ]
         properties:
           port: 22
           time_interval: 5s
 
-  # Output property for Welcome URL
+  # Output property for MntWelcome URL
 
   outputs:
     url:
       description: The URL to access the Welcome page
-      value: { get_attribute: [ Welcome, url ] }
+      value: { get_attribute: [ MntWelcome, url ] }
 
   workflows:
     killWebServer:
       steps:
         Welcome_stop:
-          target: Welcome
+          target: MntWelcome
           activities:
             - call_operation: Standard.stop
     stopWebServer:
       steps:
         Welcome_stopping:
-          target: Welcome
+          target: MntWelcome
           activities:
             - set_state: stopping
           on_success:
             - Welcome_stop
         Welcome_stopped:
-          target: Welcome
+          target: MntWelcome
           activities:
             - set_state: stopped
         Welcome_stop:
-          target: Welcome
+          target: MntWelcome
           activities:
             - call_operation: Standard.stop
           on_success:
@@ -94,17 +94,17 @@ topology_template:
     startWebServer:
       steps:
         Welcome_started:
-          target: Welcome
+          target: MntWelcome
           activities:
             - set_state: started
         Welcome_start:
-          target: Welcome
+          target: MntWelcome
           activities:
             - call_operation: Standard.start
           on_success:
             - Welcome_started
         Welcome_starting:
-          target: Welcome
+          target: MntWelcome
           activities:
             - set_state: starting
           on_success:
