@@ -124,6 +124,7 @@ node_types:
             CA_PEM: { get_property: [SELF, ca_pem] }
             CA_KEY: { get_property: [SELF, ca_key] }
             CA_PASSPHRASE: { get_property: [SELF, ca_passphrase] }
+            RESOURCES_PREFIX: { get_property: [SELF, resources_prefix] }
           implementation: playbooks/configure.yml
         start: playbooks/start.yml
         stop: playbooks/stop.yml

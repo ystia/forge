@@ -241,6 +241,10 @@ node_types:
         type: string
         required: true
         default: /var/yorc
+      resources_prefix:
+        type: string
+        description: "Prefix used to create resources (like Computes and so on)"
+        default: "yorc-"
       private_key_content:
         description: "Content of the default ssh private key used to connect on computes. Stored as ~/.ssh/yorc.pem"
         type: string
