@@ -85,6 +85,11 @@ node_types:
           implementation: playbooks/consul_start.yml
         stop:
           implementation: playbooks/consul_stop.yaml
+        delete:
+          description: Consul data directory cleanup step
+          inputs:
+            DATA_DIR: { get_property: [SELF, data_dir] }
+          implementation: playbooks/consul_cleanup.yaml
       custom:
         inputs:
           INSTALL_DIR: { get_property: [SELF, install_dir] }
