@@ -20,7 +20,24 @@
   become: yes
   become_method: sudo
   tasks:
+    - name: Disable consul Systemd Service
+      systemd:
+        name: consul
+        daemon_reload: no
+        enabled: no
+        state: stopped
+    - name: Uninstall consul systemd unit
+      file:
+        path: "/etc/systemd/system/consul.service"
+        state: "absent"
+    - name: Cleanup Systemd Service
+      systemd:
+        daemon_reload: yes
     - name: Remove consul data directory
       file:
         path: "{{DATA_DIR}}"
+        state: absent
+    - name: Remove consul config directory
+      file:
+        path: "{{CONFIG_DIR}}"
         state: absent

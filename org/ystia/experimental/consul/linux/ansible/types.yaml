@@ -89,6 +89,7 @@ node_types:
           description: Consul data directory cleanup step
           inputs:
             DATA_DIR: { get_property: [SELF, data_dir] }
+            CONFIG_DIR: { get_property: [SELF, config_dir] }
           implementation: playbooks/consul_cleanup.yaml
       custom:
         inputs:
