@@ -7,6 +7,7 @@
 * SSL Certificates Generator component ([GH-78](https://github.com/ystia/forge/issues/78))
 * Deploy Docker containers in pure TOSCA ([GH-76](https://github.com/ystia/forge/issues/76))
 * Docker Registry ([GH-80](https://github.com/ystia/forge/issues/80))
+* Expose Hybrid demo material ([GH-93](https://github.com/ystia/forge/issues/93))
 
 ### ENHANCEMENTS
 

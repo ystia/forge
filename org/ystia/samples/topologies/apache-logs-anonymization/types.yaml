@@ -1,0 +1,147 @@
+tosca_definitions_version: alien_dsl_2_0_0
+
+metadata:
+  template_name: org.ystia.samples.topologies.ApacheGeneratorAnonymization
+  template_version: 2.2.0-SNAPSHOT
+  template_author: ystia
+
+description: ""
+
+imports:
+- org.ystia.kafka.pub:2.2.0-SNAPSHOT
+- tosca-normative-types:1.0.0-ALIEN20
+- org.ystia.beats.linux.bash:2.2.0-SNAPSHOT
+- org.ystia.samples.apache-log-generator.linux.ansible:2.2.0-SNAPSHOT
+- org.ystia.kibana.pub:2.2.0-SNAPSHOT
+- org.ystia.elasticsearch.pub:2.2.0-SNAPSHOT
+- org.ystia.java.linux.bash:2.2.0-SNAPSHOT
+- org.ystia.java.pub:2.2.0-SNAPSHOT
+- org.ystia.kibana.linux.bash:2.2.0-SNAPSHOT
+- org.ystia.logstash.pub:2.2.0-SNAPSHOT
+- org.ystia.logstash.linux.bash:2.2.0-SNAPSHOT
+- org.ystia.common:2.2.0-SNAPSHOT
+- org.ystia.consul.pub:2.2.0-SNAPSHOT
+- yorc-types:1.1.0
+
+topology_template:
+  inputs:
+    gen_log_path:
+      type: string
+      required: false
+      default: "/tmp/dummy.log"
+    gen_delay_s:
+      type: integer
+      required: false
+      default: 1
+    repository:
+      type: string
+      required: false
+      default: "https://artifacts.elastic.co/downloads/logstash"
+      constraints:
+      - pattern: "^(http|https|ftp)://.+/.*$"
+  node_templates:
+    Compute_LS:
+      type: tosca.nodes.Compute
+      capabilities:
+        scalable:
+          properties:
+            min_instances: 1
+            max_instances: 1
+            default_instances: 1
+        endpoint:
+          properties:
+            secure: true
+            protocol: tcp
+            network_name: PRIVATE
+            initiator: source
+    Java_LS:
+      type: org.ystia.java.linux.bash.nodes.Java
+      requirements:
+      - host:
+          node: Compute_LS
+          capability: tosca.capabilities.Container
+          relationship: tosca.relationships.HostedOn
+    Logstash:
+      type: org.ystia.logstash.linux.bash.nodes.Logstash
+      properties:
+        repository: { get_input: repository }
+      requirements:
+      - host:
+          node: Java_LS
+          capability: org.ystia.java.pub.capabilities.JavaHosting
+          relationship: org.ystia.java.pub.relationships.HostedOnJavaRuntime
+      - logstashToElasticsearchAbstractElasticSearchSearch_resource:
+          type_requirement: search_endpoint
+          node: AbstractElasticSearch
+          capability: org.ystia.elasticsearch.pub.capabilities.SearchEndpoint
+          relationship: org.ystia.logstash.linux.bash.relationships.LogstashToElasticsearch
+          properties:
+            proxy: "http://129.183.4.8:8080"
+      capabilities:
+        logstash_resource:
+          properties:
+            protocol: tcp
+            secure: false
+            network_name: PRIVATE
+            initiator: source
+      artifacts:
+        filters_conf:
+          file: config/logstash-apache-generator-filters.conf
+          type: tosca.artifacts.File
+    Compute_DL:
+      type: tosca.nodes.Compute
+      capabilities:
+        scalable:
+          properties:
+            min_instances: 1
+            max_instances: 1
+            default_instances: 1
+        endpoint:
+          properties:
+            secure: true
+            protocol: tcp
+            network_name: PRIVATE
+            initiator: source
+    ApacheLogGenerator:
+      type: org.ystia.samples.apache-log-generator.linux.ansible.nodes.ApacheLogGenerator
+      properties:
+        log_path: { get_input: gen_log_path }
+        total_logs_nb: 0
+        delay_s: { get_input: gen_delay_s }
+      requirements:
+      - host:
+          node: Compute_DL
+          capability: tosca.capabilities.Container
+          relationship: tosca.relationships.HostedOn
+    FileBeat:
+      type: org.ystia.beats.linux.bash.nodes.FileBeat
+      properties:
+        repository: { get_input: repository }
+        files: { get_input: gen_log_path }
+        component_version: "6.2.2"
+        debug: false
+      requirements:
+      - host:
+          node: Compute_DL
+          capability: tosca.capabilities.Container
+          relationship: tosca.relationships.HostedOn
+      - logstash_endpoint:
+          node: Logstash
+          capability: org.ystia.logstash.pub.capabilities.LogstashEndpoint
+          relationship: org.ystia.beats.linux.bash.relationships.ConnectsBeatToLS
+      - dependsOnApacheLogGeneratorFeature:
+          type_requirement: dependency
+          node: ApacheLogGenerator
+          capability: tosca.capabilities.Node
+          relationship: tosca.relationships.DependsOn
+    AbstractElasticSearch:
+      type: org.ystia.elasticsearch.pub.nodes.AbstractElasticSearch
+      capabilities:
+        search_resource:
+          properties:
+            port: 9200
+            cluster_name: ystia
+            protocol: http
+            secure: false
+            network_name: PUBLIC
+            initiator: source
