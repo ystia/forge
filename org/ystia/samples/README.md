@@ -40,12 +40,14 @@ retributions). We deploy this part on GCP.
 
 The logs generation and anonymization process is done by a random log generator, then shipped to Logstash using
 FileBeat. Logstash filters will remove all personal data like IP addresses from log and then will ship them to
-ElasticSearch
+ElasticSearch. We deploy this part on OpenStack.
 
 Finally the referral retribution computation job is implemented by a Slurm Job executed within a Singularity
-container.
+container. We deploy this on a Slurm Cluster.
 
 ### Let set it up
+
+First keep in mind that you can reproduce this demo almost on any infrastructures (Only the computation job really need Slurm). But it will be more interesting if those infrastructures are truly separated.
 
 1. Setup an Alien4Cloud that could access the 3 infrastructures
 2. Deploy Yorc on those infrastructures
