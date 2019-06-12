@@ -18,8 +18,8 @@
 
 ### DEPENDENCIES
 
-* Ystia Forge components require now Alien4Cloud 2.1.1 ([GH-64](https://github.com/ystia/forge/issues/64))
-* Ystia Forge components require now Alien4Cloud CSAR public library 2.2.0-SNAPSHOT
+* Ystia Forge components require now Alien4Cloud 2.2.0 ([GH-95](https://github.com/ystia/forge/issues/GH-95))
+* Ystia Forge components require now Alien4Cloud CSAR public library 2.2.0
 * Ystia Forge components require now yorc-types 1.1.0 (GH-82](https://github.com/ystia/forge/pull/82))
 
 ### BUG FIXES
