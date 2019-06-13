@@ -6,11 +6,11 @@ This directory contains components and topologies templates that are used for de
 
 This demo is used to demonstrate the hybrid deployments capabilities of Yorc and Alien4Cloud.
 
-It is a fictional scenario that allows to implies 3 different infrastructures.
+It is a fictional scenario that allows to involve 3 different infrastructures.
 
-Lets imagine we are working for a big company that operate a web site. This website generates logs on
-acceded web pages. Those logs contains, among others, a referral field that will be used to see from
-where visitors are coming into this web site. We consider that this server is hosted on premise in a
+Lets imagine we are working for a big company operating a web site. This website generates logs on
+accessed web pages. Those logs contain, among others, a referral field that will be used to see from
+where visitors are coming to this web site. We consider that this server is hosted on premise in a
 private cloud.
 
 For convenience we want to have a world-wide accessible database that will allow our remote teams to
@@ -19,12 +19,12 @@ hosted on a public cloud.
 
 Logs are anonymized on premise before being shipped to the database.
 
-Finally we want make in place a sponsorship system and retribute referrals for promoting our web site
+Finally we want to put in place a sponsorship system and retribute referrals for promoting our web site
 to their visitors. We will have a job that will compute retributions based on data contained in the
-database. As we are in purely fictional example lets say that this computation requires so many computing
-power that it need to be done on an HPC cluster scheduled by Slurm.
+database. As we are in purely fictional example, lets say that this computation requires so many computing
+power that it needs to be done on an HPC cluster scheduled by Slurm.
 
-The bellow figure summarize this:
+The figure below summarizes this:
 
 ![Hybrid Demo Concepts Level Architecture](images/HybridDemoArchiConcepts.png)
 
@@ -47,13 +47,13 @@ container. We deploy this on a Slurm Cluster.
 
 ### Let set it up
 
-First keep in mind that you can reproduce this demo almost on any infrastructures (Only the computation job really need Slurm). But it will be more interesting if those infrastructures are truly separated.
+First keep in mind that you can reproduce this demo almost on any infrastructure (Only the computation job really need Slurm). But it will be more interesting if those infrastructures are truly separated.
 
 1. Setup an Alien4Cloud that could access the 3 infrastructures
 2. Deploy Yorc on those infrastructures
 3. Setup 3 orchestrators in a4c
 4. Create an app using the `org.ystia.samples.topologies.ApacheGeneratorVisu` topology
-5. Select GCP as location and make sure the compute you deploy on as the correct network tags to expose both 9200 and 5601 ports (on our demo infra it is the `hybrid-demo` tag)
+5. Select GCP as location and make sure the compute you deploy on has the correct network tags to expose both 9200 and 5601 ports (on our demo infra it is the `hybrid-demo` tag)
 6. On `Review & Deploy` in the `Service Management` tab click on `Expose this deployment as a service `.
 7. Deploy this app
 8. Go to `Administration > Services  > Your Service` on the `Location(s)` tab and authorize it on the 3 locations
