@@ -8,6 +8,9 @@
   hosts: all
   strategy: linear
   become: true
+  vars:
+    NO_PROXY: ""
+    no_proxy: ""
   tasks:
     - name: Create manifests directories
       file:
@@ -18,7 +21,7 @@
         mode: "u=rwx,g=rx,o=rx"
 
     - name: Etcd POD config
-      template: 
+      template:
         src: etcd.yaml.j2
         dest: "/etc/kubernetes/manifests/etcd.yaml"
         mode: "u=rw,g=r,o=r"
@@ -59,10 +62,20 @@
         POD_CIDR: "10.244.0.0/16"
       when: (pod_network == "canal" or pod_network == "flanel")
 
+    - name: presetup no_proxy
+      set_fact:
+        no_proxy: "{{ansible_env['no_proxy']}}"
+      when: ansible_env['no_proxy'] is defined
+
+    - name: presetup NO_PROXY
+      set_fact:
+        NO_PROXY: "{{ansible_env['NO_PROXY']}}"
+      when: ansible_env['NO_PROXY'] is defined
+
     - name: setup no_proxy
       set_fact:
-        NO_PROXY: "{{POD_CIDR}},{% for host in ansible_play_hosts %}{{ hostvars[host]['ansible_hostname'] }},{{ hostvars[host]['ansible_fqdn'] }},{{ hostvars[host]['PRIVATE_IP'] }},{{ hostvars[host]['PUBLIC_IP'] }},{% endfor %}{{ansible_env['NO_PROXY']}}"
-        no_proxy: "{{POD_CIDR}},{% for host in ansible_play_hosts %}{{ hostvars[host]['ansible_hostname'] }},{{ hostvars[host]['ansible_fqdn'] }},{{ hostvars[host]['PRIVATE_IP'] }},{{ hostvars[host]['PUBLIC_IP'] }},{% endfor %}{{ansible_env['no_proxy']}}"
+        NO_PROXY: "{{POD_CIDR}},{% for host in ansible_play_hosts %}{{ hostvars[host]['ansible_hostname'] }},{{ hostvars[host]['ansible_fqdn'] }},{{ hostvars[host]['PRIVATE_IP'] }},{{ hostvars[host]['PUBLIC_IP'] }},{% endfor %}{{NO_PROXY}}"
+        no_proxy: "{{POD_CIDR}},{% for host in ansible_play_hosts %}{{ hostvars[host]['ansible_hostname'] }},{{ hostvars[host]['ansible_fqdn'] }},{{ hostvars[host]['PRIVATE_IP'] }},{{ hostvars[host]['PUBLIC_IP'] }},{% endfor %}{{no_proxy}}"
 
     - name: set POD CIDR no proxy
       blockinfile:
@@ -73,7 +86,7 @@
           export no_proxy="{{POD_CIDR}},${no_proxy}"
 
     - name: Generate Kubeadm init config
-      template: 
+      template:
         src: kubeadm-init-config.yaml.j2
         dest: "/etc/kubernetes/config.yaml"
         mode: "u=rw,g=r,o=r"
@@ -93,7 +106,7 @@
       register: sa_pki_certs
       run_once: true
       when: inventory_hostname == ansible_play_hosts[0]
-    
+
     - name: write out SA certs
       copy:
         dest: "{{ item['source'] }}"
@@ -103,7 +116,7 @@
         mode: 0644
       with_items: "{{ sa_pki_certs.results }}"
       when: inventory_hostname != ansible_play_hosts[0]
-          
+
     - name: slurp SA keys
       slurp: src={{ item }}
       with_items:
@@ -111,7 +124,7 @@
       register: sa_pki_keys
       run_once: true
       when: inventory_hostname == ansible_play_hosts[0]
-    
+
     - name: write out SA keys
       copy:
         dest: "{{ item['source'] }}"
@@ -123,7 +136,7 @@
       when: inventory_hostname != ansible_play_hosts[0]
 
     - name: Run kubeadm init
-      shell: > 
+      shell: >
         exec > >(tee -a "/root/kubeinit.log") 2>&1
         kubeadm init --ignore-preflight-errors=FileAvailable--etc-kubernetes-manifests-etcd.yaml,ExternalEtcdVersion --config=/etc/kubernetes/config.yaml 2>&1
       args:
@@ -140,7 +153,7 @@
         owner: root
         group: root
         mode: "u=rwx,g=rx,o=rx"
-    
+
     - name: Create config directory
       shell:
         ln -s /etc/kubernetes/admin.conf /root/.kube/config
@@ -148,9 +161,9 @@
     - name: Create Calico Network
       shell: >
         kubectl apply -f https://docs.projectcalico.org/v3.0/getting-started/kubernetes/installation/hosted/kubeadm/1.7/calico.yaml
-      when: 
+      when:
         - inventory_hostname == ansible_play_hosts[0]
-        - pod_network == "calico"  
+        - pod_network == "calico"
       environment:
         NO_PROXY: "{{NO_PROXY}}"
         no_proxy: "{{no_proxy}}"
@@ -160,9 +173,9 @@
       shell: >
         kubectl apply -f https://raw.githubusercontent.com/projectcalico/canal/master/k8s-install/1.7/rbac.yaml;
         kubectl apply -f https://raw.githubusercontent.com/projectcalico/canal/master/k8s-install/1.7/canal.yaml
-      when:  
+      when:
         - inventory_hostname == ansible_play_hosts[0]
-        - pod_network == "canal"    
+        - pod_network == "canal"
       environment:
         NO_PROXY: "{{NO_PROXY}}"
         no_proxy: "{{no_proxy}}"
@@ -171,9 +184,9 @@
     - name: Create Flannel Network
       shell: >
         kubectl apply -f https://raw.githubusercontent.com/coreos/flannel/v0.10.0/Documentation/kube-flannel.yml
-      when:  
+      when:
         - inventory_hostname == ansible_play_hosts[0]
-        - pod_network == "flannel"    
+        - pod_network == "flannel"
       environment:
         NO_PROXY: "{{NO_PROXY}}"
         no_proxy: "{{no_proxy}}"
@@ -181,9 +194,9 @@
     - name: Create Romana Network
       shell: >
         kubectl apply -f https://raw.githubusercontent.com/romana/romana/master/containerize/specs/romana-kubeadm.yml
-      when:  
+      when:
         - inventory_hostname == ansible_play_hosts[0]
-        - pod_network == "romana"    
+        - pod_network == "romana"
       environment:
         NO_PROXY: "{{NO_PROXY}}"
         no_proxy: "{{no_proxy}}"
@@ -192,20 +205,20 @@
       shell: >
         export kubever=$(kubectl version | base64 | tr -d '\n');
         kubectl apply -f "https://cloud.weave.works/k8s/net?k8s-version=$kubever"
-      when:  
+      when:
         - inventory_hostname == ansible_play_hosts[0]
-        - pod_network == "weave"    
+        - pod_network == "weave"
       environment:
         NO_PROXY: "{{NO_PROXY}}"
         no_proxy: "{{no_proxy}}"
-         
+
     - name: Allow to schedule containers on master nodes
       shell: >
         kubectl taint nodes --all node-role.kubernetes.io/master-
-      when:  
+      when:
         - inventory_hostname == ansible_play_hosts[0]
         - hosts_pods is defined
-        - hosts_pods == "true"    
+        - hosts_pods == "true"
       environment:
         NO_PROXY: "{{NO_PROXY}}"
         no_proxy: "{{no_proxy}}"
@@ -217,11 +230,10 @@
     - name: Set private API URL fact
       set_fact:
         API_URL: "https://{{PRIVATE_IP}}:{{API_SERVER_PORT}}"
-    
+
     - name: Set public API URL fact
       set_fact:
         API_URL: "https://{{PUBLIC_IP}}:{{API_SERVER_PORT}}"
       # Below when construct is a shorthand for PUBLIC_IP is defined and not empty
-      when: PUBLIC_IP|default("") != "" 
-        
-    
+      when: PUBLIC_IP|default("") != ""
+
