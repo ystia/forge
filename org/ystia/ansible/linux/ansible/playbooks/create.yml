@@ -21,7 +21,7 @@
   become_method: sudo
   tasks:
     - name: Load a variable file based on the OS type, or a default if not found. Using free-form to specify the file.
-      include_vars: 
+      include_vars:
         file: "{{ item }}"
       with_first_found:
         - "vars/{{ ansible_distribution }}.yml"
@@ -53,13 +53,17 @@
 
     - name: install using pip
       pip:
-        name: ansible
-        version: "{{ANSIBLE_VERSION}}"
+        name:
+          - "ansible=={{ANSIBLE_VERSION}}"
+          - "mespath==0.9.4"
+          - "netaddr==0.7.19"
       when: ANSIBLE_EXTRA_PACKAGE_REPOSITORY == ""
 
     - name: install using pip package repository "{{ANSIBLE_EXTRA_PACKAGE_REPOSITORY}}"
       pip:
-        name: ansible
-        version: "{{ANSIBLE_VERSION}}"
+        name:
+          - "ansible=={{ANSIBLE_VERSION}}"
+          - "mespath==0.9.4"
+          - "netaddr==0.7.19"
         extra_args: --extra-index-url "{{ANSIBLE_EXTRA_PACKAGE_REPOSITORY}}"
       when: ANSIBLE_EXTRA_PACKAGE_REPOSITORY != ""
