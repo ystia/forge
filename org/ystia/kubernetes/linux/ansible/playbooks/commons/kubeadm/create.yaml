@@ -56,6 +56,7 @@
         block: |
           export NO_PROXY="{{net_cidr}},{% for host in ansible_play_hosts %}{{ hostvars[host]['PRIVATE_IP'] }},{{ hostvars[host]['ansible_hostname'] }},{{ hostvars[host]['ansible_fqdn'] }},{% endfor %}${NO_PROXY}"
           export no_proxy="{{net_cidr}},{% for host in ansible_play_hosts %}{{ hostvars[host]['PRIVATE_IP'] }},{{ hostvars[host]['ansible_hostname'] }},{{ hostvars[host]['ansible_fqdn'] }},{% endfor %}${no_proxy}"
+      when: ansible_env['HTTP_PROXY'] is defined or ansible_env['HTTPS_PROXY'] is defined or ansible_env['http_proxy'] is defined or ansible_env['https_proxy'] is defined
 
     - name: Import GPG keys
       rpm_key:
