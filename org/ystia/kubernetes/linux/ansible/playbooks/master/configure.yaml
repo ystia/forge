@@ -50,7 +50,7 @@
 
     - name: Set default POD CIDR
       set_fact:
-        POD_CIDR: "`10.233.64.0/18"
+        POD_CIDR: "10.233.64.0/18"
 
     - name: Set POD CIDR for Calico
       set_fact:
