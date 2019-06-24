@@ -55,7 +55,7 @@
       pip:
         name:
           - "ansible=={{ANSIBLE_VERSION}}"
-          - "mespath==0.9.4"
+          - "jmespath==0.9.4"
           - "netaddr==0.7.19"
       when: ANSIBLE_EXTRA_PACKAGE_REPOSITORY == ""
 
@@ -63,7 +63,7 @@
       pip:
         name:
           - "ansible=={{ANSIBLE_VERSION}}"
-          - "mespath==0.9.4"
+          - "jmespath==0.9.4"
           - "netaddr==0.7.19"
         extra_args: --extra-index-url "{{ANSIBLE_EXTRA_PACKAGE_REPOSITORY}}"
       when: ANSIBLE_EXTRA_PACKAGE_REPOSITORY != ""
