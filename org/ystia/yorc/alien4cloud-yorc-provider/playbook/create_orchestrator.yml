@@ -1,0 +1,195 @@
+
+- name: Create Yorc Orchestrator
+  hosts: all
+  strategy: linear
+  become: true
+  environment:
+    # We are assuming that Alien is accessible without proxies
+    # as actually this component is hosted on the Alien node 
+    # (so they are on the same host)
+    http_proxy: ""
+    HTTP_PROXY: ""
+    https_proxy: ""
+    HTTPS_PROXY: ""
+  tasks:
+    # read yorc_url from yorc connection
+    - name: Check relationship inputs exists
+      stat: path="/tmp/a4cPlaybookRegistry/{{ NODE }}/{{ INSTANCE }}/connect_yorc/inputs/yorc_url"
+      register: yorc_url_file
+
+    - name: read relationship inputs
+      command: /bin/cat "/tmp/a4cPlaybookRegistry/{{ NODE }}/{{ INSTANCE }}/connect_yorc/inputs/yorc_url"
+      register: yorc_url_content
+      when: yorc_url_file.stat.exists
+      
+    - name: set yorc_url
+      set_fact:
+        yorc_url: "{{ yorc_url_content.stdout_lines[0] }}"
+      when: yorc_url_file.stat.exists and yorc_url_content.stdout_lines|length > 0
+
+    - name: Check if a certificate authority is defined
+      stat: path="/tmp/a4cPlaybookRegistry/{{ NODE }}/{{ INSTANCE }}/connect_yorc/inputs/ca.pem"
+      register: ca_certificate_file
+
+    - name: Read Certificate Authority file
+      command: /bin/cat "/tmp/a4cPlaybookRegistry/{{ NODE }}/{{ INSTANCE }}/connect_yorc/inputs/ca.pem"
+      register: ca_certificate_content
+      when: ca_certificate_file.stat.exists
+
+    - name: Set ca_certificate variable
+      set_fact:
+        ca_certificate: "{{ ca_certificate_content.stdout }}"
+      when: ca_certificate_file.stat.exists
+
+    - name: Check if a client key is defined
+      stat: path="/tmp/a4cPlaybookRegistry/{{ NODE }}/{{ INSTANCE }}/connect_yorc/inputs/yorc_client.key"
+      register: client_key_file
+
+    - name: Read client key file
+      command: /bin/cat "/tmp/a4cPlaybookRegistry/{{ NODE }}/{{ INSTANCE }}/connect_yorc/inputs/yorc_client.key"
+      register: client_key_content
+      when: client_key_file.stat.exists
+
+    - name: Set client_key variable
+      set_fact:
+        client_key: "{{ client_key_content.stdout }}"
+      when: client_key_file.stat.exists
+
+    - name: Check if a client certificate is defined
+      stat: path="/tmp/a4cPlaybookRegistry/{{ NODE }}/{{ INSTANCE }}/connect_yorc/inputs/yorc_client.pem"
+      register: client_certificate_file
+
+    - name: Read client certificate file
+      command: /bin/cat "/tmp/a4cPlaybookRegistry/{{ NODE }}/{{ INSTANCE }}/connect_yorc/inputs/yorc_client.pem"
+      register: client_certificate_content
+      when: client_certificate_file.stat.exists
+
+    - name: Set client_certificate variable
+      set_fact:
+        client_certificate: "{{ client_certificate_content.stdout }}"
+      when: client_certificate_file.stat.exists
+
+    - name: "Login onto A4C using {{ alien_url }}/login?username={{ alien_user }}&password={{ alien_password }}&submit=Login"
+      uri:
+        url: "{{ alien_url }}/login?username={{ alien_user }}&password={{ alien_password }}&submit=Login"
+        method: POST
+        return_content: yes
+        status_code: 302
+        validate_certs: no
+        headers:
+          Content-Type: "application/x-www-form-urlencoded"
+      register: login
+
+    # - debug:
+    #     var: login
+
+    - set_fact:
+        session_id: "{{ login.set_cookie.split(';')[0] }}"
+
+    - set_fact:
+        url: "{{ alien_url }}/rest/latest/orchestrators"
+
+    - name: "Create Orchestrator using {{url}}"
+      uri:
+        url: "{{url}}"
+        method: POST
+        return_content: yes
+        validate_certs: no
+        HEADER_cookie: "{{ session_id }}"
+        body:
+          name: "{{ orchestrator_name }}"
+          pluginId: "{{ pluginId }}"
+          pluginBean: "{{ pluginBean }}"
+        body_format: json
+        status_code: 201
+      register: result
+
+    - set_fact:
+        content: "{{ result.content }}"
+
+    - set_fact:
+        orchestratorId: "{{ content.data }}"
+
+    - name: Defining Yorc SSL configuration
+      set_fact:
+        configValue:
+          urlYorc: "{{ yorc_url }}"
+          caCertificate: "{{ ca_certificate }}"
+          clientCertificate: "{{ client_certificate }}"
+          clientKey: "{{ client_key }}"
+      when: (
+        (ca_certificate is defined) and
+        (client_certificate is defined) and
+        (client_key is defined))
+
+    - name: Defining Yorc configuration
+      set_fact:
+        configValue:
+          urlYorc: "{{ yorc_url }}"
+      when: (
+        (ca_certificate is undefined) or
+        (client_certificate is undefined) or
+        (client_key is undefined))
+
+    - set_fact:
+        orchestratorConfiguration: "{{ configValue | to_json }}"
+
+    - name: Update orchestrator configuration
+      uri:
+        url: "{{ alien_url }}/rest/latest/orchestrators/{{ orchestratorId }}/configuration"
+        method: PUT
+        return_content: yes
+        validate_certs: no
+        HEADER_cookie: "{{ session_id }}"
+        HEADER_Content-Type: "application/json"
+        body: "{{ orchestratorConfiguration }}"
+        body_format: json
+        status_code: 200
+      register: result
+
+    - name: Update orchestrator deployment name pattern
+      uri:
+        url: "{{ alien_url }}/rest/latest/orchestrators/{{ orchestratorId }}"
+        method: PUT
+        return_content: yes
+        validate_certs: no
+        HEADER_cookie: "{{ session_id }}"
+        HEADER_Content-Type: "application/json"
+        body:
+          deploymentNamePattern: "('{{ discriminator }}-' + application.name + '-' + environment.name).replaceAll('[^\\w\\-_]', '_')"
+        body_format: json
+        status_code: 200
+      register: result
+
+    - name: Activate orchestrator
+      uri:
+        url: "{{ alien_url }}/rest/latest/orchestrators/{{ orchestratorId }}/instance"
+        method: POST
+        validate_certs: no
+        HEADER_cookie: "{{ session_id }}"
+        HEADER_Content-Type: "application/json"
+
+    - name: Wait for orchestrator to be started
+      uri:
+        url: "{{ alien_url }}/rest/latest/orchestrators/{{ orchestratorId }}"
+        method: GET
+        validate_certs: no
+        return_content: yes
+        HEADER_cookie: "{{ session_id }}"
+        HEADER_Content-Type: "application/json"
+        status_code: 200
+      register: result
+      until: result.json.data.state == "CONNECTED"
+      retries: 10
+      delay: 5
+      ignore_errors: yes
+
+    - set_fact:
+        orchestrator_state: "{{ result.json.data.state }}"
+
+    - debug:
+        msg: "Orchestrator {{ result.json.data.id }} is in state {{ orchestrator_state }}"
+
+    - fail:
+        msg: "The orchestrator # {{ yorc_url }} is not connected ({{ orchestrator_state }}), something went wrong !"
+      when: orchestrator_state != "CONNECTED"
