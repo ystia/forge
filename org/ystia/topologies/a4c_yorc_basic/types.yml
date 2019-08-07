@@ -5,7 +5,7 @@ metadata:
   template_version: 2.2.0-SNAPSHOT
   template_author: Ystia
 
-description: ""
+description: "Full stack setup on a single node"
 
 imports:
   - tosca-normative-types:1.0.0-ALIEN20
@@ -135,12 +135,11 @@ topology_template:
           capability: tosca.capabilities.Container
           relationship: tosca.relationships.HostedOn
     YorcPlugin:
-      type: org.ystia.yorc.alien4cloud.nodes.YorcPlugin
+      type: org.ystia.yorc.alien4cloud.nodes.YorcProvider
       properties:
-        download_url: "https://dl.bintray.com/ystia/yorc-a4c-plugin/releases/alien4cloud-yorc-plugin-3.1.0.zip"
         name: Yorc
         discriminator: yorc
-        pluginId: "alien4cloud-yorc-plugin"
+        pluginId: "alien4cloud-yorc-provider"
         pluginBean: "yorc-orchestrator-factory"
       requirements:
       - alienConfiguratorHostedOnAlienAlien4CloudConfig:
