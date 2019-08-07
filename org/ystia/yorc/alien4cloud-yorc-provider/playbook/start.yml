@@ -1,4 +1,5 @@
 
 - import_playbook: ./upload_plugin.yml
+  when: not (download_url | trim == '')
 
 - import_playbook: ./create_orchestrator.yml
