@@ -8,6 +8,7 @@
 * Deploy Docker containers in pure TOSCA ([GH-76](https://github.com/ystia/forge/issues/76))
 * Docker Registry ([GH-80](https://github.com/ystia/forge/issues/80))
 * Expose Hybrid demo material ([GH-93](https://github.com/ystia/forge/issues/93))
+* Component for the Yorc plugin provided by Alien4cloud (the Yorc Provider) ([GH-101](https://github.com/ystia/forge/issues/101))
 
 ### ENHANCEMENTS
 
