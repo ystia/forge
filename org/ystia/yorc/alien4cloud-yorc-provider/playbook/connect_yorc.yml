@@ -1,0 +1,81 @@
+- name: Get Yorc Config
+  hosts: all
+  strategy: linear
+  tasks:
+    - set_fact:
+        file_dir: "/tmp/a4cPlaybookRegistry/{{ SOURCE_NODE }}/{{ SOURCE_INSTANCE }}/connect_yorc/inputs"
+
+    - name: "Ensure <{{ file_dir }}> exists"
+      file:
+        path: "{{ file_dir }}"
+        state: directory
+
+    - name: "Echo <{{ yorc_url_ha }}> in file <{{ file_dir }}/yorc_url>"
+      shell: "echo '{{ yorc_url_ha }}' > {{ file_dir }}/yorc_url"
+      when:  not(
+        (yorc_address_ha is undefined)
+        or
+        (yorc_address_ha is none)
+        or
+        (yorc_address_ha | trim == ''))
+
+    - name: "Echo <{{ yorc_url }}> in file <{{ file_dir }}/yorc_url>"
+      shell: "echo '{{ yorc_url }}' > {{ file_dir }}/yorc_url"
+      when:  (
+        (yorc_address_ha is undefined)
+        or
+        (yorc_address_ha is none)
+        or
+        (yorc_address_ha | trim == ''))
+
+    - name: "Echo <{{ yorc_url }}> in file <{{ file_dir }}/yorc_url>"
+      shell: "echo '{{ yorc_url }}' > {{ file_dir }}/yorc_url"
+      when:  (
+        (yorc_address_ha is undefined)
+        or
+        (yorc_address_ha is none)
+        or
+        (yorc_address_ha | trim == ''))
+
+    - name: "Create certificate authority file"
+      copy:
+        content: "{{ ca_pem }}"
+        dest: "{{ file_dir }}/ca.pem"
+        mode: 0600
+      when:  ca_pem != ''
+
+    - name: "Create certificate authority key file"
+      copy:
+        content: "{{ ca_key }}"
+        dest: "{{ file_dir }}/ca.key"
+        mode: 0600
+      when:  ca_pem != ''
+
+    - name: Generate an OpenSSL private key for the plugin
+      openssl_privatekey:
+        path: "{{ file_dir }}/yorc_client.key"
+      when:  ca_pem != ''
+
+    - name: Generate an OpenSSL CSR for the plugin
+      openssl_csr:
+        path: "{{ file_dir }}/yorc_client.csr"
+        privatekey_path: "{{ file_dir }}/yorc_client.key"
+        common_name: "yorcClient"
+      when: ca_pem != ''
+
+    - name: Generate a OpenSSL certificate for the plugin
+      openssl_certificate:
+        path: "{{ file_dir }}/yorc_client.pem"
+        csr_path: "{{ file_dir }}/yorc_client.csr"
+        ownca_path: "{{ file_dir }}/ca.pem"
+        ownca_privatekey_path: "{{ file_dir }}/ca.key"
+        ownca_privatekey_passphrase: "{{ ca_passphrase }}"
+        provider: ownca
+      when: ca_pem != ''
+
+    - name: "Delete certificate authority key file"
+      file:
+        path: "{{ file_dir }}/ca.key"
+        state: absent
+      when:  ca_pem != ''
+

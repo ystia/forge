@@ -153,12 +153,11 @@ topology_template:
           capability: tosca.capabilities.Container
           relationship: tosca.relationships.HostedOn
     YorcPlugin:
-      type: org.ystia.yorc.alien4cloud.nodes.YorcPlugin
+      type: org.ystia.yorc.alien4cloud.nodes.YorcProvider
       properties:
-        download_url: "https://ystia.jfrog.io/ystia/binaries/ystia/yorc-a4c-plugin/dist/develop/alien4cloud-yorc-plugin-3.2.0-SNAPSHOT.zip"
         name: Yorc
         discriminator: yorc
-        pluginId: "alien4cloud-yorc-plugin"
+        pluginId: "alien4cloud-yorc-provider"
         pluginBean: "yorc-orchestrator-factory"
       requirements:
       - alienConfiguratorHostedOnAlienAlien4CloudConfig:
