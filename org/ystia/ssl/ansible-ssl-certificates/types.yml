@@ -35,25 +35,25 @@ node_types:
       linux_owner:
         type: string
         description: >
-          Linux user that should be the owner of the certificates and keys. This user should have rights to write on 
+          Linux user that should be the owner of the certificates and keys. This user should have rights to write on
           certificate_path and key_path. By default it is the user used to connect to the machine.
         required: false
         default: ""
-      key_name: 
+      key_name:
         type: string
         required: false
         description: Name including extention of the private key file. By default it will be the node template within the topology + '.key'
-        default: "" 
-      certificate_name: 
+        default: ""
+      certificate_name:
         type: string
         required: false
         description: Name including extention of the certificate file. By default it will be the node template within the topology + '.pem'
-        default: "" 
-      private_key: 
+        default: ""
+      private_key:
         type: string
         required: false
         description: Content of a private key to use to generate the certificate
-        default: "" 
+        default: ""
       extra_sub_alt_name:
         type: string
         required: false
@@ -111,3 +111,22 @@ node_types:
             CERTIFICATE_PATH: { get_property: [SELF, certificate_path] }
             GEN_CERT_BECOME_USER: { get_property: [SELF, linux_owner] }
           implementation: playbooks/delete.yml
+
+
+  org.ystia.ssl.ansible.certificates.nodes.SSLRootCAInstaller:
+    derived_from: tosca.nodes.SoftwareComponent
+    metadata:
+      icon: /icons/ssl-certificate.png
+    properties:
+      certificate_authorities:
+        type: list
+        entry_schema:
+          type: string
+        description: Additional Root CA certificates to install, it should be the PEM-encoded certificate content.
+        required: true
+    interfaces:
+      Standard:
+        configure:
+          inputs:
+            CA_CERTS: { get_property: [SELF, certificate_authorities] }
+          implementation: playbooks/ca_installer/configure.yaml
