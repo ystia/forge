@@ -34,6 +34,7 @@
 * Jupyter depends on EPEL repository but do not ensure that it is installed ([GH-70](https://github.com/ystia/forge/issues/70))
 * Kubernetes installation fails ([GH-97](https://github.com/ystia/forge/issues/97))
 * Fix Kubernetes install if no proxy env vars are defined ([GH-99](https://github.com/ystia/forge/issues/99))
+* Bootstrap on OpenStack doesn't allow floating IP provisioning ([GH-516](https://github.com/ystia/yorc/issues/516))
 
 ## 2.1.0 (December 20, 2018)
 

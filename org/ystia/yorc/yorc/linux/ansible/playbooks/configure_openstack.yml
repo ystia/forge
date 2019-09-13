@@ -46,7 +46,8 @@
               "tenant_name": "OPENSTACK_TENANT_NAME_YORC_SUBSTITUTION",
               "user_name": "OPENSTACK_USER_NAME_YORC_SUBSTITUTION",
               "password": "OPENSTACK_PASSWORD_YORC_SUBSTITUTION",
-              "private_network_name": "{{ PRIVATE_NETWORK_NAME }}"
+              "private_network_name": "{{ PRIVATE_NETWORK_NAME }}",
+              "provisioning_over_fip_allowed": "{{ PROVISIONING_OVER_FIP_ALLOWED | bool }}"
           } } }
     - set_fact:
         yorcConfig: "{{ yorcConfig | combine(tmp, recursive=True) }}"
