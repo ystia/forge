@@ -244,6 +244,7 @@ relationship_types:
             PRIVATE_NETWORK_NAME: { get_property: [SOURCE, private_network_name] }
             DEFAULT_SECURITY_GROUPS: { get_property: [SOURCE, default_security_groups] }
             USE_VAULT: { get_property: [SOURCE, use_vault] }
+            PROVISIONING_OVER_FIP_ALLOWED: { get_property: [SOURCE, provisioning_over_fip_allowed] }
           implementation: playbooks/configure_openstack.yml
 
   org.ystia.yorc.linux.ansible.relationships.OpenstackSecretsOnVault:

@@ -95,6 +95,11 @@ node_types:
         description: "OpenStack password"
         type: string
         required: true
+      provisioning_over_fip_allowed:
+        type: boolean
+        description: This allows to perform the provisioning of a Compute over the associated floating IP if it exists.
+        required: false
+        default: false
       private_network_name:
         description: "Name of private network to use as primary administration network between Yorc and Compute instances. It should be a private network accessible by this instance of Yorc."
         type: string
