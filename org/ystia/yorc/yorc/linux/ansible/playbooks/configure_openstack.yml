@@ -32,11 +32,12 @@
         path: "{{ lock_file }}"
         state: touch
   tasks:
-    - file:
-      path: "{{ CONFIG_DIR }}/locations.yorc.yaml"
-      state: touch
-      modification_time: preserve
-      access_time: preserve
+    - name: Creation locations file
+      file:
+        path: "{{ CONFIG_DIR }}/locations.yorc.yaml"
+        state: touch
+        modification_time: preserve
+        access_time: preserve
 
     - name: "get current locations"
       shell: "cat {{ CONFIG_DIR }}/locations.yorc.yaml"
@@ -44,6 +45,14 @@
 
     - set_fact:
         yorcLocationsConfig: "{{ result.stdout | from_yaml }}"
+
+    - set_fact:
+        locationsDefined: []
+      when: yorcLocationsConfig|length == 0
+
+    - set_fact:
+        locationsDefined: "{{ yorcLocationsConfig.locations }}"
+      when: yorcLocationsConfig|length > 0
 
     - set_fact:
         tmpLocation: >
@@ -66,7 +75,10 @@
       when: DEFAULT_SECURITY_GROUPS != ''
 
     - set_fact:
-        yorcLocationsConfig: "{{ yorcLocationsConfig }} + [ '{{ tmpLocation }}' ]"
+        locationsDefined: "{{ locationsDefined + [ tmpLocation  ] }}"
+
+    - set_fact:
+        yorcLocationsConfig:  {"locations": "{{ locationsDefined }}"}
 
     - name: "Output config to file {{ CONFIG_DIR }}/locations.yorc.yaml"
       copy:
