@@ -15,7 +15,7 @@
 #
 
 
-- name: Setup Openstack config
+- name: Setup Openstack location config
   hosts: all
   strategy: free
   become_user: yorc
