@@ -55,9 +55,8 @@
       when: yorcLocationsConfig|length > 0
 
     - set_fact:
-        tmpLocation: >
-          { "name" :  "{{ LOCATION_NAME }}",
-            "auth_url": "{{ AUTH_URL }}",
+        locationProperties: >
+          { "auth_url": "{{ AUTH_URL }}",
             "tenant_name": "OPENSTACK_TENANT_NAME_YORC_SUBSTITUTION",
             "user_name": "OPENSTACK_USER_NAME_YORC_SUBSTITUTION",
             "password": "OPENSTACK_PASSWORD_YORC_SUBSTITUTION",
@@ -71,8 +70,15 @@
           }
       when: DEFAULT_SECURITY_GROUPS != ''
     - set_fact:
-        tmpLocation: "{{ tmpLocation | combine(tmp, recursive=True) }}"
+        locationProperties: "{{ locationProperties | combine(tmp, recursive=True) }}"
       when: DEFAULT_SECURITY_GROUPS != ''
+
+    - set_fact:
+        tmpLocation: >
+          { "name" :  "{{ LOCATION_NAME }}",
+            "type" : "openstack",
+            "properties": {{ locationProperties }}
+          }
 
     - set_fact:
         locationsDefined: "{{ locationsDefined + [ tmpLocation  ] }}"
