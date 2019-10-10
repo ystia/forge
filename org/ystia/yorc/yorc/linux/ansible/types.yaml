@@ -81,6 +81,7 @@ node_types:
           inputs:
             YORC_CONFIG_DIR: { get_property: [REQ_TARGET, yorc, config_dir] }
             YORC_INSTALL_DIR: { get_property: [REQ_TARGET, yorc, install_dir] }
+            LOCATION_NAME: { get_property: [SELF, location_name] }
           implementation: playbooks/apply_hostspool.yml
     requirements:
       - yorc:
