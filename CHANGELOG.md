@@ -13,6 +13,7 @@
 
 ### ENHANCEMENTS
 
+* Support of locations ([GH-106](https://github.com/ystia/forge/issues/106))
 * Update forge components installing/configuring Yorc to support python3 ([GH-85](https://github.com/ystia/forge/issues/85))
 * Update Ansible version to 2.7.9 ([GH-83](https://github.com/ystia/forge/issues/83))
 * Add a vault in secured full stack topology ([GH-67](https://github.com/ystia/forge/issues/67))
