@@ -42,10 +42,20 @@ data_types:
           type: string
         required: false
 node_types:
-  org.ystia.yorc.pub.infrastructure.GoogleConfig:
+  org.ystia.yorc.pub.location.LocationConfig:
     derived_from: tosca.nodes.Root
     description: |
-      Google Compute Engine Infrastructure configuration for Yorc
+      Location configuration configuration for Yorc
+    abstract: true
+    properties:
+      location_name:
+        description: "Location name"
+        type: string
+        required: true
+  org.ystia.yorc.pub.location.GoogleConfig:
+    derived_from: org.ystia.yorc.pub.location.LocationConfig
+    description: |
+      Google Compute Engine location configuration for Yorc
     abstract: true
     properties:
       project:
@@ -73,10 +83,10 @@ node_types:
         capability: org.ystia.yorc.pub.capabilities.YorcConfigContainer
         relationship: org.ystia.yorc.pub.relationships.YorcConfigHostedOnYorc
         occurrences: [ 1, 1 ]
-  org.ystia.yorc.pub.infrastructure.OpenStackConfig:
-    derived_from: tosca.nodes.Root
+  org.ystia.yorc.pub.location.OpenStackConfig:
+    derived_from: org.ystia.yorc.pub.location.LocationConfig
     description: |
-      Openstack Infrastructure configuration for Yorc
+      Openstack locations configuration for Yorc
     abstract: true
     properties:
       auth_url:
@@ -123,10 +133,10 @@ node_types:
         relationship: org.ystia.yorc.pub.relationships.SaveSecretsToVault
         occurrences: [ 0, 1 ]
 
-  org.ystia.yorc.pub.infrastructure.AWSConfig:
-    derived_from: tosca.nodes.Root
+  org.ystia.yorc.pub.location.AWSConfig:
+    derived_from: org.ystia.yorc.pub.location.LocationConfig
     description: |
-      AWS Infrastructure configuration for Yorc
+      AWS location configuration for Yorc
     abstract: true
     properties:
       access_key:
@@ -151,10 +161,10 @@ node_types:
         relationship: org.ystia.yorc.pub.relationships.YorcConfigHostedOnYorc
         occurrences: [ 1, 1 ]
 
-  org.ystia.yorc.pub.infrastructure.KubernetesConfig:
-    derived_from: tosca.nodes.Root
+  org.ystia.yorc.pub.location.KubernetesConfig:
+    derived_from: org.ystia.yorc.pub.location.LocationConfig
     description: |
-      Kubernetes Infrastructure configuration for Yorc
+      Kubernetes location configuration for Yorc
     abstract: true
     properties:
       master_url:
@@ -180,10 +190,10 @@ node_types:
         relationship: org.ystia.yorc.pub.relationships.YorcConfigHostedOnYorc
         occurrences: [ 1, 1 ]
 
-  org.ystia.yorc.pub.infrastructure.HostsPoolConfig:
-    derived_from: tosca.nodes.Root
+  org.ystia.yorc.pub.location.HostsPoolConfig:
+    derived_from: org.ystia.yorc.pub.location.LocationConfig
     description: |
-      Hosts Pool Infrastructure configuration for Yorc
+      Hosts Pool location configuration for Yorc
     abstract: true
     properties:
       hosts:

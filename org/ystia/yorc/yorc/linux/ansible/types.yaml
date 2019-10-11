@@ -29,8 +29,8 @@ imports:
 
 
 node_types:
-  org.ystia.yorc.infrastructure.GoogleConfig:
-    derived_from: org.ystia.yorc.pub.infrastructure.GoogleConfig
+  org.ystia.yorc.location.GoogleConfig:
+    derived_from: org.ystia.yorc.pub.location.GoogleConfig
     requirements:
     - host:
         capability: org.ystia.yorc.pub.capabilities.YorcConfigContainer
@@ -41,8 +41,8 @@ node_types:
         relationship: org.ystia.yorc.linux.ansible.relationships.GoogleSecretsOnVault
         occurrences: [ 0, 1 ]
 
-  org.ystia.yorc.infrastructure.OpenStackConfig:
-    derived_from: org.ystia.yorc.pub.infrastructure.OpenStackConfig
+  org.ystia.yorc.location.OpenStackConfig:
+    derived_from: org.ystia.yorc.pub.location.OpenStackConfig
     requirements:
     - host:
         capability: org.ystia.yorc.pub.capabilities.YorcConfigContainer
@@ -53,8 +53,8 @@ node_types:
         relationship: org.ystia.yorc.linux.ansible.relationships.OpenstackSecretsOnVault
         occurrences: [ 0, 1 ]
 
-  org.ystia.yorc.infrastructure.AWSConfig:
-    derived_from: org.ystia.yorc.pub.infrastructure.AWSConfig
+  org.ystia.yorc.location.AWSConfig:
+    derived_from: org.ystia.yorc.pub.location.AWSConfig
     requirements:
     - host:
         capability: org.ystia.yorc.pub.capabilities.YorcConfigContainer
@@ -65,22 +65,23 @@ node_types:
         relationship: org.ystia.yorc.linux.ansible.relationships.AWSSecretsOnVault
         occurrences: [ 0, 1 ]
 
-  org.ystia.yorc.infrastructure.KubernetesConfig:
-    derived_from: org.ystia.yorc.pub.infrastructure.KubernetesConfig
+  org.ystia.yorc.location.KubernetesConfig:
+    derived_from: org.ystia.yorc.pub.location.KubernetesConfig
     requirements:
     - host:
         capability: org.ystia.yorc.pub.capabilities.YorcConfigContainer
         relationship: org.ystia.yorc.linux.ansible.relationships.YorcConfigKubernetesHostedOnYorc
         occurrences: [ 1, 1 ]
 
-  org.ystia.yorc.infrastructure.HostsPoolConfig:
-    derived_from: org.ystia.yorc.pub.infrastructure.HostsPoolConfig
+  org.ystia.yorc.location.HostsPoolConfig:
+    derived_from: org.ystia.yorc.pub.location.HostsPoolConfig
     interfaces:
       Standard:
         start:
           inputs:
             YORC_CONFIG_DIR: { get_property: [REQ_TARGET, yorc, config_dir] }
             YORC_INSTALL_DIR: { get_property: [REQ_TARGET, yorc, install_dir] }
+            LOCATION_NAME: { get_property: [SELF, location_name] }
           implementation: playbooks/apply_hostspool.yml
     requirements:
       - yorc:
@@ -209,6 +210,7 @@ relationship_types:
             CONFIG_DIR: { get_property: [TARGET, config_dir] }
             PROJECT: { get_property: [SOURCE, project] }
             REGION: { get_property: [SOURCE, region] }
+            LOCATION_NAME : { get_property: [SOURCE, location_name] }
             CREDENTIALS: { get_property: [SOURCE, credentials] }
             USE_VAULT: { get_property: [SOURCE, use_vault] }
           implementation: playbooks/configure_google.yml
@@ -223,6 +225,7 @@ relationship_types:
             TLS_DISABLED: { get_property: [TARGET, tls_disable] }
             TOKEN_ENCRYPTED: { get_attribute: [TARGET, vault_token_encrypted] }
             PASSPHRASE: { get_property: [TARGET, ca_passphrase] }
+            LOCATION_NAME : { get_property: [SOURCE, location_name] }
             CONFIG_DIR: { get_property: [SOURCE, config_dir] }
             CREDENTIALS: { get_property: [SOURCE, credentials] }
           implementation: playbooks/configure_google_secrets.yml
@@ -237,6 +240,7 @@ relationship_types:
           inputs:
             CONFIG_DIR: { get_property: [TARGET, config_dir] }
             DATA_DIR: { get_property: [TARGET, data_dir] }
+            LOCATION_NAME : { get_property: [SOURCE, location_name] }
             AUTH_URL: { get_property: [SOURCE, auth_url] }
             TENANT_NAME: { get_property: [SOURCE, tenant_name] }
             USER_NAME: { get_property: [SOURCE, user_name] }
@@ -258,6 +262,7 @@ relationship_types:
             TLS_DISABLED: { get_property: [TARGET, tls_disable] }
             TOKEN_ENCRYPTED: { get_attribute: [TARGET, vault_token_encrypted] }
             PASSPHRASE: { get_property: [TARGET, ca_passphrase] }
+            LOCATION_NAME : { get_property: [SOURCE, location_name] }
             CONFIG_DIR: { get_property: [SOURCE, config_dir] }
             TENANT_NAME: { get_property: [SOURCE, tenant_name] }
             USER_NAME: { get_property: [SOURCE, user_name] }
@@ -273,6 +278,7 @@ relationship_types:
       Configure:
         post_configure_target:
           inputs:
+            LOCATION_NAME : { get_property: [SOURCE, location_name] }
             CONFIG_DIR: { get_property: [SOURCE, config_dir] }
             MASTER_URL: { get_property: [SOURCE, master_url] }
             CA: { get_property: [SOURCE, ca] }
@@ -290,6 +296,7 @@ relationship_types:
       Configure:
         post_configure_target:
           inputs:
+            LOCATION_NAME : { get_property: [SOURCE, location_name] }
             CONFIG_DIR: { get_property: [SOURCE, config_dir] }
             ACCESS_KEY: { get_property: [SOURCE, access_key] }
             SECRET_KEY: { get_property: [SOURCE, secret_key] }
@@ -308,6 +315,7 @@ relationship_types:
             TLS_DISABLED: { get_property: [TARGET, tls_disable] }
             TOKEN_ENCRYPTED: { get_attribute: [TARGET, vault_token_encrypted] }
             PASSPHRASE: { get_property: [TARGET, ca_passphrase] }
+            LOCATION_NAME : { get_property: [SOURCE, location_name] }
             CONFIG_DIR: { get_property: [SOURCE, config_dir] }
             ACCESS_KEY: { get_property: [SOURCE, access_key] }
             SECRET_KEY: { get_property: [SOURCE, secret_key] }
@@ -323,6 +331,7 @@ relationship_types:
           inputs:
             CONFIG_DIR: { get_property: [TARGET, config_dir] }
             DATA_DIR: { get_property: [TARGET, data_dir] }
+            LOCATION_NAME : { get_property: [SOURCE, location_name] }
             HOSTS_POOL: { get_property: [SOURCE, hosts] }
             USE_VAULT: { get_property: [SOURCE, use_vault] }
           implementation: playbooks/configure_hostspool.yml
@@ -337,6 +346,7 @@ relationship_types:
             TLS_DISABLED: { get_property: [TARGET, tls_disable] }
             TOKEN_ENCRYPTED: { get_attribute: [TARGET, vault_token_encrypted] }
             PASSPHRASE: { get_property: [TARGET, ca_passphrase] }
+            LOCATION_NAME : { get_property: [SOURCE, location_name] }
             CONFIG_DIR: { get_property: [SOURCE, config_dir] }
             HOSTS_POOL: { get_property: [SOURCE, hosts] }
           implementation: playbooks/configure_hostspool_secrets.yml
