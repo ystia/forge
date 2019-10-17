@@ -19,7 +19,7 @@ imports:
 
 node_types:
   org.ystia.docker.containers.docker.registry.nodes.Registry:
-    derived_from: org.ystia.docker.containers.docker.generic.nodes.GenricContainer
+    derived_from: org.ystia.docker.containers.docker.generic.nodes.GenericContainer
     metadata:
       icon: /icons/registry.png
     capabilities:
