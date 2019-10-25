@@ -85,7 +85,7 @@ node_types:
           SELinux hosts can additionally use z or Z to use a shared or private label for the volume.
         required: false
     attributes:
-      container_id: { get_operation_output: [SELF, Standard, configure, CONTAINER_ID] }
+      container_id: { get_operation_output: [SELF, Standard, create, CONTAINER_ID] }
     interfaces:
       Standard:
         inputs:
