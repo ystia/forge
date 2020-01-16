@@ -44,7 +44,7 @@ curl -fL https://getcli.jfrog.io | sh
 
 build_name="forge-travis-ci"
 
-./jfrog rt c --apikey="${ARTIFACTORY_API_KEY}" --user=travis --url=https://ystia.jfrog.io/ystia ystia
+./jfrog rt c --interactive=false --apikey="${ARTIFACTORY_API_KEY}" --user=travis --url=https://ystia.jfrog.io/ystia ystia
 ./jfrog rt u --build-name="${build_name}" --build-number="${TRAVIS_BUILD_NUMBER}" --props="artifactory.licenses=Apache-2.0" --regexp "build/csars/(.*.zip)" "${deploy_path}"
 # Do not publish environment variables as it may expose some secrets
 #./jfrog rt bce "${build_name}" "${TRAVIS_BUILD_NUMBER}"
