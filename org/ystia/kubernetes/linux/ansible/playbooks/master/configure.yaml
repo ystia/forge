@@ -105,6 +105,7 @@
         - /etc/kubernetes/pki/sa.pub
       register: sa_pki_certs
       run_once: true
+      no_log: True
       when: inventory_hostname == ansible_play_hosts[0]
 
     - name: write out SA certs
@@ -122,6 +123,7 @@
       with_items:
         - /etc/kubernetes/pki/sa.key
       register: sa_pki_keys
+      no_log: True
       run_once: true
       when: inventory_hostname == ansible_play_hosts[0]
 
@@ -155,8 +157,12 @@
         mode: "u=rwx,g=rx,o=rx"
 
     - name: Create config directory
-      shell:
-        ln -s /etc/kubernetes/admin.conf /root/.kube/config
+      file:
+        src: /etc/kubernetes/admin.conf
+        dest: /root/.kube/config
+        owner: root
+        group: root
+        state: link
 
     - name: Create Calico Network
       shell: >

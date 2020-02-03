@@ -62,13 +62,11 @@
       rpm_key:
         state: present
         key: "{{item}}"
-      with_items: "{{KUBE_YUM_REPO_GPG_KEYS.split(' ')}}"
+      with_items: "{{ KUBE_YUM_REPO_GPG_KEYS.split(' ') }}"
       when: KUBE_YUM_REPO_GPG_KEYS != ""
-      register: setup_repo
 
     - name: run make cache to actually import gpg key
       command: "yum -q makecache -y --disablerepo='*' --enablerepo='kubernetes'"
-      when: setup_repo.changed
 
     - name: list available matching Kubernetes versions
       yum:
