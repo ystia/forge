@@ -30,7 +30,7 @@ node_types:
         type: string
         default: calico
         constraints:
-          - valid_values: [calico, canal, flannel, romana, weave]
+          - valid_values: [calico, cilium, flannel, weave]
       cfssl_download_url:
         type: string
         default: "https://pkg.cfssl.org/R1.2"
@@ -93,7 +93,7 @@ node_types:
         inputs:
           PRIVATE_IP: {get_attribute: [HOST, private_address]}
           PUBLIC_IP: {get_attribute: [HOST, public_address]}
-        create: 
+        create:
           inputs:
             CFSSL_DOWNLOAD_URL: {get_property: [SELF, cfssl_download_url]}
             CA_CERT: {get_property: [SELF, ca_certificate]}
@@ -102,18 +102,18 @@ node_types:
             KUBE_YUM_REPO_GPG_KEYS: {get_property: [SELF, kube_yum_repo_gpg_keys]}
             KUBE_VERSION: {get_property: [SELF, component_version]}
           implementation: playbooks/master/create.yaml
-        configure: 
+        configure:
           inputs:
             API_SERVER_PORT: {get_property: [SELF, api_server, port]}
             pod_network: {get_property: [SELF, pod_network]}
             hosts_pods: {get_property: [SELF, hosts_pods]}
             KUBERNETES_SELECTED_VERSION: {get_attribute: [SELF, kubernetes_selected_version]}
           implementation: playbooks/master/configure.yaml
-        start: 
+        start:
           implementation: playbooks/master/start.yaml
-        stop: 
+        stop:
           implementation: playbooks/commons/kubeadm/stop.yaml
-        delete: 
+        delete:
           implementation: playbooks/commons/kubeadm/delete.yaml
 
   org.ystia.kubernetes.linux.ansible.nodes.KubernetesWorker:
@@ -145,7 +145,7 @@ node_types:
                     - type: { equal: linux }
                     - architecture: { equal: x86_64 }
                     - distribution: { valid_values: [ centos, rhel ] }
-      - api_server:   
+      - api_server:
           capability: org.ystia.kubernetes.pub.capabilities.KubernetesAPIServer
           node: org.ystia.kubernetes.linux.ansible.nodes.KubernetesMaster
           relationship: org.ystia.kubernetes.linux.ansible.relationships.JoinCluster
@@ -154,17 +154,17 @@ node_types:
       Standard:
         inputs:
           PRIVATE_IP: {get_attribute: [HOST, private_address]}
-        create: 
+        create:
           inputs:
             KUBE_YUM_REPO: {get_property: [SELF, kube_yum_repo]}
             KUBE_YUM_REPO_GPG_KEYS: {get_property: [SELF, kube_yum_repo_gpg_keys]}
             KUBE_VERSION: {get_property: [SELF, component_version]}
           implementation: playbooks/worker/create.yaml
-        start: 
+        start:
           implementation: playbooks/commons/kubeadm/start.yaml
-        stop: 
+        stop:
           implementation: playbooks/commons/kubeadm/stop.yaml
-        delete: 
+        delete:
           implementation: playbooks/commons/kubeadm/delete.yaml
 
   org.ystia.kubernetes.linux.ansible.nodes.KubernetesDashBoard:
@@ -179,9 +179,9 @@ node_types:
         required: true
         entry_schema:
           type: string
-        default: 
-          - https://raw.githubusercontent.com/kubernetes/dashboard/v1.8.3/src/deploy/recommended/kubernetes-dashboard.yaml
-          - https://gist.githubusercontent.com/loicalbertin/1a7c1bebf1854924bf285f0553cde268/raw/0477ee67905122c16f85f43d66d3c0235e7c669d/KubernetesDashboardAdminUserSA.yaml
+        default:
+          - https://raw.githubusercontent.com/kubernetes/dashboard/v2.0.0-rc5/aio/deploy/recommended.yaml
+          - https://gist.githubusercontent.com/loicalbertin/1a7c1bebf1854924bf285f0553cde268/raw/f2df07f978cb390902908247a4e8e73e5d3efafa/KubernetesDashboardAdminUserSA.yaml
       service_type:
         type: string
         default: default
@@ -201,9 +201,9 @@ node_types:
         inputs:
           specs: {get_property: [SELF, specs]}
           MASTER_PRIVATE_IP: {get_attribute: [HOST, private_address]}
-          MASTER_PUBLIC_IP: {get_attribute: [HOST, public_address]}  
+          MASTER_PUBLIC_IP: {get_attribute: [HOST, public_address]}
         create: playbooks/apps/dashboard/create.yaml
-        start: 
+        start:
           inputs:
             service_type: {get_property: [SELF, service_type]}
             expose_admin_token: {get_property: [SELF, expose_admin_token]}
@@ -219,7 +219,7 @@ node_types:
         inputs:
           specs: {get_property: [SELF, specs]}
           MASTER_PRIVATE_IP: {get_attribute: [HOST, private_address]}
-          MASTER_PUBLIC_IP: {get_attribute: [HOST, public_address]}  
+          MASTER_PUBLIC_IP: {get_attribute: [HOST, public_address]}
         # App installation is done at the configure phase to let subtypes do some stuff before (create) and after it (start)
         configure: playbooks/apps/commons/configure.yaml
         delete: playbooks/apps/commons/delete.yaml
@@ -231,13 +231,13 @@ relationship_types:
       Configure:
         post_configure_source:
           inputs:
-            JOIN_URL: {concat: [get_attribute: [TARGET, ip_address], ":", get_attribute: [TARGET, api_server, port]]}
+            JOIN_URL: {concat: [get_attribute: [TARGET, private_address], ":", get_attribute: [TARGET, api_server, port]]}
             ADMIN_TOKEN: {get_attribute: [TARGET, admin_token]}
             CA_CERT_HASH: {get_attribute: [TARGET, ca_cert_hash]}
-            MASTER_PRIVATE_IP: { get_attribute: [TARGET, ip_address] }
+            MASTER_PRIVATE_IP: { get_attribute: [TARGET, private_address] }
             POD_CIDR: { get_attribute: [TARGET, pods_cidr] }
           implementation: playbooks/worker/post_configure.yaml
-        delete_source:
+        remove_source:
           inputs:
             node_name: {get_attribute: [SOURCE, node_name]}
           implementation: playbooks/master/remove_worker.yaml

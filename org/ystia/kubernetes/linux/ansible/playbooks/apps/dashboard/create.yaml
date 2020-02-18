@@ -38,11 +38,12 @@
     - name: Generate server certs
       shell: >
         cd "{{ansible_env['HOME']}}/kube-manifests/{{NODE}}/certs";
-        /usr/local/bin/cfssl gencert -ca=/etc/kubernetes/pki/ca.crt -ca-key=/etc/kubernetes/pki/ca.key -config=/etc/kubernetes/pki/etcd/ca-config.json -profile=server config.json | /usr/local/bin/cfssljson -bare server && mv server.pem dashboard.crt && mv server-key.pem dashboard.key
+        /usr/local/bin/cfssl gencert -ca=/etc/kubernetes/pki/ca.crt -ca-key=/etc/kubernetes/pki/ca.key -config=/etc/kubernetes/pki/ca-config.json -profile=server config.json | /usr/local/bin/cfssljson -bare server && mv server.pem dashboard.crt && mv server-key.pem dashboard.key
       when: inventory_hostname == ansible_play_hosts[0]
 
     - name: create certificate secrets
       shell: >
         source /etc/profile;
-        kubectl create secret generic kubernetes-dashboard-certs --from-file="{{ansible_env['HOME']}}/kube-manifests/{{NODE}}/certs" -n kube-system
+        kubectl create namespace kubernetes-dashboard ;
+        kubectl create secret generic kubernetes-dashboard-certs --from-file="{{ansible_env['HOME']}}/kube-manifests/{{NODE}}/certs" -n kubernetes-dashboard
       when: inventory_hostname == ansible_play_hosts[0]

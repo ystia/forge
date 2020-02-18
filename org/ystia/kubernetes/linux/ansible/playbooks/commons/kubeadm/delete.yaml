@@ -11,5 +11,4 @@
   tasks:
     - name: Delete node
       shell: >
-        kubeadm reset
-        
+        kubeadm reset -f

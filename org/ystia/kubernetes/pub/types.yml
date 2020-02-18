@@ -15,6 +15,7 @@ description: Public interface types for Kubernetes support.
 
 imports:
   - tosca-normative-types:1.0.0-ALIEN20
+  - org.ystia.traefik.ansible-linux:2.2.0-SNAPSHOT
 
 node_types:
   org.ystia.kubernetes.pub.nodes.KubernetesMaster:
@@ -28,9 +29,9 @@ node_types:
       component_version:
         type: version
         required: false
-        default: "1.10"
+        default: "1.17"
         constraints:
-          - greater_or_equal: "1.10"
+          - greater_or_equal: "1.17"
     capabilities:
       api_server: org.ystia.kubernetes.pub.capabilities.KubernetesAPIServer
       app_host: org.ystia.kubernetes.pub.capabilities.AppHosting
@@ -47,11 +48,11 @@ node_types:
       component_version:
         type: version
         required: false
-        default: "1.10"
+        default: "1.17"
         constraints:
-          - greater_or_equal: "1.10"
+          - greater_or_equal: "1.17"
     requirements:
-      - api_server:   
+      - api_server:
           capability: org.ystia.kubernetes.pub.capabilities.KubernetesAPIServer
           node: org.ystia.kubernetes.pub.nodes.KubernetesMaster
           occurrences: [ 1, 1 ]
@@ -75,9 +76,17 @@ node_types:
           node: org.ystia.kubernetes.pub.nodes.KubernetesMaster
           relationship: tosca.relationships.HostedOn
 
+  org.ystia.kubernetes.pub.nodes.TraefikRouteK8SApi:
+    derived_from: org.ystia.traefik.ansible-linux.nodes.TraefikRoute
+    capabilities:
+      client:
+        type: org.ystia.kubernetes.pub.capabilities.KubernetesAPIServer
+        occurrences: [0, UNBOUNDED]
+        description: Expose k8s API through a loadbalancer
+
 capability_types:
   org.ystia.kubernetes.pub.capabilities.KubernetesAPIServer:
-    derived_from: tosca.capabilities.Endpoint
+    derived_from: tosca.capabilities.Endpoint.Public
     description: >
       A KubernetesAPIServer capability allows to binds to the Kuberntes HTTP API.
     properties:
@@ -88,6 +97,10 @@ capability_types:
         default: 6443
         constraints:
           - in_range: [ 1, 65535 ]
-      
+      protocol:
+        type: string
+        required: true
+        default: https
+
   org.ystia.kubernetes.pub.capabilities.AppHosting:
     derived_from: tosca.capabilities.Container
