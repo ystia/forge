@@ -37,6 +37,7 @@
 * Kubernetes installation fails ([GH-97](https://github.com/ystia/forge/issues/97))
 * Fix Kubernetes install if no proxy env vars are defined ([GH-99](https://github.com/ystia/forge/issues/99))
 * Bootstrap on OpenStack doesn't allow floating IP provisioning ([GH-516](https://github.com/ystia/yorc/issues/516))
+* Yorc Bootstrap doesn't uninstall yorc binary ([GH-605](https://github.com/ystia/yorc/issues/605))
 
 ## 2.1.0 (December 20, 2018)
 
