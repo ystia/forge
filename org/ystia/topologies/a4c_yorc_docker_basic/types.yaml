@@ -5,7 +5,7 @@ metadata:
   template_version: 0.1.1-SNAPSHOT
   template_author: yorc-team
 
-description: "A yorc server with consul embedded and an A4C server"
+description: "A simple yorc server with consul embedded and an A4C server"
 
 imports:
   - tosca-normative-types:1.0.0-ALIEN20
