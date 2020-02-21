@@ -41,7 +41,7 @@ node_types:
       Standard:
         create:
           implementation:
-            file: alien4cloud/alien4cloud:2.2.0-SM9
+            file: alien4cloud/alien4cloud:2.2.0-SM10
             repository: docker
             type: tosca.artifacts.Deployment.Image.Container.Docker
 
