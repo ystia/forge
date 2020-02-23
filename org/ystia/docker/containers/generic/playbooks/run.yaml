@@ -1,0 +1,28 @@
+#
+# Ystia Forge
+# Copyright (C) 2020 Bull S. A. S. - Bull, Rue Jean Jaures, B.P.68, 78340, Les Clayes-sous-Bois, France.
+# Use of this source code is governed by Apache 2 LICENSE that can be found in the LICENSE file.
+#
+
+
+- name: Install prerequisites
+  hosts: all
+  become: true
+  tasks:
+  - import_tasks: prerequisite_tasks.yaml
+
+- name: Run Docker Container
+  hosts: all
+  become: true
+  vars:
+    ansible_python_interpreter: "/usr/local/docker-py-env/bin/python"
+    DOCKER_ENV: {}
+    DOCKER_EXP_PORTS: []
+    DOCKER_PUB_PORT: []
+    DOCKER_VOLUMES: []
+    DOCKER_STATE: "started"
+  tasks:
+  - import_tasks: create_container_tasks.yaml
+  - name: Get container output
+    debug:
+      msg: "{{ docker_create_res.ansible_facts.docker_container.Output }}"
