@@ -243,6 +243,9 @@ relationship_types:
             LOCATION_NAME : { get_property: [SOURCE, location_name] }
             AUTH_URL: { get_property: [SOURCE, auth_url] }
             TENANT_NAME: { get_property: [SOURCE, tenant_name] }
+            PROJECT_NAME: { get_property: [SOURCE, project_name] }
+            PROJECT_ID: { get_property: [SOURCE, project_id] }
+            USER_DOMAIN_NAME: { get_property: [SOURCE, user_domain_name] }
             USER_NAME: { get_property: [SOURCE, user_name] }
             PASSWORD: { get_property: [SOURCE, password] }
             PRIVATE_NETWORK_NAME: { get_property: [SOURCE, private_network_name] }
@@ -265,6 +268,9 @@ relationship_types:
             LOCATION_NAME : { get_property: [SOURCE, location_name] }
             CONFIG_DIR: { get_property: [SOURCE, config_dir] }
             TENANT_NAME: { get_property: [SOURCE, tenant_name] }
+            PROJECT_NAME: { get_property: [SOURCE, project_name] }
+            PROJECT_ID: { get_property: [SOURCE, project_id] }
+            USER_DOMAIN_NAME: { get_property: [SOURCE, user_domain_name] }
             USER_NAME: { get_property: [SOURCE, user_name] }
             PASSWORD: { get_property: [SOURCE, password] }
           implementation: playbooks/configure_openstack_secrets.yml

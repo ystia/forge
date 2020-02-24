@@ -64,6 +64,7 @@
     - name: Download Yorc binary
       get_url:
         url: "{{DOWNLOAD_URL}}"
+        force: yes
         dest: /tmp/yorc.tgz
 
     - name: copy Yorc bin

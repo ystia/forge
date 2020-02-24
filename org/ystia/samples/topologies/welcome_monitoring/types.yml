@@ -17,6 +17,7 @@ imports:
   - yorc-types:1.1.0
   - org.ystia.common:2.2.0-SNAPSHOT
   - org.ystia.samples.welcome.linux.bash:2.2.0-SNAPSHOT
+  - org.ystia.samples.tcpecho.ansible:2.2.0-SNAPSHOT
 
 topology_template:
   description: A monitored topology template for the Welcome sample
@@ -43,6 +44,11 @@ topology_template:
       requirements:
         - host:
             node: MntCompute
+    MntTCPEcho:
+      type: org.ystia.samples.tcpecho.ansible.nodes.TCPEcho
+      requirements:
+        - host:
+            node: MntCompute
 
   policies:
     - HTTPMonitoring:
@@ -54,9 +60,9 @@ topology_template:
           time_interval: 5s
     - TCPMonitoring:
         type: yorc.policies.monitoring.TCPMonitoring
-        targets: [ MntCompute ]
+        targets: [ MntTCPEcho ]
         properties:
-          port: 22
+          port: 9111
           time_interval: 5s
 
   # Output property for MntWelcome URL
@@ -65,6 +71,9 @@ topology_template:
     url:
       description: The URL to access the Welcome page
       value: { get_attribute: [ MntWelcome, url ] }
+    tcp_echo_url:
+      description: The URL to access the Echo Server
+      value: { get_attribute: [ MntTCPEcho, url ] }
 
   workflows:
     killWebServer:
@@ -109,4 +118,46 @@ topology_template:
             - set_state: starting
           on_success:
             - Welcome_start
+    killTCPEchoServer:
+      steps:
+        Welcome_stop:
+          target: MntTCPEcho
+          activities:
+            - call_operation: Standard.stop
+    stopTCPEchoServer:
+      steps:
+        TCPEcho_stopping:
+          target: MntTCPEcho
+          activities:
+            - set_state: stopping
+          on_success:
+            - TCPEcho_stop
+        TCPEcho_stopped:
+          target: MntTCPEcho
+          activities:
+            - set_state: stopped
+        TCPEcho_stop:
+          target: MntTCPEcho
+          activities:
+            - call_operation: Standard.stop
+          on_success:
+            - TCPEcho_stopped
+    startTCPEchoServer:
+      steps:
+        TCPEcho_started:
+          target: MntTCPEcho
+          activities:
+            - set_state: started
+        TCPEcho_start:
+          target: MntTCPEcho
+          activities:
+            - call_operation: Standard.start
+          on_success:
+            - TCPEcho_started
+        TCPEcho_starting:
+          target: MntTCPEcho
+          activities:
+            - set_state: starting
+          on_success:
+            - TCPEcho_start
 

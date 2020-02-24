@@ -94,9 +94,21 @@ node_types:
         type: string
         required: true
       tenant_name:
-        description: "OpenStack tenant name"
+        description: "OpenStack tenant name (Identity v2)"
         type: string
-        required: true
+        required: false
+      project_name:
+        description: "OpenStack project name (Identity v3)"
+        type: string
+        required: false
+      project_id:
+        description: "OpenStack project ID (Identity v3)"
+        type: string
+        required: false
+      user_domain_name:
+        description: "OpenStack domain name where the user is located (Identity v3)"
+        type: string
+        required: false
       user_name:
         description: "OpenStack user name"
         type: string

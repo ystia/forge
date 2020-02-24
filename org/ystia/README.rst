@@ -184,11 +184,11 @@ Moreover, some basic Ystia Forge TOSCA types have to be available in the catalog
 Suppose that none of the necessary components, nor topology template are imported to the Alien4CLoud catalog.
 You have to generate CSARs for *common* and *welcome* components, and *welcome_basic* topology.::
 
-  $ cd YOUR_SANDBOX/csar-public-library/org/ystia/common
+  $ cd YOUR_SANDBOX/forge/org/ystia/common
   $ zip -r common-csar.zip *
-  $ cd YOUR_SANDBOX/csar-public-library/org/ystia/samples/welcome/linux/bash
+  $ cd YOUR_SANDBOX/forge/org/ystia/samples/welcome/linux/bash
   $ zip -r welcome-csar.zip *
-  $ cd YOUR_SANDBOX/csar-public-library/org/ystia/samples/topologies/welcome
+  $ cd YOUR_SANDBOX/forge/org/ystia/samples/topologies/welcome
   $ zip -r welcome_basic-csar.zip *
 
 

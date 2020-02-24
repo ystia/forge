@@ -43,8 +43,20 @@ topology_template:
   inputs:
     os_tenant_name:
       type: string
-      required: true
-      description: "The OpenStack tenant name to use."
+      required: false
+      description: "The OpenStack tenant name to use (Identity v2)"
+    os_project_name:
+      type: string
+      required: false
+      description: "The OpenStack project name to use (Identity v3)"
+    os_project_id:
+      type: string
+      required: false
+      description: "The OpenStack project ID to use (Identity v3)"
+    os_user_domain_name:
+      type: string
+      required: false
+      description: "The OpenStack domain name where the user is located (Identity v3)"
     os_password:
       type: string
       required: true
@@ -297,6 +309,9 @@ topology_template:
       properties:
         auth_url: { get_input: os_auth_url }
         tenant_name: { get_input: os_tenant_name }
+        project_name: { get_input: os_project_name }
+        project_id: { get_input: os_project_id }
+        user_domain_name: { get_input: os_user_domain_name }
         user_name: { get_input: os_user_name }
         password: { get_input: os_password }
         private_network_name: { get_input: os_private_network_name }
