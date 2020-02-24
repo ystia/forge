@@ -18,14 +18,29 @@
         - "{{ INSTALL_DIR }}"
         - "{{ CONFIG_DIR }}"
         - "{{ CONFIG_DIR }}/traefik.d"
-    
+
     - name: Download Traefik binary
       get_url:
         url: "{{ DOWNLOAD_URL }}"
-        dest: "{{ INSTALL_DIR }}/traefik"
+        dest: "{{ INSTALL_DIR }}/traefik.tgz"
         owner: root
         group: root
         mode: 0755
+
+    - name: Unpack Traefik binary
+      unarchive:
+        src: "{{ INSTALL_DIR }}/traefik.tgz"
+        dest: "{{ INSTALL_DIR }}/"
+        group: root
+        remote_src: yes
+        mode: 0755
+        exclude: ["*.md"]
+        owner: root
+
+    - name: Remove Traefik tarball
+      file:
+        path: "{{ INSTALL_DIR }}/traefik.tgz"
+        state: absent
 
     - name: Create traefik systemd unit
       template:
@@ -34,12 +49,11 @@
         owner: root
         group: root
         mode: 0644
-    
+
     - name: Ensure traefik service is enabled and stopped
       service:
         name: traefik
         state: stopped
         enabled: yes
         daemon_reload: yes
-    
-    
+

@@ -13,6 +13,7 @@
 
 ### ENHANCEMENTS
 
+* Update Traefik to v2.1 ([GH-115](https://github.com/ystia/forge/issues/115))
 * Should support OpenStack Identity API v3 properties ([GH-109](https://github.com/ystia/forge/issues/109))
 * Support of locations ([GH-106](https://github.com/ystia/forge/issues/106))
 * Update forge components installing/configuring Yorc to support python3 ([GH-85](https://github.com/ystia/forge/issues/85))

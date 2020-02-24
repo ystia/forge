@@ -5,19 +5,15 @@
 #
 
 
-- name: Remove a Traefik route
+- name: Remove a Traefik route service
   hosts: all
   strategy: free
   become: true
   tasks:
-        
+
     - name: Remove route from traefik config file
       blockinfile:
-        path: "{{CONFIG_DIR}}/traefik.d/{{SOURCE_NODE}}-rules.toml"
         marker: "# {mark} ANSIBLE MANAGED BLOCK {{TARGET_INSTANCE}}"
+        dest: "{{CONFIG_DIR}}/traefik.d/{{SOURCE_NODE}}-route.toml"
         state: absent
-        block: |
-              [backends.{{SOURCE_NODE}}-backend.servers.{{TARGET_INSTANCE}}]
-              url = "http://{{IP_ADDRESS}}:{{TARGET_CAPABILITY_PROPERTY_port}}"    
 
-    

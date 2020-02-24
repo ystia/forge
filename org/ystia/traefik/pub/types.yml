@@ -17,6 +17,41 @@ description: Public interface types for Traefik reverse proxy support.
 imports:
   - tosca-normative-types:1.0.0-ALIEN20
 
+data_types:
+  org.ystia.traefik.pub.datatypes.HealthCheckConfig:
+    derived_from: tosca.datatypes.Root
+    properties:
+      path:
+        type: string
+        required: false
+        description: Path is appended to the server URL to set the health check endpoint. If not defined the targeted endpoint path is used.
+      scheme:
+        type: string
+        required: false
+        description: if defined, will replace the server URL scheme for the health check endpoint. If not defined the targeted endpoint protocol is used.
+      hostname:
+        type: string
+        required: false
+        description: if defined, will replace the server URL hostname for the health check endpoint. If not defined the targeted endpoint ip_address is used.
+      port:
+        type: integer
+        required: false
+        description: if defined, will replace the server URL port for the health check endpoint. If not defined the targeted endpoint port is used.
+      interval:
+        type: string
+        required: false
+        description: defines the frequency of the health check calls. Interval and timeout are to be given in a format understood by golang time.ParseDuration. The interval must be greater than the timeout. If configuration doesn't reflect this, the interval will be set to timeout + 1 second.
+      timeout:
+        type: string
+        required: false
+        description: defines the maximum duration Traefik will wait for a health check request before considering the server failed (unhealthy). Interval and timeout are to be given in a format understood by golang time.ParseDuration. The interval must be greater than the timeout. If configuration doesn't reflect this, the interval will be set to timeout + 1 second.
+      headers:
+        type: map
+        entry_schema:
+          type: string
+        required: false
+        description: defines custom headers to be sent to the health check endpoint.
+
 node_types:
   org.ystia.traefik.pub.nodes.Traefik:
     derived_from: tosca.nodes.SoftwareComponent
@@ -37,10 +72,27 @@ node_types:
         type: string
         default: ""
         required: false
+    capabilities:
+      health_check_cfg_host: org.ystia.traefik.pub.capabilities.HealthCheckConfigHost
     requirements:
       - cfg_host:
           capability: org.ystia.traefik.pub.capabilities.ConfigFragmentHost
           node: org.ystia.traefik.pub.nodes.Traefik
+          relationship: tosca.relationships.HostedOn
+
+  org.ystia.traefik.pub.nodes.TraefikRouteHealthCheck:
+    derived_from: tosca.nodes.Root
+    abstract: true
+    metadata:
+      icon: /icons/traefik-route-hb.png
+    properties:
+      configuration:
+        type: org.ystia.traefik.pub.datatypes.HealthCheckConfig
+        required: false
+    requirements:
+      - hc_cfg_host:
+          capability: org.ystia.traefik.pub.capabilities.HealthCheckConfigHost
+          node: org.ystia.traefik.pub.nodes.TraefikRoute
           relationship: tosca.relationships.HostedOn
 
 capability_types:
@@ -57,8 +109,10 @@ capability_types:
         type: string
         default: http
         constraints:
-          - valid_values: [http, https]
-  
+          - valid_values: [http, https, tcp]
+
   org.ystia.traefik.pub.capabilities.ConfigFragmentHost:
     derived_from: tosca.capabilities.Container
-    
+
+  org.ystia.traefik.pub.capabilities.HealthCheckConfigHost:
+    derived_from: tosca.capabilities.Container
