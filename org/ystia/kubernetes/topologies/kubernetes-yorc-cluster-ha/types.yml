@@ -9,12 +9,10 @@ description: "Setup an highly available Kubernetes Cluster plus some specific cr
 
 imports:
   - yorc-types:1.1.0
-  - org.ystia.traefik.ansible-linux:2.2.0-SNAPSHOT
   - org.ystia.kubernetes.linux.ansible:2.2.0-SNAPSHOT
   - tosca-normative-types:1.0.0-ALIEN20
   - org.ystia.ssl.ansible.certificates:2.2.0-SNAPSHOT
   - org.ystia.kubernetes.pub:2.2.0-SNAPSHOT
-  - org.ystia.traefik.pub:2.2.0-SNAPSHOT
   - org.ystia.haproxy.linux.ansible:2.2.0-SNAPSHOT
   - org.ystia.haproxy.pub:2.2.0-SNAPSHOT
 

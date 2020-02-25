@@ -15,7 +15,6 @@ description: Public interface types for Kubernetes support.
 
 imports:
   - tosca-normative-types:1.0.0-ALIEN20
-  - org.ystia.traefik.ansible-linux:2.2.0-SNAPSHOT
 
 node_types:
   org.ystia.kubernetes.pub.nodes.KubernetesMaster:
@@ -61,14 +60,6 @@ node_types:
           capability: org.ystia.kubernetes.pub.capabilities.AppHosting
           node: org.ystia.kubernetes.pub.nodes.KubernetesMaster
           relationship: tosca.relationships.HostedOn
-
-  org.ystia.kubernetes.pub.nodes.TraefikRouteK8SApi:
-    derived_from: org.ystia.traefik.ansible-linux.nodes.TraefikRoute
-    capabilities:
-      client:
-        type: org.ystia.kubernetes.pub.capabilities.KubernetesAPIServer
-        occurrences: [0, UNBOUNDED]
-        description: Expose k8s API through a loadbalancer
 
 capability_types:
   org.ystia.kubernetes.pub.capabilities.KubernetesAPIServer:
