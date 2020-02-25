@@ -4,6 +4,7 @@
 
 ### NEW COMPONENTS
 
+* Refactor HAProxy component to take advantage of tosca.nodes.LoadBalancer component ([GH-116](https://github.com/ystia/forge/issues/116))
 * SSL Root CA installer component ([GH-103](https://github.com/ystia/forge/issues/103))
 * SSL Certificates Generator component ([GH-78](https://github.com/ystia/forge/issues/78))
 * Deploy Docker containers in pure TOSCA ([GH-76](https://github.com/ystia/forge/issues/76))
