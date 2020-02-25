@@ -1,0 +1,143 @@
+#
+# Ystia Forge
+# Copyright (C) 2018 Bull S. A. S. - Bull, Rue Jean Jaures, B.P.68, 78340, Les Clayes-sous-Bois, France.
+# Use of this source code is governed by Apache 2 LICENSE that can be found in the LICENSE file.
+#
+
+- name: Set control plane url
+  set_fact:
+    control_plane_endpoint_opts: "--control-plane-endpoint {{control_plane_endpoint}}"
+  when: control_plane_endpoint|default("") != ""
+
+- name: Set default SAN fact
+  set_fact:
+    API_SAN: "{{ansible_hostname}},kubernetes,kubernetes.default,kubernetes.default.svc,kubernetes.default.svc.cluster.local,127.0.0.1,::1"
+
+- name: Set default SAN fact
+  set_fact:
+    API_SAN: "{{API_SAN}},{{LB_IP}}"
+  when: LB_IP|default("") != ""
+
+- name: compute Masters Public IP
+  set_fact:
+    API_SAN: "{{ API_SAN }},{{ hostvars[inventory_hostname][item] }}"
+  with_items: "{{ hostvars[inventory_hostname]  }}"
+  no_log: true
+  when: item is match(NODE+'_.*_PUBLIC_IP')
+
+- name: compute Masters Private IP
+  set_fact:
+    API_SAN: "{{ API_SAN }},{{ hostvars[inventory_hostname][item] }}"
+  with_items: "{{ hostvars[inventory_hostname]  }}"
+  no_log: true
+  when: item is match(NODE+'_.*_PRIVATE_IP')
+
+- name: compute Masters node names
+  set_fact:
+    API_SAN: "{{ API_SAN }},{{ hostvars[inventory_hostname][item] }}"
+  with_items: "{{ hostvars[inventory_hostname]  }}"
+  no_log: true
+  when: item is match('node_name')
+
+- name: Generate certificate key
+  shell: |
+    kubeadm alpha certs certificate-key
+  args:
+    executable: /bin/bash
+  register: certKeyResult
+
+- name: Set Certs Key fact
+  set_fact:
+    CERTS_KEY: "{{ certKeyResult['stdout_lines'][0] }}"
+
+- name: Run kubeadm init
+  shell: |
+    exec > >(tee -a "/root/kubeinit.log") 2>&1
+    kubeadm init {{control_plane_endpoint_opts}} --apiserver-advertise-address "{{PRIVATE_IP}}" --pod-network-cidr "{{POD_CIDR}}" --node-name "{{ansible_hostname}}" --apiserver-cert-extra-sans "{{API_SAN}}" --certificate-key "{{CERTS_KEY}}" --upload-certs 2>&1
+  args:
+    executable: /bin/bash
+  environment:
+    NO_PROXY: "{{NO_PROXY}}"
+    no_proxy: "{{no_proxy}}"
+
+- name: Create config directory
+  file:
+    src: /etc/kubernetes/admin.conf
+    dest: /root/.kube/config
+    owner: root
+    group: root
+    state: link
+
+- name: Generate Kubeadm Token
+  shell: >
+    kubeadm token generate
+  register: tokenResult
+  run_once: true
+
+- name: Expose bootstrap token
+  set_fact:
+    ADMIN_TOKEN: "{{ tokenResult['stdout_lines'][0] }}"
+
+- name: Create Kubeadm Token
+  shell: "kubeadm token create --ttl 0 {{ ADMIN_TOKEN }}"
+  run_once: true
+
+- name: Get discovery-token-ca-cert-hash
+  shell: >
+    openssl x509 -pubkey -in /etc/kubernetes/pki/ca.crt | openssl rsa -pubin -outform der 2>/dev/null | openssl dgst -sha256 -hex | sed 's/^.* //'
+  register: caCertHashResult
+  run_once: true
+
+- name: Expose discovery-token-ca-cert-hash
+  set_fact:
+    CA_CERT_HASH: "sha256:{{ caCertHashResult['stdout_lines'][0] }}"
+
+- name: Create Calico Network
+  shell: >
+    kubectl apply -f https://docs.projectcalico.org/v3.11/manifests/calico.yaml
+  when:
+    - pod_network == "calico"
+  environment:
+    NO_PROXY: "{{NO_PROXY}}"
+    no_proxy: "{{no_proxy}}"
+
+
+- name: Create Cilium Network
+  shell: >
+    kubectl apply -f https://raw.githubusercontent.com/cilium/cilium/v1.6/install/kubernetes/quick-install.yaml
+  when:
+    - pod_network == "cilium"
+  environment:
+    NO_PROXY: "{{NO_PROXY}}"
+    no_proxy: "{{no_proxy}}"
+
+
+- name: Create Flannel Network
+  shell: >
+    kubectl apply -f https://raw.githubusercontent.com/coreos/flannel/2140ac876ef134e0ed5af15c65e414cf26827915/Documentation/kube-flannel.yml
+  when:
+    - pod_network == "flannel"
+  environment:
+    NO_PROXY: "{{NO_PROXY}}"
+    no_proxy: "{{no_proxy}}"
+
+- name: Create Weave Network
+  shell: >
+    export kubever=$(kubectl version | base64 | tr -d '\n');
+    kubectl apply -f "https://cloud.weave.works/k8s/net?k8s-version=$kubever"
+  when:
+    - pod_network == "weave"
+  environment:
+    NO_PROXY: "{{NO_PROXY}}"
+    no_proxy: "{{no_proxy}}"
+
+- name: Allow to schedule containers on master nodes
+  shell: >
+    kubectl taint nodes --all node-role.kubernetes.io/master-
+  when:
+    - hosts_pods is defined
+    - hosts_pods == "true"
+  environment:
+    NO_PROXY: "{{NO_PROXY}}"
+    no_proxy: "{{no_proxy}}"
+

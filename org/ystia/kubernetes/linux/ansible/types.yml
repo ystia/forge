@@ -26,6 +26,12 @@ node_types:
     tags:
       icon: /images/kubernetes-master-icon.png
     properties:
+      component_version:
+        type: version
+        required: false
+        default: "1.17"
+        constraints:
+          - greater_or_equal: "1.17"
       pod_network:
         type: string
         default: calico
@@ -74,6 +80,8 @@ node_types:
       ca_cert_hash: { get_operation_output: [SELF, Standard, configure, CA_CERT_HASH]}
       pods_cidr: { get_operation_output: [SELF, Standard, configure, POD_CIDR]}
       node_name: { get_operation_output: [SELF, Standard, configure, node_name]}
+      lb_ip: { get_operation_output: [SELF, Configure, pre_configure_source, LB_IP]}
+      lb_port: { get_operation_output: [SELF, Configure, pre_configure_source, LB_PORT]}
     requirements:
       # currently support only RHEL familly
       - host:
@@ -88,11 +96,19 @@ node_types:
                     - type: { equal: linux }
                     - architecture: { equal: x86_64 }
                     - distribution: { valid_values: [ centos, rhel ] }
+      - load_balancer:
+          capability: tosca.capabilities.Endpoint
+          node: tosca.nodes.LoadBalancer
+          relationship: org.ystia.kubernetes.linux.ansible.relationships.UseLoadBalancer
+          occurrences: [ 0, 1 ]
+
     interfaces:
       Standard:
         inputs:
           PRIVATE_IP: {get_attribute: [HOST, private_address]}
           PUBLIC_IP: {get_attribute: [HOST, public_address]}
+          LB_IP: {get_attribute: [SELF, lb_ip]}
+          LB_PORT: {get_attribute: [SELF, lb_port]}
         create:
           inputs:
             CFSSL_DOWNLOAD_URL: {get_property: [SELF, cfssl_download_url]}
@@ -121,6 +137,12 @@ node_types:
     tags:
       icon: /images/kubernetes-master-icon.png
     properties:
+      component_version:
+        type: version
+        required: false
+        default: "1.17"
+        constraints:
+          - greater_or_equal: "1.17"
       kube_yum_repo:
         type: string
         default: https://packages.cloud.google.com/yum/repos/kubernetes-el7-x86_64
@@ -131,6 +153,8 @@ node_types:
         required: true
     attributes:
       node_name: { get_operation_output: [SELF, Standard, create, node_name]}
+      lb_ip: { get_operation_output: [SELF, Configure, pre_configure_source, LB_IP]}
+      lb_port: { get_operation_output: [SELF, Configure, pre_configure_source, LB_PORT]}
     requirements:
       # currently support only RHEL familly
       - host:
@@ -150,10 +174,18 @@ node_types:
           node: org.ystia.kubernetes.linux.ansible.nodes.KubernetesMaster
           relationship: org.ystia.kubernetes.linux.ansible.relationships.JoinCluster
           occurrences: [ 1, 1 ]
+      - load_balancer:
+          capability: tosca.capabilities.Endpoint
+          node: tosca.nodes.LoadBalancer
+          relationship: org.ystia.kubernetes.linux.ansible.relationships.UseLoadBalancer
+          occurrences: [ 0, 1 ]
+
     interfaces:
       Standard:
         inputs:
           PRIVATE_IP: {get_attribute: [HOST, private_address]}
+          LB_IP: {get_attribute: [SELF, lb_ip]}
+          LB_PORT: {get_attribute: [SELF, lb_port]}
         create:
           inputs:
             KUBE_YUM_REPO: {get_property: [SELF, kube_yum_repo]}
@@ -166,6 +198,12 @@ node_types:
           implementation: playbooks/commons/kubeadm/stop.yaml
         delete:
           implementation: playbooks/commons/kubeadm/delete.yaml
+
+  org.ystia.kubernetes.linux.ansible.nodes.KubernetesMasterAPI:
+    derived_from: tosca.nodes.SoftwareComponent
+    description: This component is a dummy component allowing to workaround the chicken & egg issue on Kubernetes API and LoadBalancer on HA env that depends on each other
+    capabilities:
+      api_server: org.ystia.kubernetes.pub.capabilities.KubernetesAPIServer
 
   org.ystia.kubernetes.linux.ansible.nodes.KubernetesDashBoard:
     derived_from: org.ystia.kubernetes.linux.ansible.nodes.KubernetesApp
@@ -232,6 +270,7 @@ relationship_types:
         post_configure_source:
           inputs:
             JOIN_URL: {concat: [get_attribute: [TARGET, private_address], ":", get_attribute: [TARGET, api_server, port]]}
+            JOIN_URL_LB: {concat: [get_attribute: [SOURCE, lb_ip], ":", get_attribute: [SOURCE, lb_port]]}
             ADMIN_TOKEN: {get_attribute: [TARGET, admin_token]}
             CA_CERT_HASH: {get_attribute: [TARGET, ca_cert_hash]}
             MASTER_PRIVATE_IP: { get_attribute: [TARGET, private_address] }
@@ -241,3 +280,15 @@ relationship_types:
           inputs:
             node_name: {get_attribute: [SOURCE, node_name]}
           implementation: playbooks/master/remove_worker.yaml
+
+  org.ystia.kubernetes.linux.ansible.relationships.UseLoadBalancer:
+    derived_from: tosca.relationships.ConnectsTo
+    attributes:
+      lb_ip: { get_operation_output: [SELF, Configure, pre_configure_source, LB_IP]}
+      lb_port: { get_operation_output: [SELF, Configure, pre_configure_source, LB_PORT]}
+    interfaces:
+      Configure:
+        pre_configure_source:
+          inputs:
+            lb_ip: { get_attribute: [TARGET, ip_address]}
+          implementation: playbooks/commons/kubeadm/configure_loadbalancer.yaml

@@ -11,7 +11,17 @@
   vars:
     NO_PROXY: ""
     no_proxy: ""
+    control_plane_endpoint: ""
   tasks:
+
+    - name: Set control plane url to public ip
+      set_fact:
+        control_plane_endpoint: "{{LB_IP}}:{{LB_PORT}}"
+      when: LB_IP|default("") != ""
+
+    - name: Set node name
+      set_fact:
+        node_name: "{{ansible_hostname}}"
 
     - name: Set default POD CIDR
       set_fact:
@@ -55,69 +65,6 @@
           export NO_PROXY="{{POD_CIDR}},${NO_PROXY}"
           export no_proxy="{{POD_CIDR}},${no_proxy}"
 
-    - name: Set default SAN fact
-      set_fact:
-        API_SAN: "{{ansible_hostname}},kubernetes,kubernetes.default,kubernetes.default.svc,kubernetes.default.svc.cluster.local,127.0.0.1,::1,{{PRIVATE_IP}}"
-
-    - name: Set public IP to SAN fact
-      set_fact:
-        API_SAN: "{{API_SAN}},{{PUBLIC_IP}}"
-      when: PUBLIC_IP|default("") != ""
-
-    - name: Generate certificate key
-      shell: |
-        kubeadm alpha certs certificate-key
-      args:
-        executable: /bin/bash
-      register: certKeyResult
-      when: inventory_hostname == ansible_play_hosts[0]
-
-    - name: Set Certs Key fact
-      set_fact:
-        CERTS_KEY: "{{ certKeyResult['stdout_lines'][0] }}"
-
-    - name: Run kubeadm init
-      shell: |
-        exec > >(tee -a "/root/kubeinit.log") 2>&1
-        kubeadm init --apiserver-advertise-address "${PRIVATE_IP}" --pod-network-cidr "${POD_CIDR}" --node-name "${NODE_NAME}" --apiserver-cert-extra-sans "${API_SAN}" --certificate-key "${CERTS_KEY}" --upload-certs 2>&1
-      args:
-        executable: /bin/bash
-      environment:
-        NO_PROXY: "{{NO_PROXY}}"
-        no_proxy: "{{no_proxy}}"
-        PRIVATE_IP: "{{PRIVATE_IP}}"
-        POD_CIDR: "{{POD_CIDR}}"
-        NODE_NAME: "{{ansible_hostname}}"
-        API_SAN: "{{API_SAN}}"
-        CERTS_KEY: "{{CERTS_KEY}}"
-
-    - name: Generate Kubeadm Token
-      shell: >
-        kubeadm token generate
-      register: tokenResult
-      run_once: true
-      when: inventory_hostname == ansible_play_hosts[0]
-
-    - name: Expose bootstrap token
-      set_fact:
-        ADMIN_TOKEN: "{{ tokenResult['stdout_lines'][0] }}"
-
-    - name: Create Kubeadm Token
-      shell: "kubeadm token create --ttl 0 {{ ADMIN_TOKEN }}"
-      run_once: true
-      when: inventory_hostname == ansible_play_hosts[0]
-
-    - name: Get discovery-token-ca-cert-hash
-      shell: >
-        openssl x509 -pubkey -in /etc/kubernetes/pki/ca.crt | openssl rsa -pubin -outform der 2>/dev/null | openssl dgst -sha256 -hex | sed 's/^.* //'
-      register: caCertHashResult
-      run_once: true
-      when: inventory_hostname == ansible_play_hosts[0]
-
-    - name: Expose discovery-token-ca-cert-hash
-      set_fact:
-        CA_CERT_HASH: "sha256:{{ caCertHashResult['stdout_lines'][0] }}"
-
     - name: Create config directory
       file:
         path: "/root/.kube"
@@ -126,71 +73,33 @@
         group: root
         mode: "u=rwx,g=rx,o=rx"
 
-    - name: Create config directory
-      file:
-        src: /etc/kubernetes/admin.conf
-        dest: /root/.kube/config
-        owner: root
-        group: root
-        state: link
+    - name: Include primary master tasks
+      include_tasks: init_primary_master_tasks.yaml
+      when: inventory_hostname == ansible_play_hosts[0]
 
-    - name: Create Calico Network
-      shell: >
-        kubectl apply -f https://docs.projectcalico.org/v3.11/manifests/calico.yaml
-      when:
-        - inventory_hostname == ansible_play_hosts[0]
-        - pod_network == "calico"
-      environment:
-        NO_PROXY: "{{NO_PROXY}}"
-        no_proxy: "{{no_proxy}}"
+    - name: Syncho
+      debug:
+          msg: "Done configuring primary master"
 
-
-    - name: Create Cilium Network
-      shell: >
-        kubectl apply -f https://raw.githubusercontent.com/cilium/cilium/v1.6/install/kubernetes/quick-install.yaml
-      when:
-        - inventory_hostname == ansible_play_hosts[0]
-        - pod_network == "cilium"
-      environment:
-        NO_PROXY: "{{NO_PROXY}}"
-        no_proxy: "{{no_proxy}}"
-
-
-    - name: Create Flannel Network
-      shell: >
-        kubectl apply -f https://raw.githubusercontent.com/coreos/flannel/2140ac876ef134e0ed5af15c65e414cf26827915/Documentation/kube-flannel.yml
-      when:
-        - inventory_hostname == ansible_play_hosts[0]
-        - pod_network == "flannel"
-      environment:
-        NO_PROXY: "{{NO_PROXY}}"
-        no_proxy: "{{no_proxy}}"
-
-    - name: Create Weave Network
-      shell: >
-        export kubever=$(kubectl version | base64 | tr -d '\n');
-        kubectl apply -f "https://cloud.weave.works/k8s/net?k8s-version=$kubever"
-      when:
-        - inventory_hostname == ansible_play_hosts[0]
-        - pod_network == "weave"
-      environment:
-        NO_PROXY: "{{NO_PROXY}}"
-        no_proxy: "{{no_proxy}}"
-
-    - name: Allow to schedule containers on master nodes
-      shell: >
-        kubectl taint nodes --all node-role.kubernetes.io/master-
-      when:
-        - inventory_hostname == ansible_play_hosts[0]
-        - hosts_pods is defined
-        - hosts_pods == "true"
-      environment:
-        NO_PROXY: "{{NO_PROXY}}"
-        no_proxy: "{{no_proxy}}"
-
-    - name: Set node name
+    - name: Set Certs Key fact
       set_fact:
-        node_name: "{{ansible_hostname}}"
+        CERTS_KEY: "{{ hostvars[ansible_play_hosts[0]]['CERTS_KEY'] }}"
+
+    - name: Expose bootstrap token
+      set_fact:
+        ADMIN_TOKEN: "{{ hostvars[ansible_play_hosts[0]]['ADMIN_TOKEN']  }}"
+
+    - name: Expose discovery-token-ca-cert-hash
+      set_fact:
+        CA_CERT_HASH: "{{ hostvars[ansible_play_hosts[0]]['CA_CERT_HASH'] }}"
+
+    - name: Include extra masters tasks
+      include_tasks: init_extra_master_tasks.yaml
+      when: inventory_hostname != ansible_play_hosts[0]
+
+    - name: Syncho
+      debug:
+          msg: "Done configuring extra masters"
 
     - name: Set private API URL fact
       set_fact:
@@ -202,3 +111,7 @@
       # Below when construct is a shorthand for PUBLIC_IP is defined and not empty
       when: PUBLIC_IP|default("") != ""
 
+    - name: Set private API URL fact
+      set_fact:
+        API_URL: "https://{{control_plane_endpoint}}"
+      when: control_plane_endpoint != ""

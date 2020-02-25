@@ -26,6 +26,9 @@
         mode: 0644
       with_items: "{{specs}}"
 
+    - name: Wait for kubectl to be configured
+      wait_for:
+        path: /root/.kube/config
 
     - name: Apply configurations
       shell: >
@@ -33,4 +36,3 @@
         kubectl apply -f "{{ansible_env['HOME']}}/kube-manifests/{{NODE}}/{{item|basename}}"
       with_items: "{{specs}}"
       when: inventory_hostname == ansible_play_hosts[0]
-      

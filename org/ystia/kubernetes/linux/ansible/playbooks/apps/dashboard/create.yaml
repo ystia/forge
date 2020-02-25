@@ -41,6 +41,10 @@
         /usr/local/bin/cfssl gencert -ca=/etc/kubernetes/pki/ca.crt -ca-key=/etc/kubernetes/pki/ca.key -config=/etc/kubernetes/pki/ca-config.json -profile=server config.json | /usr/local/bin/cfssljson -bare server && mv server.pem dashboard.crt && mv server-key.pem dashboard.key
       when: inventory_hostname == ansible_play_hosts[0]
 
+    - name: Wait for kubectl to be configured
+      wait_for:
+        path: /root/.kube/config
+
     - name: create certificate secrets
       shell: >
         source /etc/profile;

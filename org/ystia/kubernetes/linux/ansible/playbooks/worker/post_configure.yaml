@@ -11,12 +11,19 @@
   become: true
   vars:
     masters: []
+    join_url: "{{JOIN_URL}}"
   tasks:
+
+    - name: Compute join url though LoadBalancer
+      set_fact:
+        join_url: "{{JOIN_URL_LB}}"
+      when: JOIN_URL_LB != ":"
 
     - name: compute Masters Private IP
       set_fact:
         masters: "{{ masters }} + [ '{{ hostvars[inventory_hostname][item] }}' ]"
       with_items: "{{ hostvars[inventory_hostname]  }}"
+      no_log: true
       when: item is match(TARGET_NODE+'_.*_MASTER_PRIVATE_IP')
 
     - name: set Masters no proxy
