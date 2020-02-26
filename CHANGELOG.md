@@ -4,6 +4,7 @@
 
 ### NEW COMPONENTS
 
+* Failure starting a docker container in attached mode ([GH-119](https://github.com/ystia/forge/issues/119))
 * SSL Root CA installer component ([GH-103](https://github.com/ystia/forge/issues/103))
 * SSL Certificates Generator component ([GH-78](https://github.com/ystia/forge/issues/78))
 * Deploy Docker containers in pure TOSCA ([GH-76](https://github.com/ystia/forge/issues/76))
