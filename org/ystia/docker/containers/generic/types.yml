@@ -91,21 +91,20 @@ node_types:
         inputs:
           # Will be empty for create operation but not a big deal
           CONTAINER_ID: { get_attribute: [SELF, container_id] }
+          AUTO_REMOVE: { get_property: [SELF, auto_remove] }
+          CLEANUP: { get_property: [SELF, cleanup] }
+          CPU_SHARE: { get_property: [SELF, cpu_share] }
+          DETACH: { get_property: [SELF, detach] }
+          ENV_VARS: { get_property: [SELF, docker_env_vars] }
+          EXPOSED_PORTS: { get_property: [SELF, exposed_ports] }
+          IMAGE: { get_property: [SELF, image] }
+          KEEP_VOLUMES: { get_property: [SELF, keep_volumes] }
+          MEM_SHARE: { get_property: [SELF, mem_share] }
+          MEM_SHARE_LIMIT: { get_property: [SELF, mem_share_limit] }
+          PUBLISHED_PORTS: { get_property: [SELF, published_ports] }
+          RESTART_POLICY: { get_property: [SELF, restart_policy] }
+          VOLUMES: { get_property: [SELF, volumes] }
         create:
-          inputs:
-            AUTO_REMOVE: { get_property: [SELF, auto_remove] }
-            CLEANUP: { get_property: [SELF, cleanup] }
-            CPU_SHARE: { get_property: [SELF, cpu_share] }
-            DETACH: { get_property: [SELF, detach] }
-            ENV_VARS: { get_property: [SELF, docker_env_vars] }
-            EXPOSED_PORTS: { get_property: [SELF, exposed_ports] }
-            IMAGE: { get_property: [SELF, image] }
-            KEEP_VOLUMES: { get_property: [SELF, keep_volumes] }
-            MEM_SHARE: { get_property: [SELF, mem_share] }
-            MEM_SHARE_LIMIT: { get_property: [SELF, mem_share_limit] }
-            PUBLISHED_PORTS: { get_property: [SELF, published_ports] }
-            RESTART_POLICY: { get_property: [SELF, restart_policy] }
-            VOLUMES: { get_property: [SELF, volumes] }
           implementation: playbooks/create.yaml
         start:
           implementation: playbooks/start.yaml
@@ -113,21 +112,3 @@ node_types:
           implementation: playbooks/stop.yaml
         delete:
           implementation: playbooks/delete.yaml
-      custom:
-        # create and start
-        run:
-          inputs:
-            AUTO_REMOVE: { get_property: [SELF, auto_remove] }
-            CLEANUP: { get_property: [SELF, cleanup] }
-            CPU_SHARE: { get_property: [SELF, cpu_share] }
-            DETACH: { get_property: [SELF, detach] }
-            ENV_VARS: { get_property: [SELF, docker_env_vars] }
-            EXPOSED_PORTS: { get_property: [SELF, exposed_ports] }
-            IMAGE: { get_property: [SELF, image] }
-            KEEP_VOLUMES: { get_property: [SELF, keep_volumes] }
-            MEM_SHARE: { get_property: [SELF, mem_share] }
-            MEM_SHARE_LIMIT: { get_property: [SELF, mem_share_limit] }
-            PUBLISHED_PORTS: { get_property: [SELF, published_ports] }
-            RESTART_POLICY: { get_property: [SELF, restart_policy] }
-            VOLUMES: { get_property: [SELF, volumes] }
-          implementation: playbooks/run.yaml

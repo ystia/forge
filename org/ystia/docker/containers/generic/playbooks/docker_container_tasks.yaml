@@ -28,7 +28,7 @@
   debug:
     var: DOCKER_ENV
 
-- name: create docker container
+- name: Docker container
   docker_container: 
     name: "{{NODE}}-{{INSTANCE}}"
     auto_remove: "{{AUTO_REMOVE}}"
@@ -45,4 +45,4 @@
     restart_policy: "{{RESTART_POLICY}}"
     volumes: "{{ DOCKER_VOLUMES }}"
     state: "{{ DOCKER_STATE }}"
-  register: docker_create_res
+  register: docker_res
