@@ -4,15 +4,19 @@
 # Use of this source code is governed by Apache 2 LICENSE that can be found in the LICENSE file.
 #
 
-
 - name: Start Docker Container
   hosts: all
   become: true
   vars:
     ansible_python_interpreter: "/usr/local/docker-py-env/bin/python"
+    DOCKER_ENV: {}
+    DOCKER_EXP_PORTS: []
+    DOCKER_PUB_PORT: []
+    DOCKER_VOLUMES: []
+    DOCKER_STATE: "started"
   tasks:
-  - name: Start docker container
-    docker_container: 
-      name: "{{CONTAINER_ID}}"
-      state: started
-
+  - import_tasks: docker_container_tasks.yaml
+  - name: Get container output
+    debug:
+      msg: "{{ docker_res.ansible_facts.docker_container.Output }}"
+    when: not DETACH|bool
