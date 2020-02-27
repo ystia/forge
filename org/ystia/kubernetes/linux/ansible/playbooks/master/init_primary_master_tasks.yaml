@@ -6,6 +6,10 @@
 
 - name: Set control plane url
   set_fact:
+    control_plane_endpoint_opts: ""
+
+- name: Set control plane url
+  set_fact:
     control_plane_endpoint_opts: "--control-plane-endpoint {{control_plane_endpoint}}"
   when: control_plane_endpoint|default("") != ""
 
