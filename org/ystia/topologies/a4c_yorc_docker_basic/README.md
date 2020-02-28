@@ -41,7 +41,7 @@ In order to connect to the deployed Alien4Cloud's GUI:
 * alien-aliendeployment-service name; here alien-aliendeployment-service-786916228
 * alien-aliendeployment-service Load balancer IP ; here 35.240.85.70
 * alien-aliendeployment-service alien-console port; here 8088
-The Alien4Cloud's GUI can be reached with http://<lb-ip>:<alien-console-ip>; here  http://35.240.85.70:8088
+The Alien4Cloud's GUI can be reached with http://<lb-ip>:<alien-console-port>; here  http://35.240.85.70:8088
 
 In order to connect the Alien4Cloud to the deployed Yorc orchestrator:
 * yorc-yorcdeployment-service name; here yorc-yorcdeployment-service--1179116320
