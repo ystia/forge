@@ -10,6 +10,12 @@
 * Docker Registry ([GH-80](https://github.com/ystia/forge/issues/80))
 * Expose Hybrid demo material ([GH-93](https://github.com/ystia/forge/issues/93))
 * Component for the Yorc plugin provided by Alien4cloud (the Yorc Provider) ([GH-101](https://github.com/ystia/forge/issues/101))
+* Docker container component for Alien4Cloud deployment ([GH-111](https://github.com/ystia/forge/issues/111))
+* Docker container component for Yorc&Consul deployment ([GH-111](https://github.com/ystia/forge/issues/111))
+
+### NEW TOPOLOGY TEMPLATES
+
+* Template allowing to deploy a simple Yorc+Alien4Cloud stack based on Docker components ([GH-111](https://github.com/ystia/forge/issues/111))
 
 ### ENHANCEMENTS
 
