@@ -45,14 +45,13 @@ The Alien4Cloud's GUI can be reached with http://<lb-ip>:<alien-console-ip>; her
 
 In order to connect the Alien4Cloud to the deployed Yorc orchestrator:
 * yorc-yorcdeployment-service name; here yorc-yorcdeployment-service--1179116320
-* yorc-yorcdeployment-service ClusterIP (NodePort Cluster IP); here 10.3.255.250
 * yorc-yorcdeployment-service yorc-server port; here 8800
-The Yorc orchestrator's URL will be http://<cluster-ip>:<yorc-server-port> ; here http://10.3.255.250:8800
+The Yorc orchestrator's URL will be http://<yorc-service-name>:<yorc-service-port> ; here http://yorc-yorcdeployment-service--1179116320:8800
 
 Now follow the next steps:
 
 1. Connect to the deployed Alien Console : http://35.240.85.70:8088
-2. Create a Yorc orchestrator (Yorch) with Yorc URL http://10.3.255.250:8800
+2. Create a Yorc orchestrator (Yorch) with Yorc URL http:// yorc-yorcdeployment-service--1179116320:8800
 3. Create and configure locations for Yorch. For example, create a K8S location (See below for K8S location configuration)
 
 ```
