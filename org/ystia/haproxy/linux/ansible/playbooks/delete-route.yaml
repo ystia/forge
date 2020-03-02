@@ -5,17 +5,13 @@
 #
 
 
-- name: Add a Traefik route
+- name: Configure HAProxy Route
   hosts: all
   strategy: free
   become: true
   tasks:
-
-    - name: Create traefik route config file
-      template:
-        src: "routers.toml.j2"
-        dest: "{{CONFIG_DIR}}/traefik.d/{{NODE}}-route.toml"
-        owner: root
-        group: root
-        mode: 0644
-
+    - name: Add generated content to HAProxy config
+      blockinfile:
+        path: /etc/haproxy/haproxy.cfg
+        marker: "# {mark} ANSIBLE MANAGED BLOCK ROUTE {{INSTANCE}}"
+        state: absent

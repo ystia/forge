@@ -1,0 +1,25 @@
+#
+# Ystia Forge
+# Copyright (C) 2018 Bull S. A. S. - Bull, Rue Jean Jaures, B.P.68, 78340, Les Clayes-sous-Bois, France.
+# Use of this source code is governed by Apache 2 LICENSE that can be found in the LICENSE file.
+#
+
+
+- name: Add HAProxy Route target
+  hosts: all
+  strategy: free
+  become: true
+  tasks:
+
+    - name: Add generated content to HAProxy config
+      blockinfile:
+        path: /etc/haproxy/haproxy.cfg
+        insertafter: "backend_{{SOURCE_NODE}} anchor"
+        marker: "# {mark} ANSIBLE MANAGED BLOCK ROUTE {{TARGET_INSTANCE}}"
+        state: present
+        block:  "    server {{TARGET_INSTANCE | lower}} {{IP_ADDRESS}}:{{TARGET_CAPABILITY_PROPERTY_port}} check"
+
+    - name: Reload HAProxy
+      systemd:
+        name: haproxy
+        state: reloaded

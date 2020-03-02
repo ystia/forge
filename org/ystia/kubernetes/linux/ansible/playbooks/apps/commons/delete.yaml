@@ -9,7 +9,7 @@
   strategy: linear
   become: true
   tasks:
-    
+
     - name: Delete configurations
       shell: >
         source /etc/profile;

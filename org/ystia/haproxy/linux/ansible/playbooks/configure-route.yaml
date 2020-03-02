@@ -1,0 +1,35 @@
+#
+# Ystia Forge
+# Copyright (C) 2018 Bull S. A. S. - Bull, Rue Jean Jaures, B.P.68, 78340, Les Clayes-sous-Bois, France.
+# Use of this source code is governed by Apache 2 LICENSE that can be found in the LICENSE file.
+#
+
+
+- name: Configure HAProxy Route
+  hosts: all
+  strategy: free
+  become: true
+  vars:
+    template_name: http-route.cfg.j2
+  tasks:
+    - name: Change TCP template name
+      set_fact:
+        template_name: tcp-route.cfg.j2
+      when: MODE == "tcp"
+
+    - name: Install HAProxy package
+      template:
+        dest: "/tmp/{{INSTANCE}}.tmp"
+        src: "{{template_name}}"
+
+    - name: Slurp generated content
+      slurp:
+          src: "/tmp/{{INSTANCE}}.tmp"
+      register: generated_template
+
+    - name: Add generated content to HAProxy config
+      blockinfile:
+        path: /etc/haproxy/haproxy.cfg
+        marker: "# {mark} ANSIBLE MANAGED BLOCK ROUTE {{INSTANCE}}"
+        state: present # not required. choices: absent;present. Whether the block should be there or not.
+        block:  "{{ generated_template.content | b64decode  }}"

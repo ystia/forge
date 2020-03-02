@@ -1,0 +1,11 @@
+
+frontend {{NODE}}
+    bind :{{PORT}}
+    bind 127.0.0.1:{{PORT}}
+    mode http
+    default_backend backend_{{NODE}}
+
+backend backend_{{NODE}}
+    mode http
+    balance roundrobin
+# backend_{{NODE}} anchor

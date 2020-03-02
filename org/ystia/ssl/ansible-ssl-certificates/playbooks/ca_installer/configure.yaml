@@ -19,7 +19,7 @@
   strategy: free
   become: true
   vars:
-    certs: "{{ CA_CERTS | from_json }}"
+
   tasks:
     - name: compute install path Debian
       set_fact:
@@ -33,13 +33,26 @@
         command: "update-ca-trust force-enable && update-ca-trust extract"
       when: ansible_facts['os_family'] == "RedHat"
 
+
+    - name: generate certificates list
+      set_fact:
+        certs: "{{ CA_CERTS | from_json }}"
+      when: CA_CERTS|default("") != ""
+
     - name: copy certificates
       copy:
-        dest: "{{ install_path }}/ssl-ca-installer-{{ idx }}.crt"
+        dest: "{{ install_path }}/ssl-ca-installer-{{NODE}}-{{ idx }}.crt"
         content: "{{ item }}"
       loop: "{{ certs }}"
       loop_control:
         index_var: idx
+      when: CA_CERTS|default("") != ""
+
+    - name: copy single certificate
+      copy:
+        dest: "{{ install_path }}/ssl-ca-installer-{{NODE}}.crt"
+        content: "{{ CA_CERT }}"
+      when: CA_CERT != ""
 
     - name: Update CA Trust
       command: "{{ command }}"

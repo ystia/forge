@@ -5,15 +5,19 @@
 #
 
 
-- name: Remove a Traefik route service
+- name: Remove HAProxy Route target
   hosts: all
   strategy: free
   become: true
   tasks:
 
-    - name: Remove route from traefik config file
+    - name: Remove generated content from HAProxy config
       blockinfile:
-        marker: "# {mark} ANSIBLE MANAGED BLOCK {{TARGET_INSTANCE}}"
-        dest: "{{CONFIG_DIR}}/traefik.d/{{SOURCE_NODE}}-route.toml"
+        path: /etc/haproxy/haproxy.cfg
+        marker: "# {mark} ANSIBLE MANAGED BLOCK ROUTE {{TARGET_INSTANCE}}"
         state: absent
 
+    - name: Reload HAProxy
+      systemd:
+        name: haproxy
+        state: reloaded

@@ -1,0 +1,294 @@
+tosca_definitions_version: alien_dsl_2_0_0
+
+metadata:
+  template_name: Kubernetes-Yorc-Cluster-ha
+  template_version: 2.2.0-SNAPSHOT
+  template_author: admin
+
+description: "Setup an highly available Kubernetes Cluster plus some specific credentials to make it manageable by Yorc"
+
+imports:
+  - yorc-types:1.1.0
+  - org.ystia.kubernetes.linux.ansible:2.2.0-SNAPSHOT
+  - tosca-normative-types:1.0.0-ALIEN20
+  - org.ystia.ssl.ansible.certificates:2.2.0-SNAPSHOT
+  - org.ystia.kubernetes.pub:2.2.0-SNAPSHOT
+  - org.ystia.haproxy.linux.ansible:2.2.0-SNAPSHOT
+  - org.ystia.haproxy.pub:2.2.0-SNAPSHOT
+
+topology_template:
+  inputs:
+    ca_certificate:
+      type: string
+      required: false
+      default: ""
+      description: |
+        This property should contains a PEM-encoded Certificate Authority (CA) certificate.
+        If not provided along with a ca_key a self-signed certificate and key will be automatically created.
+        It should allows to sign clients, servers and peers certification requests.
+        It will be used a Root CA for etcd and the Kubernetes API server.
+    k8s_api_port:
+      type: integer
+      required: true
+      default: 6443
+      constraints:
+        - in_range: [1, 65535]
+      description: "The port of the Kubernetes HTTP endpoint."
+    ca_key:
+      type: string
+      required: false
+      default: ""
+      description: |
+        This property should contains a PEM-encoded Certificate Authority (CA) key.
+        If not provided along with a ca_certificate a self-signed certificate and key will be automatically created.
+        It should allows to sign clients, servers and peers certification requests.
+        It will be used a Root CA for etcd and the Kubernetes API server.
+  node_templates:
+    Network:
+      metadata:
+        a4c_edit_x: 68
+        a4c_edit_y: "-48"
+      type: tosca.nodes.Network
+    KubernetesMaster:
+      type: org.ystia.kubernetes.linux.ansible.nodes.KubernetesMaster
+      properties:
+        component_version: 1.17
+        pod_network: calico
+        cfssl_download_url: "https://pkg.cfssl.org/R1.2"
+        ca_certificate: { get_input: ca_certificate }
+        ca_key: { get_input: ca_key }
+        hosts_pods: false
+        kube_yum_repo: "https://packages.cloud.google.com/yum/repos/kubernetes-el7-x86_64"
+        kube_yum_repo_gpg_keys: "https://packages.cloud.google.com/yum/doc/yum-key.gpg https://packages.cloud.google.com/yum/doc/rpm-package-key.gpg"
+      requirements:
+        - hostedOnComputeHost:
+            type_requirement: host
+            node: ComputeKubeMaster
+            capability: tosca.capabilities.Container
+            relationship: tosca.relationships.HostedOn
+        - dependsOnKubernetesMasterApiFeature:
+            type_requirement: dependency
+            node: KubernetesMasterAPI
+            capability: tosca.capabilities.Node
+            relationship: tosca.relationships.DependsOn
+        - useLoadBalancerHaProxyTcpClient:
+            type_requirement: load_balancer
+            node: HAProxyTCP
+            capability: tosca.capabilities.Endpoint.Public
+            relationship: org.ystia.kubernetes.linux.ansible.relationships.UseLoadBalancer
+      capabilities:
+        api_server:
+          properties:
+            port: { get_input: k8s_api_port }
+            protocol: https
+            secure: false
+            network_name: PUBLIC
+            initiator: source
+    KubernetesDashBoard:
+      type: org.ystia.kubernetes.linux.ansible.nodes.KubernetesDashBoard
+      properties:
+        specs:
+          - "https://raw.githubusercontent.com/kubernetes/dashboard/v2.0.0-rc5/aio/deploy/recommended.yaml"
+          - "https://gist.githubusercontent.com/loicalbertin/1a7c1bebf1854924bf285f0553cde268/raw/f2df07f978cb390902908247a4e8e73e5d3efafa/KubernetesDashboardAdminUserSA.yaml"
+        service_type: NodePort
+        expose_admin_token: true
+      requirements:
+        - hostedOnKubernetesMasterApp_host:
+            type_requirement: app_host
+            node: KubernetesMaster
+            capability: org.ystia.kubernetes.pub.capabilities.AppHosting
+            relationship: tosca.relationships.HostedOn
+    ComputeKubeMaster:
+      metadata:
+        a4c_edit_x: "-11"
+        a4c_edit_y: "-3"
+      type: tosca.nodes.Compute
+      requirements:
+        - networkNetworkConnection:
+            type_requirement: network
+            node: Network
+            capability: tosca.capabilities.Connectivity
+            relationship: tosca.relationships.Network
+      capabilities:
+        os:
+          properties:
+            architecture: "x86_64"
+            type: linux
+            distribution: centos
+        scalable:
+          properties:
+            min_instances: 3
+            max_instances: 3
+            default_instances: 3
+        endpoint:
+          properties:
+            secure: true
+            protocol: tcp
+            network_name: PRIVATE
+            initiator: source
+    ComputeKubeWorker:
+      metadata:
+        a4c_edit_x: "-298"
+        a4c_edit_y: 3
+      type: tosca.nodes.Compute
+      requirements:
+        - networkNetworkConnection:
+            type_requirement: network
+            node: Network
+            capability: tosca.capabilities.Connectivity
+            relationship: tosca.relationships.Network
+      capabilities:
+        os:
+          properties:
+            architecture: "x86_64"
+            type: linux
+            distribution: centos
+        scalable:
+          properties:
+            min_instances: 1
+            max_instances: 10
+            default_instances: 2
+        endpoint:
+          properties:
+            secure: true
+            protocol: tcp
+            network_name: PRIVATE
+            initiator: source
+    KubernetesWorker:
+      type: org.ystia.kubernetes.linux.ansible.nodes.KubernetesWorker
+      properties:
+        component_version: 1.17
+        kube_yum_repo: "https://packages.cloud.google.com/yum/repos/kubernetes-el7-x86_64"
+        kube_yum_repo_gpg_keys: "https://packages.cloud.google.com/yum/doc/yum-key.gpg https://packages.cloud.google.com/yum/doc/rpm-package-key.gpg"
+      requirements:
+        - hostedOnComputeKubeWorkerHost:
+            type_requirement: host
+            node: ComputeKubeWorker
+            capability: tosca.capabilities.Container
+            relationship: tosca.relationships.HostedOn
+        - joinClusterKubernetesMasterApi_server:
+            type_requirement: api_server
+            node: KubernetesMaster
+            capability: org.ystia.kubernetes.pub.capabilities.KubernetesAPIServer
+            relationship: org.ystia.kubernetes.linux.ansible.relationships.JoinCluster
+        - useLoadBalancerHaProxyTcpClient:
+            type_requirement: load_balancer
+            node: HAProxyTCP
+            capability: tosca.capabilities.Endpoint.Public
+            relationship: org.ystia.kubernetes.linux.ansible.relationships.UseLoadBalancer
+    YorcClusterRole:
+      type: org.ystia.kubernetes.linux.ansible.nodes.KubernetesApp
+      properties:
+        specs:
+          - "https://gist.githubusercontent.com/loicalbertin/1c48a4dc5204e1826e1e059ec8b7017e/raw/9b178bcfadb150fbbf38086711f5af14fb7f9424/KubeYorcClusterRole.yaml"
+      requirements:
+        - hostedOnKubernetesMasterApp_host:
+            type_requirement: app_host
+            node: KubernetesMaster
+            capability: org.ystia.kubernetes.pub.capabilities.AppHosting
+            relationship: tosca.relationships.HostedOn
+    ComputeLB:
+      metadata:
+        a4c_edit_x: "-582"
+        a4c_edit_y: "-3"
+      type: tosca.nodes.Compute
+      requirements:
+        - networkNetworkConnection:
+            type_requirement: network
+            node: Network
+            capability: tosca.capabilities.Connectivity
+            relationship: tosca.relationships.Network
+      capabilities:
+        scalable:
+          properties:
+            min_instances: 1
+            max_instances: 1
+            default_instances: 1
+        endpoint:
+          properties:
+            secure: true
+            protocol: tcp
+            network_name: PRIVATE
+            initiator: source
+    HAProxy:
+      type: org.ystia.haproxy.linux.ansible.nodes.HAProxy
+      requirements:
+        - hostedOnComputeLbHost:
+            type_requirement: host
+            node: ComputeLB
+            capability: tosca.capabilities.Container
+            relationship: tosca.relationships.HostedOn
+    HAProxyTCP:
+      type: org.ystia.haproxy.linux.ansible.nodes.HAProxyTCP
+      requirements:
+        - haProxyRoutesToKubernetesMasterApiApi_server:
+            type_requirement: application
+            node: KubernetesMasterAPI
+            capability: org.ystia.kubernetes.pub.capabilities.KubernetesAPIServer
+            relationship: org.ystia.haproxy.linux.ansible.relationships.HAProxyRoutesTo
+        - hostedOnHaProxyHost:
+            type_requirement: host
+            node: HAProxy
+            capability: org.ystia.haproxy.pub.capabilities.Container.HAProxy
+            relationship: tosca.relationships.HostedOn
+      capabilities:
+        client:
+          properties:
+            network_name: PUBLIC
+            protocol: tcp
+            port: { get_input: k8s_api_port }
+            secure: false
+            initiator: source
+    KubernetesMasterAPI:
+      type: org.ystia.kubernetes.linux.ansible.nodes.KubernetesMasterAPI
+      requirements:
+        - hostedOnComputeKubeMasterHost:
+            type_requirement: host
+            node: ComputeKubeMaster
+            capability: tosca.capabilities.Container
+            relationship: tosca.relationships.HostedOn
+      capabilities:
+        api_server:
+          properties:
+            port: { get_input: k8s_api_port }
+            protocol: https
+            secure: false
+            network_name: PRIVATE
+            initiator: source
+    SSLRootCAInstallerLB:
+      type: org.ystia.ssl.ansible.certificates.nodes.SSLRootCAInstaller
+      properties:
+        certificate_authority: { get_input: ca_certificate }
+      requirements:
+        - hostedOnComputeLbHost:
+            type_requirement: host
+            node: ComputeLB
+            capability: tosca.capabilities.Container
+            relationship: tosca.relationships.HostedOn
+    SSLRootCAInstallerWorker:
+      type: org.ystia.ssl.ansible.certificates.nodes.SSLRootCAInstaller
+      properties:
+        certificate_authority: { get_input: ca_certificate }
+      requirements:
+        - hostedOnComputeKubeWorkerHost:
+            type_requirement: host
+            node: ComputeKubeWorker
+            capability: tosca.capabilities.Container
+            relationship: tosca.relationships.HostedOn
+    SSLRootCAInstallerMaster:
+      type: org.ystia.ssl.ansible.certificates.nodes.SSLRootCAInstaller
+      properties:
+        certificate_authority: { get_input: ca_certificate }
+      requirements:
+        - hostedOnComputeKubeMasterHost:
+            type_requirement: host
+            node: ComputeKubeMaster
+            capability: tosca.capabilities.Container
+            relationship: tosca.relationships.HostedOn
+  outputs:
+    KubernetesDashBoard_url:
+      value: { get_attribute: [ KubernetesDashBoard, url ] }
+    KubernetesDashBoard_admin_token:
+      value: { get_attribute: [ KubernetesDashBoard, admin_token ] }
+    KubernetesMaster_api_url:
+      value: { get_attribute: [ KubernetesMaster, api_url ] }

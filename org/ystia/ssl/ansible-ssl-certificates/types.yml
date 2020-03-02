@@ -118,15 +118,20 @@ node_types:
     metadata:
       icon: /icons/ssl-certificate.png
     properties:
+      certificate_authority:
+        type: string
+        description: A single Root CA certificate to install, it should be the PEM-encoded certificate content. Property certificate_authorities allows to define several certificates at the same time
+        required: false
       certificate_authorities:
         type: list
         entry_schema:
           type: string
         description: Additional Root CA certificates to install, it should be the PEM-encoded certificate content.
-        required: true
+        required: false
     interfaces:
       Standard:
         configure:
           inputs:
             CA_CERTS: { get_property: [SELF, certificate_authorities] }
+            CA_CERT: { get_property: [SELF, certificate_authority] }
           implementation: playbooks/ca_installer/configure.yaml

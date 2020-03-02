@@ -1,0 +1,22 @@
+#
+# Ystia Forge
+# Copyright (C) 2018 Bull S. A. S. - Bull, Rue Jean Jaures, B.P.68, 78340, Les Clayes-sous-Bois, France.
+# Use of this source code is governed by Apache 2 LICENSE that can be found in the LICENSE file.
+#
+
+
+- name: Install HAProxy
+  hosts: all
+  strategy: free
+  become: true
+  tasks:
+    - name: Install HAProxy package
+      package:
+          state: present
+          name: haproxy
+
+    - name: Set haproxy_connect_any flag on and keep it persistent across reboots
+      seboolean:
+        name: haproxy_connect_any
+        state: yes
+        persistent: yes

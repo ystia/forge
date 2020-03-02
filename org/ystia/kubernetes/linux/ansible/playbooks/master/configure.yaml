@@ -11,42 +11,17 @@
   vars:
     NO_PROXY: ""
     no_proxy: ""
+    control_plane_endpoint: ""
   tasks:
-    - name: Create manifests directories
-      file:
-        path: "/etc/kubernetes/manifests"
-        state: directory
-        owner: root
-        group: root
-        mode: "u=rwx,g=rx,o=rx"
 
-    - name: Etcd POD config
-      template:
-        src: etcd.yaml.j2
-        dest: "/etc/kubernetes/manifests/etcd.yaml"
-        mode: "u=rw,g=r,o=r"
-
-    - name: Generate Kubeadm Token
-      shell: >
-        kubeadm token generate
-      register: tokenResult
-      run_once: true
-      when: inventory_hostname == ansible_play_hosts[0]
-
-    - name: Expose bootstrap token
+    - name: Set control plane url to public ip
       set_fact:
-        ADMIN_TOKEN: "{{ tokenResult['stdout_lines'][0] }}"
+        control_plane_endpoint: "{{LB_IP}}:{{LB_PORT}}"
+      when: LB_IP|default("") != ""
 
-    - name: Get discovery-token-ca-cert-hash
-      shell: >
-        openssl x509 -pubkey -in /etc/kubernetes/pki/ca.crt | openssl rsa -pubin -outform der 2>/dev/null | openssl dgst -sha256 -hex | sed 's/^.* //'
-      register: caCertHashResult
-      run_once: true
-      when: inventory_hostname == ansible_play_hosts[0]
-
-    - name: Expose discovery-token-ca-cert-hash
+    - name: Set node name
       set_fact:
-        CA_CERT_HASH: "sha256:{{ caCertHashResult['stdout_lines'][0] }}"
+        node_name: "{{ansible_hostname}}"
 
     - name: Set default POD CIDR
       set_fact:
@@ -60,7 +35,12 @@
     - name: Set POD CIDR for Flanel
       set_fact:
         POD_CIDR: "10.244.0.0/16"
-      when: (pod_network == "canal" or pod_network == "flanel")
+      when: pod_network == "flanel"
+
+    - name: Set POD CIDR for Cilium
+      set_fact:
+        POD_CIDR: "10.217.0.0/16"
+      when: pod_network == "cilium"
 
     - name: presetup no_proxy
       set_fact:
@@ -85,69 +65,6 @@
           export NO_PROXY="{{POD_CIDR}},${NO_PROXY}"
           export no_proxy="{{POD_CIDR}},${no_proxy}"
 
-    - name: Generate Kubeadm init config
-      template:
-        src: kubeadm-init-config.yaml.j2
-        dest: "/etc/kubernetes/config.yaml"
-        mode: "u=rw,g=r,o=r"
-
-    - name: Pregenerate SA keypair
-      shell: >
-        exec > >(tee -a "/root/kubeadm-gensa.log") 2>&1
-        kubeadm alpha phase certs sa --config=/etc/kubernetes/config.yaml 2>&1
-      args:
-        executable: /bin/bash
-      when: inventory_hostname == ansible_play_hosts[0]
-
-    - name: slurp SA certs
-      slurp: src={{ item }}
-      with_items:
-        - /etc/kubernetes/pki/sa.pub
-      register: sa_pki_certs
-      run_once: true
-      no_log: True
-      when: inventory_hostname == ansible_play_hosts[0]
-
-    - name: write out SA certs
-      copy:
-        dest: "{{ item['source'] }}"
-        content: "{{ item['content'] | b64decode }}"
-        owner: root
-        group: root
-        mode: 0644
-      with_items: "{{ sa_pki_certs.results }}"
-      when: inventory_hostname != ansible_play_hosts[0]
-
-    - name: slurp SA keys
-      slurp: src={{ item }}
-      with_items:
-        - /etc/kubernetes/pki/sa.key
-      register: sa_pki_keys
-      no_log: True
-      run_once: true
-      when: inventory_hostname == ansible_play_hosts[0]
-
-    - name: write out SA keys
-      copy:
-        dest: "{{ item['source'] }}"
-        content: "{{ item['content'] | b64decode }}"
-        owner: root
-        group: root
-        mode: 0600
-      with_items: "{{ sa_pki_keys.results }}"
-      when: inventory_hostname != ansible_play_hosts[0]
-
-    - name: Run kubeadm init
-      shell: >
-        exec > >(tee -a "/root/kubeinit.log") 2>&1
-        kubeadm init --ignore-preflight-errors=FileAvailable--etc-kubernetes-manifests-etcd.yaml,ExternalEtcdVersion --config=/etc/kubernetes/config.yaml 2>&1
-      args:
-        executable: /bin/bash
-      environment:
-        NO_PROXY: "{{NO_PROXY}}"
-        no_proxy: "{{no_proxy}}"
-
-
     - name: Create config directory
       file:
         path: "/root/.kube"
@@ -156,82 +73,33 @@
         group: root
         mode: "u=rwx,g=rx,o=rx"
 
-    - name: Create config directory
-      file:
-        src: /etc/kubernetes/admin.conf
-        dest: /root/.kube/config
-        owner: root
-        group: root
-        state: link
+    - name: Include primary master tasks
+      include_tasks: init_primary_master_tasks.yaml
+      when: inventory_hostname == ansible_play_hosts[0]
 
-    - name: Create Calico Network
-      shell: >
-        kubectl apply -f https://docs.projectcalico.org/v3.0/getting-started/kubernetes/installation/hosted/kubeadm/1.7/calico.yaml
-      when:
-        - inventory_hostname == ansible_play_hosts[0]
-        - pod_network == "calico"
-      environment:
-        NO_PROXY: "{{NO_PROXY}}"
-        no_proxy: "{{no_proxy}}"
+    - name: Syncho
+      debug:
+          msg: "Done configuring primary master"
 
-
-    - name: Create Canal Network
-      shell: >
-        kubectl apply -f https://raw.githubusercontent.com/projectcalico/canal/master/k8s-install/1.7/rbac.yaml;
-        kubectl apply -f https://raw.githubusercontent.com/projectcalico/canal/master/k8s-install/1.7/canal.yaml
-      when:
-        - inventory_hostname == ansible_play_hosts[0]
-        - pod_network == "canal"
-      environment:
-        NO_PROXY: "{{NO_PROXY}}"
-        no_proxy: "{{no_proxy}}"
-
-
-    - name: Create Flannel Network
-      shell: >
-        kubectl apply -f https://raw.githubusercontent.com/coreos/flannel/v0.10.0/Documentation/kube-flannel.yml
-      when:
-        - inventory_hostname == ansible_play_hosts[0]
-        - pod_network == "flannel"
-      environment:
-        NO_PROXY: "{{NO_PROXY}}"
-        no_proxy: "{{no_proxy}}"
-
-    - name: Create Romana Network
-      shell: >
-        kubectl apply -f https://raw.githubusercontent.com/romana/romana/master/containerize/specs/romana-kubeadm.yml
-      when:
-        - inventory_hostname == ansible_play_hosts[0]
-        - pod_network == "romana"
-      environment:
-        NO_PROXY: "{{NO_PROXY}}"
-        no_proxy: "{{no_proxy}}"
-
-    - name: Create Weave Network
-      shell: >
-        export kubever=$(kubectl version | base64 | tr -d '\n');
-        kubectl apply -f "https://cloud.weave.works/k8s/net?k8s-version=$kubever"
-      when:
-        - inventory_hostname == ansible_play_hosts[0]
-        - pod_network == "weave"
-      environment:
-        NO_PROXY: "{{NO_PROXY}}"
-        no_proxy: "{{no_proxy}}"
-
-    - name: Allow to schedule containers on master nodes
-      shell: >
-        kubectl taint nodes --all node-role.kubernetes.io/master-
-      when:
-        - inventory_hostname == ansible_play_hosts[0]
-        - hosts_pods is defined
-        - hosts_pods == "true"
-      environment:
-        NO_PROXY: "{{NO_PROXY}}"
-        no_proxy: "{{no_proxy}}"
-
-    - name: Set node name
+    - name: Set Certs Key fact
       set_fact:
-        node_name: "{{ansible_hostname}}"
+        CERTS_KEY: "{{ hostvars[ansible_play_hosts[0]]['CERTS_KEY'] }}"
+
+    - name: Expose bootstrap token
+      set_fact:
+        ADMIN_TOKEN: "{{ hostvars[ansible_play_hosts[0]]['ADMIN_TOKEN']  }}"
+
+    - name: Expose discovery-token-ca-cert-hash
+      set_fact:
+        CA_CERT_HASH: "{{ hostvars[ansible_play_hosts[0]]['CA_CERT_HASH'] }}"
+
+    - name: Include extra masters tasks
+      include_tasks: init_extra_master_tasks.yaml
+      when: inventory_hostname != ansible_play_hosts[0]
+
+    - name: Syncho
+      debug:
+          msg: "Done configuring extra masters"
 
     - name: Set private API URL fact
       set_fact:
@@ -243,3 +111,7 @@
       # Below when construct is a shorthand for PUBLIC_IP is defined and not empty
       when: PUBLIC_IP|default("") != ""
 
+    - name: Set private API URL fact
+      set_fact:
+        API_URL: "https://{{control_plane_endpoint}}"
+      when: control_plane_endpoint != ""

@@ -4,11 +4,12 @@
 # Use of this source code is governed by Apache 2 LICENSE that can be found in the LICENSE file.
 #
 
-- name: Delete Kubernetes
+- name: Retrieve LoadBalancer config
   hosts: all
   strategy: linear
   become: true
   tasks:
-    - name: Delete node
-      shell: >
-        kubeadm reset -f
+    - name: Retrieve LoadBalancer config
+      set_fact:
+        LB_IP: "{{lb_ip}}"
+        LB_PORT: "{{TARGET_CAPABILITY_PROPERTY_port}}"

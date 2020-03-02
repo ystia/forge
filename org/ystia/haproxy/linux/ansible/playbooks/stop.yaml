@@ -5,17 +5,13 @@
 #
 
 
-- name: Add a Traefik route
+- name: Stop HAProxy
   hosts: all
   strategy: free
   become: true
   tasks:
-
-    - name: Create traefik route config file
-      template:
-        src: "routers.toml.j2"
-        dest: "{{CONFIG_DIR}}/traefik.d/{{NODE}}-route.toml"
-        owner: root
-        group: root
-        mode: 0644
-
+    - name: Stop HAProxy
+      systemd:
+        name: haproxy
+        enabled: yes
+        state: stopped

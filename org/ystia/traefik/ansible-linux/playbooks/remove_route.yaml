@@ -5,17 +5,14 @@
 #
 
 
-- name: Add a Traefik route
+- name: Remove a Traefik router
   hosts: all
   strategy: free
   become: true
   tasks:
 
-    - name: Create traefik route config file
-      template:
-        src: "routers.toml.j2"
-        dest: "{{CONFIG_DIR}}/traefik.d/{{NODE}}-route.toml"
-        owner: root
-        group: root
-        mode: 0644
+    - name: Remove route from traefik config file
+      file:
+        path:  "{{CONFIG_DIR}}/traefik.d/{{NODE}}-routers.toml"
+        state: absent
 

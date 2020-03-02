@@ -10,7 +10,7 @@
   strategy: free
   become: true
   tasks:
-        
+
     - name: Create traefik config file
       template:
         src: "traefik.toml.j2"
@@ -19,5 +19,15 @@
         group: root
         mode: 0644
 
-    
-    
+    - name: Create traefik TLS config file
+      template:
+        src: "ssl.toml.j2"
+        dest: "{{CONFIG_DIR}}/traefik.d/ssl.toml"
+        owner: root
+        group: root
+        mode: 0644
+      when:
+        - DEFAULT_TLS_CERT != ""
+        - DEFAULT_TLS_KEY != ""
+
+
