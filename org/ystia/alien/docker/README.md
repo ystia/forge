@@ -1,6 +1,7 @@
 # Alien4Cloud Tosca Node Template
 
 This TOSCA type allows to deploy an Alien4Cloud docker container.
+The Alien4Cloud component requires connection to a Yorc component in order to create and configure a Yorc orchestrator.
 
 The docker image should be available in dockerhub, or other Docker registry.
 
