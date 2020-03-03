@@ -46,6 +46,11 @@ topology_template:
       properties:
         cpu_share: 0.3
       requirements:
+        - connectsToYorcServer:
+            type_requirement: yorc_server
+            node: Yorc
+            capability: org.ystia.yorc.docker.capabilities.YorcRestAPI
+            relationship: tosca.relationships.ConnectsTo
         - hostedOnContainerRuntimeContainer:
             type_requirement: host
             node: AlienContainer
