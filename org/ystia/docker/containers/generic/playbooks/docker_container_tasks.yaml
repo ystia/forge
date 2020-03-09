@@ -7,6 +7,7 @@
 - name: setup docker env
   set_fact:
     DOCKER_ENV: "{{ENV_VARS}}"
+  no_log: true
   when: ENV_VARS | length > 0
 
 - name: setup docker exposed ports
@@ -23,10 +24,6 @@
   set_fact:
     DOCKER_VOLUMES: "{{VOLUMES}}"
   when: VOLUMES | length > 0
-
-- name: debug env
-  debug:
-    var: DOCKER_ENV
 
 - name: Docker container
   docker_container: 
