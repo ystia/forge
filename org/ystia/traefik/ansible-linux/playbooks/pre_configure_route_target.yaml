@@ -1,0 +1,25 @@
+#
+# Ystia Forge
+# Copyright (C) 2018 Bull S. A. S. - Bull, Rue Jean Jaures, B.P.68, 78340, Les Clayes-sous-Bois, France.
+# Use of this source code is governed by Apache 2 LICENSE that can be found in the LICENSE file.
+#
+
+
+- name: Transmit info to target
+  hosts: all
+  strategy: free
+  become: true
+  tasks:
+
+    - name: Filter properties to transmit
+      set_fact:
+        filtered_props: "{{ filtered_props | default({}) | combine({item.key: item.value}) }}"
+      when: "item.key is match('^LB_.*')"
+      with_dict: "{{ hostvars[inventory_hostname] }}"
+      no_log: true
+
+    - name: Transmit LB info
+      copy:
+        dest:  "/tmp/traefik_config_dump.json"
+        content: "{{ filtered_props | to_nice_json }}"
+

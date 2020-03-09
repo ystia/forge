@@ -1,0 +1,18 @@
+# Alien4Cloud Tosca Node Template
+
+This TOSCA type allows to deploy an Alien4Cloud docker container.
+
+The docker image should be available in dockerhub, or other Docker registry.
+
+The deployment to Kubernetes can be done using Alien4Cloud and Yorc.
+
+## About used versions
+
+1. Used Alien version: 2.2.0-SM10 (docker-types:2.2.0-SM10)
+2. Deployed Alien version: 2.2.0-SM10 (file: alien4cloud/alien4cloud:2.2.0-SM10)
+
+## Usage
+
+Check used versions, and if necessary modify them correspondingly to your needs.
+Create a zip file with the types.yaml and upload it to the used Alien4Cloud's Catalog.
+  

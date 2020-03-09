@@ -10,19 +10,48 @@
   become: true
   tasks:
 
-    - name: Docker install
+    - name: Docker dependencies install
       yum:
-        name: docker
+        name:
+          - yum-utils
+          - device-mapper-persistent-data
+          - lvm2
         state: present
         update_cache: yes
+
+    - name: Setup Docker Repo
+      shell: yum-config-manager --add-repo https://download.docker.com/linux/centos/docker-ce.repo
+
+    - name: Docker install
+      yum:
+        name:
+          - containerd.io-1.2.10
+          - docker-ce-19.03.4
+          - docker-ce-cli-19.03.4
+        state: present
+        update_cache: yes
+
+    - name: Docker conf dir
+      file:
+        path: "/etc/docker"
+        state: directory
+        owner: root
+        group: root
+        mode: "u=rwx,g=rx,o=rx"
+
+    - name: Install Docker config
+      copy:
+        src: files/daemon.json
+        dest: /etc/docker/daemon.json
+
     - name: Docker systemd dir
-      file:  
+      file:
         path: "/etc/systemd/system/docker.service.d"
         state: directory
         owner: root
         group: root
         mode: "u=rwx,g=rx,o=rx"
-            
+
     - name: Docker proxy config
       template:
         src: http-proxy.conf.j2
@@ -33,7 +62,7 @@
       modprobe:
         name: br_netfilter
         state: present
-        
+
     - name: Sysctl config
       sysctl:
         name: "{{item.name}}"
@@ -42,14 +71,14 @@
         reload: yes
         state: present
       with_items:
-        - { name: "net.bridge.bridge-nf-call-ip6tables", value: 1}       
-        - { name: "net.bridge.bridge-nf-call-iptables", value: 1}       
+        - { name: "net.bridge.bridge-nf-call-ip6tables", value: 1}
+        - { name: "net.bridge.bridge-nf-call-iptables", value: 1}
 
     - name: Replace Cgroup driver
       replace:
         path: /usr/lib/systemd/system/docker.service
         regexp: 'native\.cgroupdriver=\w+'
-        replace: 'native.cgroupdriver=cgroupfs'
+        replace: 'native.cgroupdriver=systemd'
 
     - name: Start Docker
       systemd:

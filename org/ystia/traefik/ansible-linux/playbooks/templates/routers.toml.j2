@@ -1,0 +1,16 @@
+[http.routers]
+  [http.routers.{{NODE}}]
+    entryPoints = ["main"]
+    service = "{{NODE}}"
+{% if RULES|default("") != "" %}
+    rule = "{{RULES}}"
+{% endif %}
+{% if ENTRYPOINT_PROTOCOL == "https" %}
+    [http.routers.{{NODE}}.tls]
+{% endif %}
+
+[http.services]
+  [http.services.{{NODE}}.loadBalancer]
+# Health Check Anchor
+
+# Servers Anchor

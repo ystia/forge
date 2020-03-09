@@ -5,15 +5,24 @@
 ### NEW COMPONENTS
 
 * Failure starting a docker container in attached mode ([GH-119](https://github.com/ystia/forge/issues/119))
+* Refactor HAProxy component to take advantage of tosca.nodes.LoadBalancer component ([GH-116](https://github.com/ystia/forge/issues/116))
 * SSL Root CA installer component ([GH-103](https://github.com/ystia/forge/issues/103))
 * SSL Certificates Generator component ([GH-78](https://github.com/ystia/forge/issues/78))
 * Deploy Docker containers in pure TOSCA ([GH-76](https://github.com/ystia/forge/issues/76))
 * Docker Registry ([GH-80](https://github.com/ystia/forge/issues/80))
 * Expose Hybrid demo material ([GH-93](https://github.com/ystia/forge/issues/93))
 * Component for the Yorc plugin provided by Alien4cloud (the Yorc Provider) ([GH-101](https://github.com/ystia/forge/issues/101))
+* Docker container component for Alien4Cloud deployment ([GH-111](https://github.com/ystia/forge/issues/111))
+* Docker container component for Yorc&Consul deployment ([GH-111](https://github.com/ystia/forge/issues/111))
+
+### NEW TOPOLOGY TEMPLATES
+
+* Template allowing to deploy a simple Yorc+Alien4Cloud stack based on Docker components ([GH-111](https://github.com/ystia/forge/issues/111))
 
 ### ENHANCEMENTS
 
+* Update to Kubernetes v1.17 ([GH-117](https://github.com/ystia/forge/issues/117))
+* Update Traefik to v2.1 ([GH-115](https://github.com/ystia/forge/issues/115))
 * Should support OpenStack Identity API v3 properties ([GH-109](https://github.com/ystia/forge/issues/109))
 * Support of locations ([GH-106](https://github.com/ystia/forge/issues/106))
 * Update forge components installing/configuring Yorc to support python3 ([GH-85](https://github.com/ystia/forge/issues/85))

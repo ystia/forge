@@ -85,12 +85,20 @@
           - "kubelet-{{KUBERNETES_SELECTED_VERSION}}"
           - "kubeadm-{{KUBERNETES_SELECTED_VERSION}}"
           - "kubectl-{{KUBERNETES_SELECTED_VERSION}}"
-          # Next version of kubernetes-cni is 0.7.5 and has a dependency to kubernetes 1.12+
-          # So it wont work with the default version we use
-          - kubernetes-cni-0.6.0
+          # # Next version of kubernetes-cni is 0.7.5 and has a dependency to kubernetes 1.12+
+          # # So it wont work with the default version we use
+          # - kubernetes-cni-0.6.0
         state: present
         update_cache: yes
         enablerepo: kubernetes
+
+    - name: Create Systemd droplet config dir for kubeadm
+      file:
+        path: "/etc/systemd/system/kubelet.service.d"
+        state: directory
+        owner: root
+        group: root
+        mode: "u=rwx,g=rx,o=rx"
 
     - name: Extra config for Kubelet
       template:
@@ -98,20 +106,19 @@
         dest: "/etc/systemd/system/kubelet.service.d/01-kubeadm-extra-args.conf"
         mode: "u=rw,g=rw,o=r"
 
-    - name: Get docker cgroup driver
-      shell: "docker info | grep -i cgroup | awk -F': ' '{print $2}'"
-      register: docker_cgroups
+    # - name: Get docker cgroup driver
+    #   shell: "docker info | grep -i cgroup | awk -F': ' '{print $2}'"
+    #   register: docker_cgroups
 
-    - name: setup kubelet cgroup config
-      lineinfile:
-        path: /etc/systemd/system/kubelet.service.d/10-kubeadm.conf
-        line: "Environment=\"KUBELET_CGROUP_ARGS=--cgroup-driver={{docker_cgroups['stdout_lines'][0]}} --runtime-cgroups=/systemd/system.slice --kubelet-cgroups=/systemd/system.slice\""
-        regexp: "KUBELET_CGROUP_ARGS=--cgroup-driver"
+    # - name: setup kubelet cgroup config
+    #   lineinfile:
+    #     path: /etc/systemd/system/kubelet.service.d/10-kubeadm.conf
+    #     line: "Environment=\"KUBELET_CGROUP_ARGS=--cgroup-driver={{docker_cgroups['stdout_lines'][0]}} --runtime-cgroups=/systemd/system.slice --kubelet-cgroups=/systemd/system.slice\""
+    #     regexp: "KUBELET_CGROUP_ARGS=--cgroup-driver"
 
     - name: Start Kubelet
       systemd:
         name: kubelet
-        state: restarted
         enabled: yes
         daemon_reload: yes
 

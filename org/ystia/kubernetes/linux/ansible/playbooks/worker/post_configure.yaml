@@ -11,12 +11,19 @@
   become: true
   vars:
     masters: []
+    join_url: "{{JOIN_URL}}"
   tasks:
+
+    - name: Compute join url though LoadBalancer
+      set_fact:
+        join_url: "{{JOIN_URL_LB}}"
+      when: JOIN_URL_LB != ":"
 
     - name: compute Masters Private IP
       set_fact:
         masters: "{{ masters }} + [ '{{ hostvars[inventory_hostname][item] }}' ]"
       with_items: "{{ hostvars[inventory_hostname]  }}"
+      no_log: true
       when: item is match(TARGET_NODE+'_.*_MASTER_PRIVATE_IP')
 
     - name: set Masters no proxy
@@ -27,12 +34,11 @@
           export NO_PROXY="{{POD_CIDR}},{% for host in masters %}{{host}},{% endfor %}${NO_PROXY}"
           export no_proxy="{{POD_CIDR}},{% for host in masters %}{{host}},{% endfor %}${no_proxy}"
 
-    # we ignore CRI errors on joining due to https://github.com/kubernetes/kubeadm/issues/1038 on 1.10.6
     - name: Join Kubernetes cluster
       shell: >
         source /etc/profile;
         exec > >(tee -a "/root/kubeadm-join.log") 2>&1
-        kubeadm join "{{JOIN_URL}}" --ignore-preflight-errors=CRI --token "{{ADMIN_TOKEN}}" --discovery-token-ca-cert-hash "{{CA_CERT_HASH}}"
+        kubeadm join "{{JOIN_URL}}" --token "{{ADMIN_TOKEN}}" --discovery-token-ca-cert-hash "{{CA_CERT_HASH}}"
       args:
         executable: /bin/bash
 

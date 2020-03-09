@@ -26,11 +26,17 @@ node_types:
     tags:
       icon: /images/kubernetes-master-icon.png
     properties:
+      component_version:
+        type: version
+        required: false
+        default: "1.17"
+        constraints:
+          - greater_or_equal: "1.17"
       pod_network:
         type: string
         default: calico
         constraints:
-          - valid_values: [calico, canal, flannel, romana, weave]
+          - valid_values: [calico, cilium, flannel, weave]
       cfssl_download_url:
         type: string
         default: "https://pkg.cfssl.org/R1.2"
@@ -74,6 +80,8 @@ node_types:
       ca_cert_hash: { get_operation_output: [SELF, Standard, configure, CA_CERT_HASH]}
       pods_cidr: { get_operation_output: [SELF, Standard, configure, POD_CIDR]}
       node_name: { get_operation_output: [SELF, Standard, configure, node_name]}
+      lb_ip: { get_operation_output: [SELF, Configure, pre_configure_source, LB_IP]}
+      lb_port: { get_operation_output: [SELF, Configure, pre_configure_source, LB_PORT]}
     requirements:
       # currently support only RHEL familly
       - host:
@@ -88,12 +96,20 @@ node_types:
                     - type: { equal: linux }
                     - architecture: { equal: x86_64 }
                     - distribution: { valid_values: [ centos, rhel ] }
+      - load_balancer:
+          capability: tosca.capabilities.Endpoint
+          node: tosca.nodes.LoadBalancer
+          relationship: org.ystia.kubernetes.linux.ansible.relationships.UseLoadBalancer
+          occurrences: [ 0, 1 ]
+
     interfaces:
       Standard:
         inputs:
           PRIVATE_IP: {get_attribute: [HOST, private_address]}
           PUBLIC_IP: {get_attribute: [HOST, public_address]}
-        create: 
+          LB_IP: {get_attribute: [SELF, lb_ip]}
+          LB_PORT: {get_attribute: [SELF, lb_port]}
+        create:
           inputs:
             CFSSL_DOWNLOAD_URL: {get_property: [SELF, cfssl_download_url]}
             CA_CERT: {get_property: [SELF, ca_certificate]}
@@ -102,18 +118,18 @@ node_types:
             KUBE_YUM_REPO_GPG_KEYS: {get_property: [SELF, kube_yum_repo_gpg_keys]}
             KUBE_VERSION: {get_property: [SELF, component_version]}
           implementation: playbooks/master/create.yaml
-        configure: 
+        configure:
           inputs:
             API_SERVER_PORT: {get_property: [SELF, api_server, port]}
             pod_network: {get_property: [SELF, pod_network]}
             hosts_pods: {get_property: [SELF, hosts_pods]}
             KUBERNETES_SELECTED_VERSION: {get_attribute: [SELF, kubernetes_selected_version]}
           implementation: playbooks/master/configure.yaml
-        start: 
+        start:
           implementation: playbooks/master/start.yaml
-        stop: 
+        stop:
           implementation: playbooks/commons/kubeadm/stop.yaml
-        delete: 
+        delete:
           implementation: playbooks/commons/kubeadm/delete.yaml
 
   org.ystia.kubernetes.linux.ansible.nodes.KubernetesWorker:
@@ -121,6 +137,12 @@ node_types:
     tags:
       icon: /images/kubernetes-master-icon.png
     properties:
+      component_version:
+        type: version
+        required: false
+        default: "1.17"
+        constraints:
+          - greater_or_equal: "1.17"
       kube_yum_repo:
         type: string
         default: https://packages.cloud.google.com/yum/repos/kubernetes-el7-x86_64
@@ -131,6 +153,8 @@ node_types:
         required: true
     attributes:
       node_name: { get_operation_output: [SELF, Standard, create, node_name]}
+      lb_ip: { get_operation_output: [SELF, Configure, pre_configure_source, LB_IP]}
+      lb_port: { get_operation_output: [SELF, Configure, pre_configure_source, LB_PORT]}
     requirements:
       # currently support only RHEL familly
       - host:
@@ -145,27 +169,41 @@ node_types:
                     - type: { equal: linux }
                     - architecture: { equal: x86_64 }
                     - distribution: { valid_values: [ centos, rhel ] }
-      - api_server:   
+      - api_server:
           capability: org.ystia.kubernetes.pub.capabilities.KubernetesAPIServer
           node: org.ystia.kubernetes.linux.ansible.nodes.KubernetesMaster
           relationship: org.ystia.kubernetes.linux.ansible.relationships.JoinCluster
           occurrences: [ 1, 1 ]
+      - load_balancer:
+          capability: tosca.capabilities.Endpoint
+          node: tosca.nodes.LoadBalancer
+          relationship: org.ystia.kubernetes.linux.ansible.relationships.UseLoadBalancer
+          occurrences: [ 0, 1 ]
+
     interfaces:
       Standard:
         inputs:
           PRIVATE_IP: {get_attribute: [HOST, private_address]}
-        create: 
+          LB_IP: {get_attribute: [SELF, lb_ip]}
+          LB_PORT: {get_attribute: [SELF, lb_port]}
+        create:
           inputs:
             KUBE_YUM_REPO: {get_property: [SELF, kube_yum_repo]}
             KUBE_YUM_REPO_GPG_KEYS: {get_property: [SELF, kube_yum_repo_gpg_keys]}
             KUBE_VERSION: {get_property: [SELF, component_version]}
           implementation: playbooks/worker/create.yaml
-        start: 
+        start:
           implementation: playbooks/commons/kubeadm/start.yaml
-        stop: 
+        stop:
           implementation: playbooks/commons/kubeadm/stop.yaml
-        delete: 
+        delete:
           implementation: playbooks/commons/kubeadm/delete.yaml
+
+  org.ystia.kubernetes.linux.ansible.nodes.KubernetesMasterAPI:
+    derived_from: tosca.nodes.SoftwareComponent
+    description: This component is a dummy component allowing to workaround the chicken & egg issue on Kubernetes API and LoadBalancer on HA env that depends on each other
+    capabilities:
+      api_server: org.ystia.kubernetes.pub.capabilities.KubernetesAPIServer
 
   org.ystia.kubernetes.linux.ansible.nodes.KubernetesDashBoard:
     derived_from: org.ystia.kubernetes.linux.ansible.nodes.KubernetesApp
@@ -179,9 +217,9 @@ node_types:
         required: true
         entry_schema:
           type: string
-        default: 
-          - https://raw.githubusercontent.com/kubernetes/dashboard/v1.8.3/src/deploy/recommended/kubernetes-dashboard.yaml
-          - https://gist.githubusercontent.com/loicalbertin/1a7c1bebf1854924bf285f0553cde268/raw/0477ee67905122c16f85f43d66d3c0235e7c669d/KubernetesDashboardAdminUserSA.yaml
+        default:
+          - https://raw.githubusercontent.com/kubernetes/dashboard/v2.0.0-rc5/aio/deploy/recommended.yaml
+          - https://gist.githubusercontent.com/loicalbertin/1a7c1bebf1854924bf285f0553cde268/raw/f2df07f978cb390902908247a4e8e73e5d3efafa/KubernetesDashboardAdminUserSA.yaml
       service_type:
         type: string
         default: default
@@ -201,9 +239,9 @@ node_types:
         inputs:
           specs: {get_property: [SELF, specs]}
           MASTER_PRIVATE_IP: {get_attribute: [HOST, private_address]}
-          MASTER_PUBLIC_IP: {get_attribute: [HOST, public_address]}  
+          MASTER_PUBLIC_IP: {get_attribute: [HOST, public_address]}
         create: playbooks/apps/dashboard/create.yaml
-        start: 
+        start:
           inputs:
             service_type: {get_property: [SELF, service_type]}
             expose_admin_token: {get_property: [SELF, expose_admin_token]}
@@ -219,7 +257,7 @@ node_types:
         inputs:
           specs: {get_property: [SELF, specs]}
           MASTER_PRIVATE_IP: {get_attribute: [HOST, private_address]}
-          MASTER_PUBLIC_IP: {get_attribute: [HOST, public_address]}  
+          MASTER_PUBLIC_IP: {get_attribute: [HOST, public_address]}
         # App installation is done at the configure phase to let subtypes do some stuff before (create) and after it (start)
         configure: playbooks/apps/commons/configure.yaml
         delete: playbooks/apps/commons/delete.yaml
@@ -231,13 +269,26 @@ relationship_types:
       Configure:
         post_configure_source:
           inputs:
-            JOIN_URL: {concat: [get_attribute: [TARGET, ip_address], ":", get_attribute: [TARGET, api_server, port]]}
+            JOIN_URL: {concat: [get_attribute: [TARGET, private_address], ":", get_attribute: [TARGET, api_server, port]]}
+            JOIN_URL_LB: {concat: [get_attribute: [SOURCE, lb_ip], ":", get_attribute: [SOURCE, lb_port]]}
             ADMIN_TOKEN: {get_attribute: [TARGET, admin_token]}
             CA_CERT_HASH: {get_attribute: [TARGET, ca_cert_hash]}
-            MASTER_PRIVATE_IP: { get_attribute: [TARGET, ip_address] }
+            MASTER_PRIVATE_IP: { get_attribute: [TARGET, private_address] }
             POD_CIDR: { get_attribute: [TARGET, pods_cidr] }
           implementation: playbooks/worker/post_configure.yaml
-        delete_source:
+        remove_source:
           inputs:
             node_name: {get_attribute: [SOURCE, node_name]}
           implementation: playbooks/master/remove_worker.yaml
+
+  org.ystia.kubernetes.linux.ansible.relationships.UseLoadBalancer:
+    derived_from: tosca.relationships.ConnectsTo
+    attributes:
+      lb_ip: { get_operation_output: [SELF, Configure, pre_configure_source, LB_IP]}
+      lb_port: { get_operation_output: [SELF, Configure, pre_configure_source, LB_PORT]}
+    interfaces:
+      Configure:
+        pre_configure_source:
+          inputs:
+            lb_ip: { get_attribute: [TARGET, ip_address]}
+          implementation: playbooks/commons/kubeadm/configure_loadbalancer.yaml
