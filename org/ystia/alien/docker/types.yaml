@@ -35,6 +35,12 @@ repositories:
 node_types:
   org.ystia.alien.docker.nodes.Alien:
     derived_from: tosca.nodes.Container.Application.DockerContainer
+    properties:
+      nb_retry: 
+        description: number tentatives to connect to Yorc orchestrator
+        type: integer
+        required: false
+        default: 25
     requirements:
       - yorc_server:
           capability: org.ystia.yorc.docker.capabilities.YorcRestAPI
@@ -47,6 +53,7 @@ node_types:
       Standard:
         create:
           inputs:
+            ENV_NB_RETRY: { get_property: [SELF, nb_retry] }
             ENV_YORC_HOST: { get_attribute: [TARGET, yorc_server, service_name] }
             ENV_YORC_PORT: { get_attribute: [TARGET, yorc_server, port] }
           implementation:
