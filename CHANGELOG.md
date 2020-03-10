@@ -30,6 +30,7 @@
 * Add a vault in secured full stack topology ([GH-67](https://github.com/ystia/forge/issues/67))
 * Provide forge components/topology allowing to install a secured Yorc setup ([GH-37](https://github.com/ystia/forge/issues/37))
 * Allow to configure resources prefix for bootstrapped Yorc ([GH-399](https://github.com/ystia/yorc/issues/399))
+* Allow to configure Alien4Cloud docker conatainer when deployed within a Yorc stack ([GH-121](https://github.com/ystia/forge/issues/121))
 
 ### DEPENDENCIES
 
