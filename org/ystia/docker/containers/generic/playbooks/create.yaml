@@ -38,50 +38,10 @@
     DOCKER_EXP_PORTS: []
     DOCKER_PUB_PORT: []
     DOCKER_VOLUMES: []
+    DOCKER_STATE: "present"
   tasks:
-  - name: setup docker env
-    set_fact:
-      DOCKER_ENV: "{{ENV_VARS}}"
-    when: ENV_VARS | length > 0
-
-  - name: setup docker exposed ports
-    set_fact:
-      DOCKER_EXP_PORTS: "{{EXPOSED_PORTS}}"
-    when: EXPOSED_PORTS | length > 0
-
-  - name: setup docker published ports 
-    set_fact:
-      DOCKER_PUB_PORT: "{{PUBLISHED_PORTS}}"
-    when: PUBLISHED_PORTS | length > 0
-
-  - name: setup docker volumes 
-    set_fact:
-      DOCKER_VOLUMES: "{{VOLUMES}}"
-    when: VOLUMES | length > 0
-
-  - name: debug env
-    debug:
-      var: DOCKER_ENV
-
-  - name: create docker container
-    docker_container: 
-      name: "{{NODE}}-{{INSTANCE}}"
-      auto_remove: "{{AUTO_REMOVE}}"
-      cleanup: "{{CLEANUP}}"
-      # cpus: "{{CPU_SHARE}}"
-      detach: "{{DETACH}}"
-      env: "{{DOCKER_ENV}}"
-      exposed_ports: "{{DOCKER_EXP_PORTS}}"
-      image: "{{IMAGE}}"
-      keep_volumes: "{{KEEP_VOLUMES}}"
-      memory: "{{MEM_SHARE_LIMIT}}"
-      memory_reservation: "{{MEM_SHARE}}"
-      published_ports: "{{DOCKER_PUB_PORT}}"
-      restart_policy: "{{RESTART_POLICY}}"
-      volumes: "{{ DOCKER_VOLUMES }}"
-      state: present
-    register: docker_create_res
+  - import_tasks: docker_container_tasks.yaml
 
   - name: Store container id
     set_fact:
-      CONTAINER_ID: "{{docker_create_res.ansible_facts.docker_container['Id']}}"
+      CONTAINER_ID: "{{docker_res.ansible_facts.docker_container['Id']}}"

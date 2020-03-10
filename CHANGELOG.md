@@ -4,6 +4,7 @@
 
 ### NEW COMPONENTS
 
+* Failure starting a docker container in attached mode ([GH-119](https://github.com/ystia/forge/issues/119))
 * Refactor HAProxy component to take advantage of tosca.nodes.LoadBalancer component ([GH-116](https://github.com/ystia/forge/issues/116))
 * SSL Root CA installer component ([GH-103](https://github.com/ystia/forge/issues/103))
 * SSL Certificates Generator component ([GH-78](https://github.com/ystia/forge/issues/78))
