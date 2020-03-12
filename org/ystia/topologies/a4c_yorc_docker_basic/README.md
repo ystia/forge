@@ -18,8 +18,7 @@ Create a zip file with the types.yaml and upload it to the A4C's Catalog.
 
 ### Create an application using this template.
 
-### Deploy it to a K8S location configured within a Yorc orchestrator (YO).
-See below for K8S location configuration
+### Deploy it to a kubernetes location
 
 ### Check workloads and services on K8S
 
@@ -31,28 +30,13 @@ yorc-yorcdeployment-service--1179116320   NodePort       10.3.255.250   <none>  
 
 ```
 
-### Configure deployed components
+### Application configuration
 
-Currently a manual configuration is necessary at this step.
+Connect to the deployed Alien Console : http://35.240.85.70:8088. 
+A Yorc orchestrator should be created with Yorc URL set to http:// yorc-yorcdeployment-service--1179116320:8800, and enabled.
+A K8S location should be created and configured with onDemand resources.
 
-Some informations are necessary to be get from K8S. 
-
-In order to connect to the deployed Alien4Cloud's GUI:
-* alien-aliendeployment-service name; here alien-aliendeployment-service-786916228
-* alien-aliendeployment-service Load balancer IP ; here 35.240.85.70
-* alien-aliendeployment-service alien-console port; here 8088
-The Alien4Cloud's GUI can be reached with http://<lb-ip>:<alien-console-port>; here  http://35.240.85.70:8088
-
-In order to connect the Alien4Cloud to the deployed Yorc orchestrator:
-* yorc-yorcdeployment-service name; here yorc-yorcdeployment-service--1179116320
-* yorc-yorcdeployment-service yorc-server port; here 8800
-The Yorc orchestrator's URL will be http://<yorc-service-name>:<yorc-service-port> ; here http://yorc-yorcdeployment-service--1179116320:8800
-
-Now follow the next steps:
-
-1. Connect to the deployed Alien Console : http://35.240.85.70:8088
-2. Create a Yorc orchestrator (Yorch) with Yorc URL http:// yorc-yorcdeployment-service--1179116320:8800
-3. Create and configure locations for Yorch. For example, create a K8S location (See below for K8S location configuration)
+The Yorc server should be running and configured with a K8S location.
 
 ```
 $ kubectl get pods
@@ -60,34 +44,11 @@ $ kubectl get pods
 yorcdeployment--1518504487-545fc74c94-f2pqs    1/1     Running
 
 $ kubectl exec -ti yorcdeployment--1518504487-545fc74c94-f2pqs -- yorc loc list
-$ kubectl exec -ti yorcdeployment--1518504487-545fc74c94-f2pqs -- yorc loc add --data '{"name": "locationk8S","type": "kubernetes","properties": {}}'
 
 ```
 
 May check Consul K/V base using Port forwarding on consul-ui TargetPort from yorc-yorcdeployment-service--1179116320
 
-
-## A4C Administration config
-
-### Create usefull Meta-properties
-
-- K8S_NAMESPACE
-- YORC_LOCATION 
-
-### K8S location configuration
-
-#### On demand resources
-
-- org.alien4cloud.kubernetes.api.types.Deployment
-- org.alien4cloud.kubernetes.api.types.Container
-- org.alien4cloud.kubernetes.api.types.volume.ConfigMapSource -set spec.name to the ConfigMap created for Yorc config files
-- NodePort org.alien4cloud.kubernetes.api.types.Service - to be matched by Alien_AlienDeployment_Service
-- LoadBalancer org.alien4cloud.kubernetes.api.types.Service - to be matched by Yorc_YorcDeployment
-
-#### Meta-properties
-
-- K8S_NAMESPACE = namespace name to be used
-- YORC_LOCATION = the K8S location name configured in the YO
 
 ## Known Issues
 
