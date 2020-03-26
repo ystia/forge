@@ -21,6 +21,7 @@
 
 ### ENHANCEMENTS
 
+* Add docker container properties workdir and user ([GH-124](https://github.com/ystia/forge/issues/124))
 * Update to Kubernetes v1.17 ([GH-117](https://github.com/ystia/forge/issues/117))
 * Update Traefik to v2.1 ([GH-115](https://github.com/ystia/forge/issues/115))
 * Should support OpenStack Identity API v3 properties ([GH-109](https://github.com/ystia/forge/issues/109))
