@@ -74,6 +74,10 @@ node_types:
         constraints:
           - valid_values: ["no", "on-failure", "always", "unless-stopped"]
         default: "no"
+      user:
+        type: string
+        description: "Username or UID (format: <name|uid>[:<group|gid>])"
+        required: false
       volumes:
         type: list
         entry_schema:
@@ -83,6 +87,10 @@ node_types:
           Use docker CLI-style syntax: /host:/container[:mode]
           You can specify a read mode for the mount with either ro or rw.
           SELinux hosts can additionally use z or Z to use a shared or private label for the volume.
+        required: false
+      workdir:
+        type: string
+        description: working directory inside the container
         required: false
     attributes:
       container_id: { get_operation_output: [SELF, Standard, create, CONTAINER_ID] }
@@ -103,7 +111,9 @@ node_types:
           MEM_SHARE_LIMIT: { get_property: [SELF, mem_share_limit] }
           PUBLISHED_PORTS: { get_property: [SELF, published_ports] }
           RESTART_POLICY: { get_property: [SELF, restart_policy] }
+          USER: { get_property: [SELF, user] }
           VOLUMES: { get_property: [SELF, volumes] }
+          WORKDIR: { get_property: [SELF, workdir] }
         create:
           implementation: playbooks/create.yaml
         start:

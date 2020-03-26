@@ -40,6 +40,8 @@
     memory_reservation: "{{MEM_SHARE}}"
     published_ports: "{{DOCKER_PUB_PORT}}"
     restart_policy: "{{RESTART_POLICY}}"
+    user: "{{ USER }}"
     volumes: "{{ DOCKER_VOLUMES }}"
     state: "{{ DOCKER_STATE }}"
+    working_dir: "{{ WORKDIR }}"
   register: docker_res
