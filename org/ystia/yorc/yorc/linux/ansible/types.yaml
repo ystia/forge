@@ -366,5 +366,6 @@ relationship_types:
             CONFIG_DIR: { get_property: [TARGET, config_dir] }
             USE_OPENSSH: { get_property: [SOURCE, use_openssh] }
             INVENTORY: { get_property: [SOURCE, inventory] }
+            HOST_OPERATIONS_ALLOWED: { get_property: [SOURCE, host_operations_allowed] }
           implementation: playbooks/configure_ansible.yml
     valid_source_types: ["org.ystia.yorc.pub.nodes.YorcServer"]
