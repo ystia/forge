@@ -22,7 +22,7 @@ metadata:
 
 imports:
   - tosca-normative-types:1.0.0-ALIEN20
-  - org.alien4cloud.vault.pub:2.2.0-SNAPSHOT
+  - org.alien4cloud.vault.pub:2.2.0
   - org.ystia.yorc.experimental.consul.pub:2.2.0-SNAPSHOT
   - org.ystia.ansible.pub:2.2.0-SNAPSHOT
   - org.ystia.terraform.pub:2.2.0-SNAPSHOT

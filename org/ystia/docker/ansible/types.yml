@@ -14,7 +14,7 @@ metadata:
 imports:
   - tosca-normative-types:1.0.0-ALIEN20
   - yorc-types:1.1.0
-  - docker-types:2.2.0-SM10
+  - docker-types:2.2.0
 
 node_types:
   org.ystia.docker.ansible.nodes.Docker:
