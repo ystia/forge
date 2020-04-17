@@ -17,7 +17,7 @@ tosca_definitions_version: alien_dsl_2_0_0
 
 metadata:
   template_name: org.ystia.ansible.pub
-  template_version: 2.2.0-SNAPSHOT
+  template_version: 2.2.0
   template_author: yorc
 
 imports:
