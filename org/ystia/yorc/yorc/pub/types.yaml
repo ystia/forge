@@ -236,6 +236,10 @@ node_types:
         entry_schema:
           type: org.ystia.yorc.datatypes.ansible.inventory.Section
         required: false
+      host_operations_allowed:
+        type: boolean
+        description: "Allow to execute operations on orchestrator host"
+        default: false
     requirements:
       - host:
           capability: org.ystia.yorc.pub.capabilities.YorcConfigContainer
