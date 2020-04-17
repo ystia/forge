@@ -1,6 +1,6 @@
 # Ystia Forge
 
-[![Download](https://api.bintray.com/packages/ystia/forge/distributions/images/download.svg?version=2.1.0)](https://bintray.com/ystia/forge/distributions/2.1.0/link) [![Build Status](https://travis-ci.org/ystia/forge.svg?branch=develop)](https://travis-ci.org/ystia/forge) [![license](https://img.shields.io/github/license/ystia/forge.svg)](https://github.com/ystia/forge/blob/develop/LICENSE) [![PRs Welcome](https://img.shields.io/badge/PRs-welcome-brightgreen.svg?style=flat-square)](http://makeapullrequest.com) [![Join the chat at https://gitter.im/ystia/forge](https://badges.gitter.im/ystia/forge.svg)](https://gitter.im/ystia/forge?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
+[![Download](https://api.bintray.com/packages/ystia/forge/distributions/images/download.svg?version=2.1.0)](https://bintray.com/ystia/forge/distributions/2.1.0/link) [![Build Status](https://travis-ci.org/ystia/forge.svg?branch=release/2.2)](https://travis-ci.org/ystia/forge) [![license](https://img.shields.io/github/license/ystia/forge.svg)](https://github.com/ystia/forge/blob/develop/LICENSE) [![PRs Welcome](https://img.shields.io/badge/PRs-welcome-brightgreen.svg?style=flat-square)](http://makeapullrequest.com) [![Join the chat at https://gitter.im/ystia/forge](https://badges.gitter.im/ystia/forge.svg)](https://gitter.im/ystia/forge?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
 
 A set of public TOSCA Types and Topology templates used by the Ystia project
 
