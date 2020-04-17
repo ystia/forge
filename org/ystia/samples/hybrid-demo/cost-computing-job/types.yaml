@@ -31,7 +31,7 @@ imports:
 repositories:
   docker:
     url: hub.docker.com
-    type: docker
+    type: a4c_ignore
 
 node_types:
 
