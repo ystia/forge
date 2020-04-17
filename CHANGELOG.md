@@ -2,6 +2,8 @@
 
 ## UNRELEASED
 
+## 2.2.0 (April 17, 2020)
+
 ### NEW COMPONENTS
 
 * Failure starting a docker container in attached mode ([GH-119](https://github.com/ystia/forge/issues/119))
