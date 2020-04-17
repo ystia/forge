@@ -1,6 +1,6 @@
 # Ystia Forge Changelog
 
-## UNRELEASED
+## 2.2.0 (April 17, 2020)
 
 ### NEW COMPONENTS
 
