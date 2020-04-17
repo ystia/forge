@@ -1,0 +1,33 @@
+tosca_definitions_version: alien_dsl_2_0_0
+
+metadata:
+  template_name: org.ystia.vault.pub
+  template_version: 2.2.0-SNAPSHOT
+  template_author: Ystia
+
+description: Public interfaces of a Vault server
+
+
+imports:
+  - tosca-normative-types:1.0.0-ALIEN20
+
+node_types:
+  org.alien4cloud.vault.pub.nodes.VaultServer:
+    derived_from: tosca.nodes.SoftwareComponent
+    abstract: true
+    description: Vault server
+    tags:
+      icon: /images/vault.png
+    properties:
+      version:
+        description: Vault version to install
+        type: version
+        required: true
+        default: 1.2.3
+    capabilities:
+      vault_server:
+        type: org.ystia.vault.pub.capabilities.VaultServer
+
+capability_types:
+  org.ystia.vault.pub.capabilities.VaultServer:
+    derived_from: tosca.capabilities.Root
