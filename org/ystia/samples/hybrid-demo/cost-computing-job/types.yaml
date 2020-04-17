@@ -25,13 +25,13 @@ description: "Singularity job to run Apache log generaetor cost computing job."
 
 imports:
   - tosca-normative-types:1.0.0-ALIEN20
-  - yorc-slurm-types:1.2.0
+  - yorc-slurm-types:2.2.0
   - org.ystia.elasticsearch.pub:2.2.0-SNAPSHOT
 
 repositories:
   docker:
     url: hub.docker.com
-    type: docker
+    type: a4c_ignore
 
 node_types:
 
