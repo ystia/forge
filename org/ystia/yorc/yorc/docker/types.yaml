@@ -33,6 +33,8 @@ repositories:
 
 node_types:
   org.ystia.yorc.docker.nodes.Yorc:
+    metadata:
+      icon: "yorcicon.png"
     derived_from: tosca.nodes.Container.Application.DockerContainer
     capabilities:
       consul_ui:
