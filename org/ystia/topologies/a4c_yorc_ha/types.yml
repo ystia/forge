@@ -305,7 +305,7 @@ topology_template:
           capability: tosca.capabilities.Container
           relationship: tosca.relationships.HostedOn
     OpenStackConfig:
-      type: org.ystia.yorc.infrastructure.OpenStackConfig
+      type: org.ystia.yorc.location.OpenStackConfig
       properties:
         auth_url: { get_input: os_auth_url }
         tenant_name: { get_input: os_tenant_name }
@@ -323,7 +323,7 @@ topology_template:
           capability: org.ystia.yorc.pub.capabilities.YorcConfigContainer
           relationship: org.ystia.yorc.linux.ansible.relationships.YorcConfigOpenstackHostedOnYorc
     KubernetesConfig:
-      type: org.ystia.yorc.infrastructure.KubernetesConfig
+      type: org.ystia.yorc.location.KubernetesConfig
       properties:
         master_url: { get_input: k8s_master_url }
         ca: { get_input: k8s_root_ca }

@@ -102,7 +102,6 @@ capability_types:
     derived_from: tosca.capabilities.Endpoint
 
 relationship_types:
-
   org.ystia.yorc.alien4cloud.relationships.ConnectsToYorc:
     derived_from: tosca.relationships.ConnectsTo
     valid_target_types: [ org.ystia.yorc.pub.capabilities.YorcRestAPI ]

@@ -9,11 +9,9 @@ description: "Full stack setup on a single node"
 
 imports:
   - tosca-normative-types:1.0.0-ALIEN20
-
   - org.alien4cloud.alien4cloud.pub:2.2.0
   - org.alien4cloud.alien4cloud.webapp:2.2.0
   - org.alien4cloud.java.jdk.linux:2.2.0
-
   - org.ystia.terraform.linux.terraform:2.2.0-SNAPSHOT
   - org.ystia.yorc.alien4cloud:2.2.0-SNAPSHOT
   - org.ystia.ansible.linux.ansible:2.2.0-SNAPSHOT
@@ -23,6 +21,7 @@ imports:
   - org.ystia.yorc.pub:2.2.0-SNAPSHOT
   - org.ystia.ansible.pub:2.2.0-SNAPSHOT
   - org.ystia.yorc.experimental.consul.pub:2.2.0-SNAPSHOT
+  - org.ystia.yorc.alien4cloud_yorc_provider:2.2.0-SNAPSHOT
 
 
 repositories:
@@ -264,7 +263,7 @@ topology_template:
             network_name: PRIVATE
             initiator: source
     OpenStackConfig:
-      type: org.ystia.yorc.infrastructure.OpenStackConfig
+      type: org.ystia.yorc.location.OpenStackConfig
       properties:
         auth_url: { get_input: os_auth_url }
         tenant_name: { get_input: os_tenant_name }
