@@ -1,0 +1,46 @@
+#
+# Ystia Forge
+# Copyright (C) 2018 Bull S. A. S. - Bull, Rue Jean Jaures, B.P.68, 78340, Les Clayes-sous-Bois, France.
+# Use of this source code is governed by Apache 2 LICENSE that can be found in the LICENSE file.
+#
+
+- name: Start TCP Echo Server
+  hosts: all
+  strategy: linear
+  tasks:
+
+    - name: Copy echo-server.py
+      copy:
+          dest: "{{ansible_env.HOME}}/echo-server.py"
+          src: echo-server.py
+          force: yes
+
+    - name: Start TCP Echo server
+      shell: |
+        for p in python3 python2 python ; do
+          p_bin=$(which $p)
+          if [[ "${p_bin}" != "" ]] ; then
+            break
+          fi
+        done
+        if [[ "${p_bin}" == "" ]] ; then
+          echo "no suitable python bin found"
+          exit 1
+        fi
+        nohup "${p_bin}" echo-server.py "${PORT}" >> echo-server.log 2>&1 &
+        echo $! > echo-server.pid
+      args:
+        executable: /bin/bash
+        chdir: "{{ansible_env.HOME}}"
+      environment:
+        PORT: "{{PORT}}"
+
+    - name: Check Server started
+      wait_for:
+          host: "{{ansible_default_ipv4.address}}"
+          connect_timeout: 5
+          delay: 1
+          state: started
+          sleep: 1
+          timeout: 300
+          port: "{{PORT}}"

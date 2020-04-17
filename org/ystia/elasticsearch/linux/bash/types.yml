@@ -8,17 +8,17 @@ tosca_definitions_version: alien_dsl_2_0_0
 
 metadata:
   template_name: org.ystia.elasticsearch.linux.bash
-  template_version: 2.1.0
+  template_version: 2.2.0
   template_author: Ystia
 
 description: Elasticsearch implementation
 
 imports:
   - tosca-normative-types:1.0.0-ALIEN20
-  - org.ystia.common:2.1.0
-  - org.ystia.consul.pub:2.1.0
-  - org.ystia.java.pub:2.1.0
-  - org.ystia.elasticsearch.pub:2.1.0
+  - org.ystia.common:2.2.0
+  - org.ystia.consul.pub:2.2.0
+  - org.ystia.java.pub:2.2.0
+  - org.ystia.elasticsearch.pub:2.2.0
 
 node_types:
   org.ystia.elasticsearch.linux.bash.nodes.Elasticsearch:
@@ -122,7 +122,7 @@ node_types:
           - valid_values: [days,months,years]
     attributes:
       java_home: { get_operation_output: [ SELF, Configure, pre_configure_source, JAVA_HOME ] }
-      api: { concat: [get_attribute: [ SELF, search_resource, ip_address ], ":", get_attribute: [ SELF, search_resource, port ]]}
+      api: { concat: [get_attribute: [ SELF, search_resource, ip_address ], ":", get_property: [ SELF, search_resource, port ]]}
     capabilities:
       search_resource: org.ystia.elasticsearch.pub.capabilities.SearchEndpoint
     requirements:

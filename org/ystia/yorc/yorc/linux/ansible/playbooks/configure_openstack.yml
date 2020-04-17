@@ -15,12 +15,178 @@
 #
 
 
-- name: Setup Openstack config
+- name: Setup Openstack location config
   hosts: all
   strategy: free
   become_user: yorc
   become: true
+  vars:
+    lock_file: "{{ CONFIG_DIR }}//config.lock"
+  pre_tasks:
+    - name: check for lock file
+      wait_for:
+        path: "{{ lock_file }}"
+        state: absent
+    - name: create lock file
+      file:
+        path: "{{ lock_file }}"
+        state: touch
   tasks:
+    - name: Creation locations file
+      file:
+        path: "{{ CONFIG_DIR }}/locations.yorc.yaml"
+        state: touch
+        modification_time: preserve
+        access_time: preserve
+
+    - name: "get current locations"
+      shell: "cat {{ CONFIG_DIR }}/locations.yorc.yaml"
+      register: result
+
+    - set_fact:
+        yorcLocationsConfig: "{{ result.stdout | from_yaml }}"
+
+    - set_fact:
+        locationsDefined: []
+      when: yorcLocationsConfig|length == 0
+
+    - set_fact:
+        locationsDefined: "{{ yorcLocationsConfig.locations }}"
+      when: yorcLocationsConfig|length > 0
+
+    - set_fact:
+        locationProperties: >
+          { "auth_url": "{{ AUTH_URL }}",
+            "tenant_name": "OPENSTACK_TENANT_NAME_YORC_SUBSTITUTION",
+            "user_name": "OPENSTACK_USER_NAME_YORC_SUBSTITUTION",
+            "password": "OPENSTACK_PASSWORD_YORC_SUBSTITUTION",
+            "private_network_name": "{{ PRIVATE_NETWORK_NAME }}",
+            "provisioning_over_fip_allowed": "{{ PROVISIONING_OVER_FIP_ALLOWED | bool }}"
+          }
+      when: TENANT_NAME != ''
+
+    - set_fact:
+        locationProperties: >
+          { "auth_url": "{{ AUTH_URL }}",
+            "project_name": "OPENSTACK_PROJECT_NAME_YORC_SUBSTITUTION",
+            "project_id": "OPENSTACK_PROJECT_ID_YORC_SUBSTITUTION",
+            "user_domain_name": "OPENSTACK_USER_DOMAIN_NAME_YORC_SUBSTITUTION",
+            "user_name": "OPENSTACK_USER_NAME_YORC_SUBSTITUTION",
+            "password": "OPENSTACK_PASSWORD_YORC_SUBSTITUTION",
+            "private_network_name": "{{ PRIVATE_NETWORK_NAME }}",
+            "provisioning_over_fip_allowed": "{{ PROVISIONING_OVER_FIP_ALLOWED | bool }}"
+          }
+      when: TENANT_NAME == ''
+
+    - set_fact:
+        tmp: >
+          { "default_security_groups": {{ DEFAULT_SECURITY_GROUPS }}
+          }
+      when: DEFAULT_SECURITY_GROUPS != ''
+    - set_fact:
+        locationProperties: "{{ locationProperties | combine(tmp, recursive=True) }}"
+      when: DEFAULT_SECURITY_GROUPS != ''
+
+    - set_fact:
+        tmpLocation: >
+          { "name" :  "{{ LOCATION_NAME }}",
+            "type" : "openstack",
+            "properties": {{ locationProperties }}
+          }
+
+    - set_fact:
+        locationsDefined: "{{ locationsDefined + [ tmpLocation  ] }}"
+
+    - set_fact:
+        yorcLocationsConfig:  {"locations": "{{ locationsDefined }}"}
+
+    - name: "Output config to file {{ CONFIG_DIR }}/locations.yorc.yaml"
+      copy:
+        content: "{{ yorcLocationsConfig | to_yaml }}"
+        dest: "{{ CONFIG_DIR }}/locations.yorc.yaml"
+
+    - name: Set OpenStack secret user name
+      replace:
+        path: "{{ CONFIG_DIR }}/locations.yorc.yaml"
+        regexp: 'OPENSTACK_USER_NAME_YORC_SUBSTITUTION'
+        replace: "'{{ '{{' }} secret \"/secret/yorc/locations/{{ LOCATION_NAME }}\" \"data=user_name\" | print {{ '}}' }}'"
+      when: USE_VAULT == "true"
+    - name: Set OpenStack user name
+      replace:
+        path: "{{ CONFIG_DIR }}/locations.yorc.yaml"
+        regexp: 'OPENSTACK_USER_NAME_YORC_SUBSTITUTION'
+        replace: "{{ USER_NAME }}"
+      when: USE_VAULT == "false"
+
+    - name: Set OpenStack secret tenant name (Identity v2)
+      replace:
+        path: "{{ CONFIG_DIR }}/locations.yorc.yaml"
+        regexp: 'OPENSTACK_TENANT_NAME_YORC_SUBSTITUTION'
+        replace: "'{{ '{{' }} secret \"/secret/yorc/locations/{{ LOCATION_NAME }}\" \"data=tenant_name\" | print {{ '}}' }}'"
+      when: USE_VAULT == "true" and TENANT_NAME != ''
+
+    - name: Set OpenStack tenant name (Identity v2)
+      replace:
+        path: "{{ CONFIG_DIR }}/locations.yorc.yaml"
+        regexp: 'OPENSTACK_TENANT_NAME_YORC_SUBSTITUTION'
+        replace: "{{ TENANT_NAME }}"
+      when: USE_VAULT == "false" and TENANT_NAME != ''
+
+    - name: Set OpenStack secret project name (Identity v3)
+      replace:
+        path: "{{ CONFIG_DIR }}/locations.yorc.yaml"
+        regexp: 'OPENSTACK_PROJECT_NAME_YORC_SUBSTITUTION'
+        replace: "'{{ '{{' }} secret \"/secret/yorc/locations/{{ LOCATION_NAME }}\" \"data=project_name\" | print {{ '}}' }}'"
+      when: USE_VAULT == "true" and TENANT_NAME == ''
+
+    - name: Set OpenStack project name (Identity v3)
+      replace:
+        path: "{{ CONFIG_DIR }}/locations.yorc.yaml"
+        regexp: 'OPENSTACK_PROJECT_NAME_YORC_SUBSTITUTION'
+        replace: "{{ PROJECT_NAME }}"
+      when: USE_VAULT == "false" and TENANT_NAME == ''
+
+    - name: Set OpenStack secret project ID (Identity v3)
+      replace:
+        path: "{{ CONFIG_DIR }}/locations.yorc.yaml"
+        regexp: 'OPENSTACK_PROJECT_ID_YORC_SUBSTITUTION'
+        replace: "'{{ '{{' }} secret \"/secret/yorc/locations/{{ LOCATION_NAME }}\" \"data=project_id\" | print {{ '}}' }}'"
+      when: USE_VAULT == "true" and TENANT_NAME == ''
+
+    - name: Set OpenStack project ID (Identity v3)
+      replace:
+        path: "{{ CONFIG_DIR }}/locations.yorc.yaml"
+        regexp: 'OPENSTACK_PROJECT_ID_YORC_SUBSTITUTION'
+        replace: "{{ PROJECT_ID }}"
+      when: USE_VAULT == "false" and TENANT_NAME == ''
+
+    - name: Set OpenStack secret user domain name (Identity v3)
+      replace:
+        path: "{{ CONFIG_DIR }}/locations.yorc.yaml"
+        regexp: 'OPENSTACK_USER_DOMAIN_NAME_YORC_SUBSTITUTION'
+        replace: "'{{ '{{' }} secret \"/secret/yorc/locations/{{ LOCATION_NAME }}\" \"data=user_domain_name\" | print {{ '}}' }}'"
+      when: USE_VAULT == "true" and TENANT_NAME == ''
+
+    - name: Set OpenStack user domain name (Identity v3)
+      replace:
+        path: "{{ CONFIG_DIR }}/locations.yorc.yaml"
+        regexp: 'OPENSTACK_USER_DOMAIN_NAME_YORC_SUBSTITUTION'
+        replace: "{{ USER_DOMAIN_NAME }}"
+      when: USE_VAULT == "false" and TENANT_NAME == ''
+
+    - name: Set OpenStack secret password
+      replace:
+        path: "{{ CONFIG_DIR }}/locations.yorc.yaml"
+        regexp: 'OPENSTACK_PASSWORD_YORC_SUBSTITUTION'
+        replace: "'{{ '{{' }} secret \"/secret/yorc/locations/{{ LOCATION_NAME }}\" \"data=password\" | print {{ '}}' }}'"
+      when: USE_VAULT == "true"
+    - name: Set OpenStack password
+      replace:
+        path: "{{ CONFIG_DIR }}/locations.yorc.yaml"
+        regexp: 'OPENSTACK_PASSWORD_YORC_SUBSTITUTION'
+        replace: "{{ PASSWORD }}"
+      when: USE_VAULT == "false"
+
     - name: "get current config of Yorc"
       shell: "cat {{ CONFIG_DIR }}/config.yorc.yaml"
       register: result
@@ -30,27 +196,18 @@
 
     - set_fact:
         tmp: >
-          { "infrastructures": { "openstack": {
-              "auth_url": "{{ AUTH_URL }}",
-              "tenant_name": "{{ TENANT_NAME }}",
-              "user_name": "{{ USER_NAME }}",
-              "password": "{{ PASSWORD }}",
-              "private_network_name": "{{ PRIVATE_NETWORK_NAME }}"
-          } } }
+          { "locations_file_path": "{{ CONFIG_DIR }}/locations.yorc.yaml"
+          }
     - set_fact:
         yorcConfig: "{{ yorcConfig | combine(tmp, recursive=True) }}"
-
-    - set_fact:
-        tmp: >
-          { "infrastructures": { "openstack": {
-              "default_security_groups": {{ DEFAULT_SECURITY_GROUPS }}
-          } } }
-      when: DEFAULT_SECURITY_GROUPS != ''
-    - set_fact:
-        yorcConfig: "{{ yorcConfig | combine(tmp, recursive=True) }}"
-      when: DEFAULT_SECURITY_GROUPS != ''
 
     - name: "Output config to file {{ CONFIG_DIR }}/config.yorc.yaml"
       copy:
         content: "{{ yorcConfig | to_yaml }}"
         dest: "{{ CONFIG_DIR }}/config.yorc.yaml"
+
+  post_tasks:
+    - name: remove lock file
+      file:
+        path: "{{ lock_file }}"
+        state: absent

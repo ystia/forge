@@ -1,0 +1,118 @@
+tosca_definitions_version: alien_dsl_2_0_0
+
+metadata:
+  template_name: org.ystia.yorc.alien4cloud_yorc_provider
+  template_version: 2.2.0
+  template_author: alien4cloud
+
+imports:
+  - org.alien4cloud.alien4cloud.pub:2.2.0
+  - org.alien4cloud.alien4cloud.config.pub:2.2.0
+  - org.alien4cloud.alien4cloud.config.location:2.2.0
+  - org.alien4cloud.alien4cloud.config.location_resources.on_demand:2.2.0
+  - org.alien4cloud.alien4cloud.config.location_resources.autoconfig:2.2.0
+  - tosca-normative-types:1.0.0-ALIEN20
+  - yorc-types:1.1.0
+  - org.ystia.yorc.pub:2.2.0
+
+node_types:
+
+  org.ystia.yorc.alien4cloud.nodes.YorcProvider:
+    description: |
+      Upload Yorc Orchestrator Plugin
+    derived_from: org.alien4cloud.alien4cloud.config.pub.nodes.OrchestratorConfigurator
+    requirements:
+      - yorc:
+          capability: org.ystia.yorc.pub.capabilities.YorcRestAPI
+          relationship: org.ystia.yorc.alien4cloud.relationships.ConnectsToYorc
+          occurrences: [1, 1]
+    attributes:
+      orchestratorId: { get_operation_output: [ SELF, Standard, start, orchestratorId ] }
+    properties:
+      download_url:
+        description: The URL used to download the Yorc Plugin zip.
+        type: string
+        required: false
+      name:
+        type: string
+        required: true
+        default: Yorc
+      discriminator:
+        type: string
+        description: a prefix for all deployments
+        required: true
+        default: YourInitials
+      pluginId:
+        type: string
+        required: true
+        default: alien4cloud-yorc-provider
+      pluginBean:
+        type: string
+        required: true
+        default: yorc-orchestrator-factory
+      yorc_address_ha:
+        type: string
+        required: false
+    interfaces:
+      Standard:
+        start:
+          inputs:
+            alien_user: { get_property: [HOST, rest, user] }
+            alien_password: { get_property: [HOST, rest, password] }
+            alien_url: { get_attribute: [HOST, alien_url] }
+            download_url: { get_property: [SELF, download_url] }
+            orchestrator_name: { get_property: [SELF, name] }
+            pluginId: { get_property: [SELF, pluginId] }
+            pluginBean: { get_property: [SELF, pluginBean] }
+            discriminator: { get_property: [SELF, discriminator] }
+          implementation: playbook/start.yml
+
+  org.ystia.yorc.alien4cloud.nodes.YorcLocationConfigurator:
+    derived_from: org.alien4cloud.alien4cloud.config.location.nodes.SimpleLocationConfigurator
+    properties:
+      type:
+        type: string
+        required: true
+        default: OpenStack
+        constraints:
+        - valid_values: [ "Google Cloud", "AWS", "OpenStack", "Slurm", "Kubernetes", "HostsPool" ]
+
+  org.ystia.yorc.alien4cloud.nodes.YorcAutoconfigResourcesConfigurator:
+    derived_from: org.alien4cloud.alien4cloud.config.location_resources.autoconfig.nodes.ResourcesConfigurator
+    properties:
+      type:
+        type: string
+        required: true
+        default: OpenStack
+        constraints:
+        - valid_values: [ "Google Cloud", "AWS", "OpenStack", "Slurm", "Kubernetes", "HostsPool" ]
+
+  org.ystia.yorc.alien4cloud.nodes.YorcOnDemandLocationResourcesConfigurator:
+    derived_from: org.alien4cloud.alien4cloud.config.location_resources.on_demand.nodes.OnDemandLocationResourcesConfigurator
+    properties:
+      type:
+        type: string
+        required: true
+        default: OpenStack
+        constraints:
+        - valid_values: [ "Google Cloud", "AWS", "OpenStack", "Slurm", "Kubernetes", "HostsPool" ]
+
+capability_types:
+  org.ystia.yorc.alien4cloud.capabilities.YorcProvider:
+    derived_from: tosca.capabilities.Endpoint
+
+relationship_types:
+  org.ystia.yorc.alien4cloud.relationships.ConnectsToYorc:
+    derived_from: tosca.relationships.ConnectsTo
+    valid_target_types: [ org.ystia.yorc.pub.capabilities.YorcRestAPI ]
+    interfaces:
+      Configure:
+        pre_configure_source:
+          inputs:
+            yorc_address_ha: { get_property: [SOURCE, yorc_address_ha ] }
+            yorc_url_ha: { concat: [get_property: [TARGET, rest, protocol], "://", get_property: [SOURCE, yorc_address_ha ], ":", get_property: [TARGET, rest, port]] }
+            yorc_url: { concat: [get_property: [TARGET, rest, protocol], "://", get_attribute: [TARGET, rest, ip_address], ":", get_property: [TARGET, rest, port]] }
+            ca_pem: { get_property: [TARGET, ca_pem ] }
+            ca_key: { get_property: [TARGET, ca_key ] }
+            ca_passphrase: { get_property: [TARGET, ca_passphrase ] }
+          implementation: playbook/connect_yorc.yml

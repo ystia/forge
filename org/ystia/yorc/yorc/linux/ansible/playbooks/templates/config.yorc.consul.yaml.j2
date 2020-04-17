@@ -1,2 +1,8 @@
 consul:
   address: "127.0.0.1:{{CONSUL_PORT}}"
+{% if  TLS_ENABLED == "true" %}
+  ssl: true
+  key_file: "{{CONFIG_DIR}}/consul.key"
+  cert_file: "{{CONFIG_DIR}}/consul.pem"
+  ca_cert: "{{CONFIG_DIR}}/consul_ca.pem"
+{% endif %}

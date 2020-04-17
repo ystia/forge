@@ -24,7 +24,7 @@ Group=consul
 PIDFile=/run/consul/consul.pid
 Restart=on-failure
 RuntimeDirectory=consul
-ExecStartPre=/usr/bin/sh -c 'if [ -f "/run/consul/consul.pid" ] ; then  /usr/bin/rm -f /run/consul/consul.pid ; else /usr/bin/true ; fi'
+ExecStartPre=/bin/sh -c 'if [ -f "/run/consul/consul.pid" ] ; then /bin/rm -f /run/consul/consul.pid ; else /bin/true ; fi'
 ExecStartPre={{INSTALL_DIR}}/consul validate {{CONFIG_DIR}}
 ExecStart={{INSTALL_DIR}}/consul agent $OPTIONS -pid-file=/run/consul/consul.pid -config-dir={{CONFIG_DIR}}
 ExecReload=/bin/kill -s HUP $MAINPID

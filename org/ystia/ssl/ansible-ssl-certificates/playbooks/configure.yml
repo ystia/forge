@@ -1,0 +1,104 @@
+#
+# Copyright 2019 Bull S.A.S. Atos Technologies - Bull, Rue Jean Jaures, B.P.68, 78340, Les Clayes-sous-Bois, France.
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+#
+
+- name: Generate Certificates
+  hosts: all
+  strategy: free
+  become: "{{GEN_CERT_BECOME_USER != ''}}"
+  become_user: "{{GEN_CERT_BECOME_USER}}"
+  vars:
+    key_name: "{{NODE}}.key"
+    cert_name: "{{NODE}}.pem"
+    extended_key_usage: []
+  tasks:
+    - name: Set extented key usages
+      set_fact:
+        extended_key_usage: "{{EXTENDED_KEY_USAGE}}"
+      when: EXTENDED_KEY_USAGE is defined and EXTENDED_KEY_USAGE != ''
+
+    - name: Set key name
+      set_fact:
+        key_name: "{{KEY_NAME}}"
+      when: KEY_NAME is defined and KEY_NAME != ''
+
+    - name: Set certificate name
+      set_fact:
+        cert_name: "{{CERTIFICATE_NAME}}"
+      when: CERTIFICATE_NAME is defined and CERTIFICATE_NAME != ''
+
+    - name: Ensure Certificates and Private Keys directory exist
+      file:
+        path: "{{ item }}"
+        state: directory 
+      loop:
+        - "{{ KEY_PATH }}"
+        - "{{ CERTIFICATE_PATH }}"
+
+    - name: Setup CA
+      copy:
+        content: "{{item.content}}"
+        dest: "{{item.path}}"
+      no_log: true
+      loop:
+        - {content: "{{CA_CERTIFICATE}}", path: "{{CERTIFICATE_PATH}}/{{NODE}}-ca.pem"}
+        - {content: "{{CA_KEY}}", path: "{{KEY_PATH}}/{{NODE}}-ca.key"}
+
+    - name: Generate an OpenSSL private key for the server
+      openssl_privatekey:
+        path: "{{ KEY_PATH }}/{{key_name}}"
+      when: PRIVATE_KEY is undefined or PRIVATE_KEY == ''
+
+    - name: Get Host private IP address and DNS hostname for which TLS connections are accepted
+      set_fact:
+        subjectAltName: "IP:{{ IP_ADDRESS }},IP:127.0.0.1,DNS:localhost"
+
+    - name: Add Host public IP address to subjectAltName
+      set_fact:
+        subjectAltName: "IP:{{ PUBLIC_ADDRESS }},{{ subjectAltName }}"
+      when: PUBLIC_ADDRESS is defined and PUBLIC_ADDRESS != ''
+
+    - name: Add Extra SubjectAltName
+      set_fact:
+        subjectAltName: "{{EXTRA_SUB_ALT_NAME}},{{ subjectAltName }}"
+      when: EXTRA_SUB_ALT_NAME is defined and EXTRA_SUB_ALT_NAME != ''
+
+    - name: Generate an OpenSSL CSR with subjectAltName for the server
+      openssl_csr:
+        path: "{{ CERTIFICATE_PATH }}/{{cert_name}}.csr"
+        privatekey_path: "{{ KEY_PATH }}/{{key_name}}"
+        common_name: "{{COMMON_NAME}}"
+        extended_key_usage: "{{extended_key_usage}}"
+        subjectAltName: "{{ subjectAltName }}"
+
+    - name: Set certificate path output
+      set_fact:
+        GENERATED_CERTIFICATE_PATH: "{{ CERTIFICATE_PATH }}/{{cert_name}}"
+
+    - name: Generate a OpenSSL certificate for the server
+      openssl_certificate:
+        path: "{{ GENERATED_CERTIFICATE_PATH }}"
+        csr_path: "{{ CERTIFICATE_PATH }}/{{cert_name}}.csr"
+        ownca_path: "{{CERTIFICATE_PATH}}/{{NODE}}-ca.pem"
+        ownca_privatekey_path: "{{KEY_PATH}}/{{NODE}}-ca.key"
+        ownca_privatekey_passphrase: "{{ CA_PASSPHRASE }}"
+        provider: ownca
+        subjectAltName: "{{ subjectAltName }}"
+
+    # Now we do not need it anymore so lets remove it 
+    - name: Delete CA Key
+      file:
+        name: "{{KEY_PATH}}/{{NODE}}-ca.key"
+        state: absent

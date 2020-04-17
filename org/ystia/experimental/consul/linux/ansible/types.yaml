@@ -18,13 +18,13 @@ tosca_definitions_version: alien_dsl_2_0_0
 
 metadata:
   template_name: org.ystia.yorc.experimental.consul.linux.ansible
-  template_version: 2.1.0
+  template_version: 2.2.0
   template_author: yorc
 
 imports:
   - tosca-normative-types:1.0.0-ALIEN20
-  - yorc-types:1.0.0
-  - org.ystia.yorc.experimental.consul.pub:2.1.0
+  - yorc-types:1.1.0
+  - org.ystia.yorc.experimental.consul.pub:2.2.0
 
 description: >
   This component allows to deploy Consul with Ansible
@@ -85,6 +85,12 @@ node_types:
           implementation: playbooks/consul_start.yml
         stop:
           implementation: playbooks/consul_stop.yaml
+        delete:
+          description: Consul data directory cleanup step
+          inputs:
+            DATA_DIR: { get_property: [SELF, data_dir] }
+            CONFIG_DIR: { get_property: [SELF, config_dir] }
+          implementation: playbooks/consul_cleanup.yaml
       custom:
         inputs:
           INSTALL_DIR: { get_property: [SELF, install_dir] }

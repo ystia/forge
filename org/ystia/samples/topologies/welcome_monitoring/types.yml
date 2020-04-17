@@ -1,0 +1,163 @@
+tosca_definitions_version: alien_dsl_2_0_0
+
+#
+# Ystia Forge
+# Copyright (C) 2018 Bull S. A. S. - Bull, Rue Jean Jaures, B.P.68, 78340, Les Clayes-sous-Bois, France.
+# Use of this source code is governed by Apache 2 LICENSE that can be found in the LICENSE file.
+#
+
+metadata:
+  template_name: org.ystia.samples.topologies.welcome_monitoring
+  template_version: 2.2.0
+  template_author: Ystia
+
+
+imports:
+  - tosca-normative-types:1.0.0-ALIEN20
+  - yorc-types:1.1.0
+  - org.ystia.common:2.2.0
+  - org.ystia.samples.welcome.linux.bash:2.2.0
+  - org.ystia.samples.tcpecho.ansible:2.2.0
+
+topology_template:
+  description: A monitored topology template for the Welcome sample
+
+  node_templates:
+
+    # Network
+
+    Network:
+      type: tosca.nodes.Network
+      properties:
+        ip_version: 4
+
+    # VM for MntWelcome
+
+    MntCompute:
+      type: tosca.nodes.Compute
+      requirements:
+        - network:
+            node: Network
+            relationship: tosca.relationships.Network
+    MntWelcome:
+      type: org.ystia.samples.welcome.linux.bash.nodes.Welcome
+      requirements:
+        - host:
+            node: MntCompute
+    MntTCPEcho:
+      type: org.ystia.samples.tcpecho.ansible.nodes.TCPEcho
+      requirements:
+        - host:
+            node: MntCompute
+
+  policies:
+    - HTTPMonitoring:
+        type: yorc.policies.monitoring.HTTPMonitoring
+        targets: [ MntWelcome ]
+        properties:
+          scheme: http
+          port: 8111
+          time_interval: 5s
+    - TCPMonitoring:
+        type: yorc.policies.monitoring.TCPMonitoring
+        targets: [ MntTCPEcho ]
+        properties:
+          port: 9111
+          time_interval: 5s
+
+  # Output property for MntWelcome URL
+
+  outputs:
+    url:
+      description: The URL to access the Welcome page
+      value: { get_attribute: [ MntWelcome, url ] }
+    tcp_echo_url:
+      description: The URL to access the Echo Server
+      value: { get_attribute: [ MntTCPEcho, url ] }
+
+  workflows:
+    killWebServer:
+      steps:
+        Welcome_stop:
+          target: MntWelcome
+          activities:
+            - call_operation: Standard.stop
+    stopWebServer:
+      steps:
+        Welcome_stopping:
+          target: MntWelcome
+          activities:
+            - set_state: stopping
+          on_success:
+            - Welcome_stop
+        Welcome_stopped:
+          target: MntWelcome
+          activities:
+            - set_state: stopped
+        Welcome_stop:
+          target: MntWelcome
+          activities:
+            - call_operation: Standard.stop
+          on_success:
+            - Welcome_stopped
+    startWebServer:
+      steps:
+        Welcome_started:
+          target: MntWelcome
+          activities:
+            - set_state: started
+        Welcome_start:
+          target: MntWelcome
+          activities:
+            - call_operation: Standard.start
+          on_success:
+            - Welcome_started
+        Welcome_starting:
+          target: MntWelcome
+          activities:
+            - set_state: starting
+          on_success:
+            - Welcome_start
+    killTCPEchoServer:
+      steps:
+        Welcome_stop:
+          target: MntTCPEcho
+          activities:
+            - call_operation: Standard.stop
+    stopTCPEchoServer:
+      steps:
+        TCPEcho_stopping:
+          target: MntTCPEcho
+          activities:
+            - set_state: stopping
+          on_success:
+            - TCPEcho_stop
+        TCPEcho_stopped:
+          target: MntTCPEcho
+          activities:
+            - set_state: stopped
+        TCPEcho_stop:
+          target: MntTCPEcho
+          activities:
+            - call_operation: Standard.stop
+          on_success:
+            - TCPEcho_stopped
+    startTCPEchoServer:
+      steps:
+        TCPEcho_started:
+          target: MntTCPEcho
+          activities:
+            - set_state: started
+        TCPEcho_start:
+          target: MntTCPEcho
+          activities:
+            - call_operation: Standard.start
+          on_success:
+            - TCPEcho_started
+        TCPEcho_starting:
+          target: MntTCPEcho
+          activities:
+            - set_state: starting
+          on_success:
+            - TCPEcho_start
+

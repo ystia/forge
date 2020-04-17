@@ -2,18 +2,18 @@ tosca_definitions_version: alien_dsl_2_0_0
 
 metadata:
   template_name: org.ystia.yorc.alien4cloud
-  template_version: 2.1.0
+  template_version: 2.2.0
   template_author: alien4cloud
 
 imports:
-  - org.alien4cloud.alien4cloud.pub:2.1.0
-  - org.alien4cloud.alien4cloud.config.pub:2.1.0
-  - org.alien4cloud.alien4cloud.config.location:2.1.0
-  - org.alien4cloud.alien4cloud.config.location_resources.on_demand:2.1.0
-  - org.alien4cloud.alien4cloud.config.location_resources.autoconfig:2.1.0
+  - org.alien4cloud.alien4cloud.pub:2.2.0
+  - org.alien4cloud.alien4cloud.config.pub:2.2.0
+  - org.alien4cloud.alien4cloud.config.location:2.2.0
+  - org.alien4cloud.alien4cloud.config.location_resources.on_demand:2.2.0
+  - org.alien4cloud.alien4cloud.config.location_resources.autoconfig:2.2.0
   - tosca-normative-types:1.0.0-ALIEN20
-  - yorc-types:1.0.0
-  - org.ystia.yorc.pub:2.1.0
+  - yorc-types:1.1.0
+  - org.ystia.yorc.pub:2.2.0
 
 node_types:
 
@@ -33,7 +33,7 @@ node_types:
         description: The URL used to download the Yorc plugin zip.
         type: string
         required: true
-        default: https://github.com/ystia/yorc-a4c-plugin/releases/download/v3.0.0/alien4cloud-yorc-plugin-3.0.0.zip
+        default: https://dl.bintray.com/ystia/yorc-a4c-plugin/releases/alien4cloud-yorc-plugin-3.1.0.zip
       name:
         type: string
         required: true
@@ -114,4 +114,7 @@ relationship_types:
             yorc_address_ha: { get_property: [SOURCE, yorc_address_ha ] }
             yorc_url_ha: { concat: [get_property: [TARGET, rest, protocol], "://", get_property: [SOURCE, yorc_address_ha ], ":", get_property: [TARGET, rest, port]] }
             yorc_url: { concat: [get_property: [TARGET, rest, protocol], "://", get_attribute: [TARGET, rest, ip_address], ":", get_property: [TARGET, rest, port]] }
+            ca_pem: { get_property: [TARGET, ca_pem ] }
+            ca_key: { get_property: [TARGET, ca_key ] }
+            ca_passphrase: { get_property: [TARGET, ca_passphrase ] }
           implementation: playbook/connect_yorc.yml

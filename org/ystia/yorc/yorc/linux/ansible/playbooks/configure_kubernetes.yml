@@ -20,6 +20,17 @@
   strategy: free
   become_user: yorc
   become: true
+  vars:
+    lock_file: "{{ CONFIG_DIR }}//config.lock"
+  pre_tasks:
+    - name: check for lock file
+      wait_for:
+        path: "{{ lock_file }}"
+        state: absent
+    - name: create lock file
+      file:
+        path: "{{ lock_file }}"
+        state: touch
   tasks:
     - name: "Ensures {{ CONFIG_DIR }}/kubernetes dir exists"
       file:
@@ -41,6 +52,55 @@
         content: "{{ KEY }}"
         dest: "{{ CONFIG_DIR }}/kubernetes/client.key"
 
+    - name: Creation locations file
+      file:
+        path: "{{ CONFIG_DIR }}/locations.yorc.yaml"
+        state: touch
+        modification_time: preserve
+        access_time: preserve
+
+    - name: "get current locations"
+      shell: "cat {{ CONFIG_DIR }}/locations.yorc.yaml"
+      register: result
+
+    - set_fact:
+        yorcLocationsConfig: "{{ result.stdout | from_yaml }}"
+
+    - set_fact:
+        locationsDefined: []
+      when: yorcLocationsConfig|length == 0
+
+    - set_fact:
+        locationsDefined: "{{ yorcLocationsConfig.locations }}"
+      when: yorcLocationsConfig|length > 0
+
+    - set_fact:
+        locationProperties: >
+          { "master_url": "{{ MASTER_URL }}",
+            "ca_file": "{{ CONFIG_DIR }}/kubernetes/ca.pem",
+            "cert_file": "{{ CONFIG_DIR }}/kubernetes/client.crt",
+            "key_file": "{{ CONFIG_DIR }}/kubernetes/client.key",
+            "insecure": "{{ INSECURE }}"
+          }
+
+    - set_fact:
+        tmpLocation: >
+          { "name" :  "{{ LOCATION_NAME }}",
+            "type" : "kubernetes",
+            "properties": {{ locationProperties }}
+          }
+
+    - set_fact:
+        locationsDefined: "{{ locationsDefined + [ tmpLocation  ] }}"
+
+    - set_fact:
+        yorcLocationsConfig:  {"locations": "{{ locationsDefined }}"}
+
+    - name: "Output config to file {{ CONFIG_DIR }}/locations.yorc.yaml"
+      copy:
+        content: "{{ yorcLocationsConfig | to_yaml }}"
+        dest: "{{ CONFIG_DIR }}/locations.yorc.yaml"
+
     - name: "get current config of Yorc"
       shell: "cat {{ CONFIG_DIR }}/config.yorc.yaml"
       register: result
@@ -50,13 +110,8 @@
 
     - set_fact:
         tmp: >
-            { "infrastructures": { "kubernetes": {
-                "master_url": "{{ MASTER_URL }}",
-                "ca_file": "{{ CONFIG_DIR }}/kubernetes/ca.pem",
-                "cert_file": "{{ CONFIG_DIR }}/kubernetes/client.crt",
-                "key_file": "{{ CONFIG_DIR }}/kubernetes/client.key",
-                "insecure": "{{ INSECURE }}"
-            } } }
+          { "locations_file_path": "{{ CONFIG_DIR }}/locations.yorc.yaml"
+          }
     - set_fact:
         yorcConfig: "{{ yorcConfig | combine(tmp, recursive=True) }}"
 
@@ -64,3 +119,9 @@
       copy:
         content: "{{ yorcConfig | to_yaml }}"
         dest: "{{ CONFIG_DIR }}/config.yorc.yaml"
+
+  post_tasks:
+    - name: remove lock file
+      file:
+        path: "{{ lock_file }}"
+        state: absent

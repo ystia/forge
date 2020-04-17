@@ -1,0 +1,74 @@
+tosca_definitions_version: alien_dsl_2_0_0
+
+#
+# Ystia Forge
+# Copyright (C) 2018 Bull S. A. S. - Bull, Rue Jean Jaures, B.P.68, 78340, Les Clayes-sous-Bois, France.
+# Use of this source code is governed by Apache 2 LICENSE that can be found in the LICENSE file.
+#
+
+metadata:
+  template_name: org.ystia.docker.containers.docker.registry
+  template_version: 2.2.0
+  template_author: Ystia
+
+
+
+imports:
+  - tosca-normative-types:1.0.0-ALIEN20
+  - org.ystia.docker.containers.docker.generic:2.2.0
+
+node_types:
+  org.ystia.docker.containers.docker.registry.nodes.Registry:
+    derived_from: org.ystia.docker.containers.docker.generic.nodes.GenericContainer
+    metadata:
+      icon: /icons/registry.png
+    capabilities:
+      api: org.ystia.docker.containers.docker.registry.capabilities.RegistryAPI
+    properties:
+      image:
+        type: string
+        description: >
+          Repository path and tag used to create the container. If an image is not found,
+          the image will be pulled from the registry. If no tag is included, 'latest' will be used.
+        required: true
+        default: "registry:2"
+      restart_policy:
+        type: string
+        constraints:
+          - valid_values: ["no", "on-failure", "always", "unless-stopped"]
+        default: "always"
+      published_ports:
+        type: list
+        entry_schema:
+          type: string
+        description: |
+          List of ports to publish from the container to the host.
+          Use docker CLI syntax: 8000, 9000:8000, or 0.0.0.0:9000:8000, where 8000 is a container port, 9000 is a host port, and 0.0.0.0 is a host interface.
+          Container ports must be exposed either in the Dockerfile or via the expose option.
+          A value of all will publish all exposed container ports to random host ports, ignoring any other mappings.
+        required: false
+        default:
+          - "5000:5000"
+
+capability_types:
+  org.ystia.docker.containers.docker.registry.capabilities.RegistryAPI:
+    derived_from: tosca.capabilities.Endpoint
+    properties:
+      protocol:
+        type: string
+        description: >
+          The name of the protocol (i.e., the protocol prefix) that the endpoint accepts (any OSI Layer 4-7 protocols)
+          Examples: http, https, ftp, tcp, udp, etc.
+        default: http
+      port:
+        type: integer
+        description: The optional port of the endpoint.
+        default: 5000
+        required: false
+        constraints:
+          - in_range: [ 1, 65535 ]
+      url_path:
+        type: string
+        description: The optional URL path of the endpoint’s address if applicable for the protocol.
+        required: false
+        default: "/v2"

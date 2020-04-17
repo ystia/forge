@@ -6,37 +6,25 @@ sudo: required
 
 env:
   global:
-    # BINTRAY API KEY
-    - secure: "pPBh4VDtMgP5R6e0sFVUx1Jg+ytip36kWxQ+Na5uqZW9Z6MEbeuUQ6fcc+6ayVXkyJOCJRvO8ohoJSM64qbpThzaHKdf8xCbmRIbFpLkgyWIuByASjR4no/ZnEp5FRYrIX9vvgFI4ky6C59/JOf4XnnQbMZMk7ovGigIMwD15VHcO5iAQJ69Ktz1aur4fCABNcYqUT1k6Px+KkvQs5hVdCr4C7OtT4OR2AVC5DE+Fx7eOdhmIXhvMmTW0TDVnP5LrVDePEDgKabTQZsTd0UKfO/ngegmnrvh3ZKluRtqnzOLCOy7KODnKEXs26yQNVdpAQu/PNp7M7RTWIebZtz4xfOTRGV7U+Qq9s7TgpbPMxOume4dhIhM9pUWTpmheYJiQJiDaYzpGV8+yfyKQm4DSNYf5HxFpdsa5jy/fwe+mzUNWTB/BgnwlI+84kB8sJ/HHtEdpWa3BSGMC3/OWb061Fyda6iMU/5AGK5C9WuGly4EmhsKf9GgG+i+woYw2oHVBcCiHbHRMtNs/gNJ2R6Qa1IbqwlfCJdLlobnHKD+C57dZFHgaW59o9bDdikrUkyNMvIqpV/iXTrsnSuScVhN07QVqwNOebkN2x8eml7EGddXKAMJxOSEXPM3uZHch+in6UuGYvSfqqOtECu3trUyTgPsvc/41X3/SF7jxskCDcQ="
+    # ARTIFACTORY_API_KEY
+    secure: "zPXLR5lq5j5wXAupZmxVYWlkJsprRiy+UAxT9LxXNEuXjcmwyyv9e8cvQ3t9cZ/qCL+kR1EFDJfEMCUf5EEwurlnRoh8QYv0ZGGXfXr5bJNlwcVEz3e9ZUHoKjXmZ+vRA21H3FVrYQA4XyBFvPmfWdCe6NQHaHxxTTt9yKMYVgwQKLUOWPv78E7pdy6LVOo+j3mnRnQ+gjC7k1mQdxD2iglRh/KAJ2TnUkkO5ABrgz/Q//n88SXKEwR8BJY64R2PFlxJBrIBxLP07i/3CstncPtAzLpmCjMJyPLHrqcJ6TruQ0ag9nqUgfZVyWd6JnEbFhCETParSrjPEz/CPNJMo0LUAi5nuC3pxCLDSMunc777Zpl0WZuYOpHm5hg9jviZiCiLwR7iEbLdgYzT4rRErn1OMV86P8qDtCZeo3/MAG3+QICvDI1H0OjUHJrfSGmU+opU8X0Dljjbeki+HOmuZCilHUylpMUpV3TSRVsrMLS0ck29zUUQsnxAj+wZvmj0NaCvOItVNugkGUbHoWQ1UcjUEmTTHP8XBV+ItB8/jzv7XLjk65gFrnCHRuddmspQbvhv5hIJ96welw8IIfLZl+sJXsKxjyLOnBheo8cwz07oC/k1UeFInBtrLM6qZxVVNrP/BGdxmheXoL/1FcjxtHYLbmLe6rss8AhxGLxUkSU="
 
 script:
   - bash build/zip_csar.sh
+  - bash build/deploy_artifactory.sh
+
+before_deploy:
+  - "bash ./build/pre_bintray_release.sh"
 
 deploy:
-  - provider: script
-    script: bash build/deploy.sh
-    on:
-      all_branches: true
-    skip_cleanup: true
-
-  - provider: script
-    script: bash build/cleanup_bintray.sh
-    on:
-      all_branches: true
-    skip_cleanup: true
-
-
-  - provider: releases
-    overwrite: true
-    file_glob: true
-    api_key:
-      secure: "3z/GkHklOED0NonznmEARjOgLfx0YOOP6kU4N0gifkqe6U+sHvvRjOchT6bJI1XkG541cv4yzm4CoIotmzUmWNJmgqiXVfoQNW7Sy3t+tC3q3T0n9YIvX3JEvy05IqM3e60R2Xbcgz04/RQP76li3zvu3dJ4ev/9Vl4T59qFyP2OiKwr3IGCpo553yhRcwP5hssPiIKZFJqxxLDEXzVW8gX22HwsMZn1nrkvshcKc6fbKwmNjDYy3PuX2Tzk3+6VajTjZfCqirBkWofLPxiTd1jRVTDEhEAb7F2C6XeLVKreN0v7AKoWnopibGmI8eCq3NO21U2BbkVjA4kw1p+gk3HXlYYSZSIqnLeTqjnFy+lyN1qjP5+jqPOzhYCX1v29uhAsbM4fbI2XM24oetLltQbFh4HhGO9egzGA+CdJmJPQoh39+YXzAJNM+Dns6bgK9juJjNGNIJq+z3yGABepT4IdnhUZjG1Nw25GgI+o4YNbklARNEbFWd1dr8H+r1cBdLikDzF3FZuyyIY/fNC2WjiMgGB4fibw4/7POTLDPI9CUmhPN0dFMDVeW+sveWsgpBbLuQ/cvHxNkdJKcCoMiigDo9QMu689h+85kVP7sH/bMiC1BfU4VEoH+QEss9MOekLO549swTMfXv+fVvdjSaBPSlJUProv5YSFNNtw6UA="
-    file:
-      - build/csars/*.zip
+  - provider: bintray
+    file: "build/bintray_release.json"
+    user: "loicalbertin"
+    key: 
+      secure: "rEKazS5w7wsijy5n+BI+sLbLdXM2zKsPCRLzgZ+XdRCYjNcaWmQZ7LDP+4s2kAv0pi+fELtRT5AE5TiUU5Kh5SHLPJ9sOBhIbVsuaOHctUI2v4MCfdfiDNJF8SkG03yxUUA8jyb+8KfPJ6lSHd7VqtF0Nbpl56m5QkTICy5YdEEZYjUD4bwzBCTbndTa/5MAWTTO60aePHStW2gHMtgEGvnfqiEKYxSaZnONqgiqBLfW4JuLFbXnHlFJNoRMt6+XnZZAgjpYxpwsTbSqa46xBgPFGIkjO0Q6jIeCp7yBQCjRbHCNQ99lFV3qFem2o//U5rclm7FR0/8WeNL2THF1cUzd/nOVL4FZT3UeOW/f7ooyjDZ1poIkUe4C0tL5RlNixLMsia4+CWqP96fhcR9KtDBoP96ZjMcoQJ0RTyMFF9cJmsWyREhGWa/S/QUYXWnvpbiuEFoMuMlq2gJs0k+wNs9VbqB3t0jois7BI1o9BOu1/8HyNBo2YmQKZ7Zu51fcs1tDbVHjUCtnf1dbeXMEHlPc0Hb82LirmgLzWBTw3oqRC7gFJbOfANvgBXczT5QYct3CMu8xxiRNn+v6oELzCJCnk0rOjLK4BBgxtomN+5DgR8m/uIyj3kAqBIyh/f+px6gYlsQF2ZX563QX5b7c8jSP3zbGuJ66lrAvnRsNBMY="
     skip_cleanup: true
     on:
       tags: true
-      repo: ystia/forge
 
 addons:
   apt:

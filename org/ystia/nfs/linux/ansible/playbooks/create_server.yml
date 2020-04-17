@@ -20,17 +20,37 @@
   become: true
   become_method: sudo
   tasks:
-    - name: Install nfs-utils
+    - name: RedHat - install prerequisites
       yum:
-        name: "{{item}}"
+        name:
+          - nfs-utils
         state: present
         update_cache: yes
-      with_items:
-      - nfs-utils
+      when: ansible_os_family == 'RedHat'
+
+    - name: Debian/Ubuntu - install prerequisites
+      apt:
+        name:
+          - nfs-kernel-server
+        state: present
+        update_cache: yes
+      when: ansible_os_family == 'Debian' or ansible_distribution == 'Ubuntu'
+
+    - name: Set RedHat specific variables
+      set_fact:
+        nfs_server_daemon_name: nfs-server
+        share_owner: nfsnobody
+      when: ansible_os_family == 'RedHat'
+
+    - name: Set Debian/Ubuntu specific variables
+      set_fact:
+        nfs_server_daemon_name: nfs-kernel-server
+        share_owner: nobody
+      when:  ansible_os_family == 'Debian' or ansible_distribution == 'Ubuntu'
 
     - name: Enable NFS Server Systemd Service
       systemd:
-        name: nfs-server
+        name: "{{ nfs_server_daemon_name }}"
         daemon_reload: yes
         enabled: yes
         state: started
@@ -39,8 +59,8 @@
       file:
         path: "/var/nfs"
         state: directory
-        owner: nfsnobody
-        group: nfsnobody
+        owner: "{{ share_owner }}"
+        group: "{{ share_owner }}"
         mode: "u=rwx,g=rwx,o=rwx"
 
     - lineinfile:

@@ -13,16 +13,16 @@
     masters_public_IPs: []
   tasks:
     - name: compute Masters Private IP
-      set_fact: 
+      set_fact:
         masters_private_IPs: "{{ masters_private_IPs }} + [ '{{ hostvars[inventory_hostname][item] }}' ]"
       with_items: "{{ hostvars[inventory_hostname]  }}"
-      when: item | match(NODE+'_.*_MASTER_PRIVATE_IP')
+      when: item is match(NODE+'_.*_MASTER_PRIVATE_IP')
 
     - name: compute Masters Public IP
-      set_fact: 
+      set_fact:
         masters_public_IPs: "{{ masters_public_IPs }} + [ '{{ hostvars[inventory_hostname][item] }}' ]"
       with_items: "{{ hostvars[inventory_hostname]  }}"
-      when: item | match(NODE+'_.*_MASTER_PUBLIC_IP')
+      when: item is match(NODE+'_.*_MASTER_PUBLIC_IP')
 
     - name: Create manifests directory
       file:
@@ -30,21 +30,24 @@
         state: directory
 
     - name: Server certificates config
-      template: 
+      template:
         src: server-cert.json.j2
         dest: "{{ansible_env['HOME']}}/kube-manifests/{{NODE}}/certs/config.json"
         mode: "u=rw,g=r,o=r"
-    
+
     - name: Generate server certs
       shell: >
-        cd "{{ansible_env['HOME']}}/kube-manifests/{{NODE}}/certs"; 
-        /usr/local/bin/cfssl gencert -ca=/etc/kubernetes/pki/ca.crt -ca-key=/etc/kubernetes/pki/ca.key -config=/etc/kubernetes/pki/etcd/ca-config.json -profile=server config.json | /usr/local/bin/cfssljson -bare server && mv server.pem dashboard.crt && mv server-key.pem dashboard.key  
-      when: inventory_hostname == ansible_play_hosts[0] 
-    
+        cd "{{ansible_env['HOME']}}/kube-manifests/{{NODE}}/certs";
+        /usr/local/bin/cfssl gencert -ca=/etc/kubernetes/pki/ca.crt -ca-key=/etc/kubernetes/pki/ca.key -config=/etc/kubernetes/pki/ca-config.json -profile=server config.json | /usr/local/bin/cfssljson -bare server && mv server.pem dashboard.crt && mv server-key.pem dashboard.key
+      when: inventory_hostname == ansible_play_hosts[0]
+
+    - name: Wait for kubectl to be configured
+      wait_for:
+        path: /root/.kube/config
+
     - name: create certificate secrets
       shell: >
         source /etc/profile;
-        kubectl create secret generic kubernetes-dashboard-certs --from-file="{{ansible_env['HOME']}}/kube-manifests/{{NODE}}/certs" -n kube-system
+        kubectl create namespace kubernetes-dashboard ;
+        kubectl create secret generic kubernetes-dashboard-certs --from-file="{{ansible_env['HOME']}}/kube-manifests/{{NODE}}/certs" -n kubernetes-dashboard
       when: inventory_hostname == ansible_play_hosts[0]
-
-      

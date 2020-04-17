@@ -8,15 +8,15 @@ tosca_definitions_version: alien_dsl_2_0_0
 
 metadata:
   template_name: org.ystia.traefik.ansible-linux
-  template_version: 2.1.0
+  template_version: 2.2.0
   template_author: Ystia
 
 description: Traefik reverse proxy implementation using Ansible on Linux
 
 imports:
   - tosca-normative-types:1.0.0-ALIEN20
-  - yorc-types:1.0.0
-  - org.ystia.traefik.pub:2.1.0
+  - yorc-types:1.1.0
+  - org.ystia.traefik.pub:2.2.0
 
 node_types:
   org.ystia.traefik.ansible-linux.nodes.Traefik:
@@ -24,7 +24,7 @@ node_types:
     properties:
       download_url:
         type: string
-        default: "https://github.com/containous/traefik/releases/download/v1.6.4/traefik_linux-amd64"
+        default: "https://github.com/containous/traefik/releases/download/v2.1.4/traefik_v2.1.4_linux_amd64.tar.gz"
       install_dir:
         type: string
         default: "/usr/local/bin"
@@ -35,10 +35,21 @@ node_types:
         required: true
       enable_dashboard:
         type: boolean
-        default: true
+        default: false
+        required: false
+      default_tls_certificate:
+        type: string
+        default: ""
+        required: false
+        description: could be either a path to the default server TLS certificate or the certificate itself
+      default_tls_key:
+        type: string
+        default: ""
+        required: false
+        description: could be either a path to the default server TLS key or the key itself
       component_version:
         type: version
-        default: 1.6.4
+        default: 2.1.4
         required: false
     interfaces:
       Standard:
@@ -54,6 +65,8 @@ node_types:
             ENTRYPOINT_PORT: {get_property: [SELF, entrypoint, port]}
             ENTRYPOINT_PROTOCOL: {get_property: [SELF, entrypoint, protocol]}
             ENABLE_DASHBOARD: {get_property: [SELF, enable_dashboard]}
+            DEFAULT_TLS_CERT: {get_property: [SELF, default_tls_certificate]}
+            DEFAULT_TLS_KEY: {get_property: [SELF, default_tls_key]}
           implementation: playbooks/configure.yaml
         start: playbooks/start.yaml
         stop: playbooks/stop.yaml
@@ -72,8 +85,25 @@ node_types:
           inputs:
             CONFIG_DIR: {get_property: [SELF, config_dir]}
             RULES: {get_property: [SELF, rules]}
+            ENTRYPOINT_PROTOCOL: { get_property: [HOST, entrypoint, protocol]}
           implementation: playbooks/configure_route.yaml
-      
+        stop:
+          inputs:
+            CONFIG_DIR: {get_property: [SELF, config_dir]}
+          implementation: playbooks/remove_route.yaml
+
+  org.ystia.traefik.ansible-linux.nodes.TraefikRouteHealthCheck:
+    derived_from: org.ystia.traefik.pub.nodes.TraefikRouteHealthCheck
+    requirements:
+      - hc_cfg_host:
+          capability: org.ystia.traefik.pub.capabilities.HealthCheckConfigHost
+          node: org.ystia.traefik.pub.nodes.TraefikRoute
+          relationship: org.ystia.traefik.ansible-linux.relationships.TraefikRoutesHealthCheckHostedOn
+          occurrences: [1,1]
+
+
+
+
 relationship_types:
   org.ystia.traefik.ansible-linux.relationships.TraefikRoutesTo:
     derived_from: tosca.relationships.RoutesTo
@@ -82,7 +112,26 @@ relationship_types:
         inputs:
           CONFIG_DIR: {get_property: [SOURCE, config_dir]}
           IP_ADDRESS: {get_attribute: [TARGET, ip_address]}
+        pre_configure_target:
+          inputs:
+            LB_IP_ADDRESS: {get_attribute: [SOURCE, ip_address]}
+            LB_PRIVATE_ADDRESS: {get_attribute: [SOURCE, private_address]}
+            LB_PUBLIC_ADDRESS: {get_attribute: [SOURCE, public_address]}
+            LB_CAP_CLIENT_PROTOCOL: {get_property: [SOURCE, client, protocol]}
+            LB_CAP_CLIENT_PORT: {get_property: [SOURCE, client, port]}
+            LB_CAP_CLIENT_URL_PATH: {get_property: [SOURCE, client, url_path]}
+          implementation: playbooks/pre_configure_route_target.yaml
         add_target:
           implementation: playbooks/add_route_target.yaml
         remove_target:
           implementation: playbooks/remove_route_target.yaml
+
+  org.ystia.traefik.ansible-linux.relationships.TraefikRoutesHealthCheckHostedOn:
+    derived_from: tosca.relationships.HostedOn
+    interfaces:
+      Configure:
+        post_configure_target:
+          inputs:
+            HC_CONFIG: {get_property: [SOURCE, configuration]}
+            CONFIG_DIR: {get_property: [TARGET, config_dir]}
+          implementation: playbooks/configure_service_health_check.yaml

@@ -1,0 +1,74 @@
+tosca_definitions_version: alien_dsl_2_0_0
+#
+# Copyright 2020 Bull S.A.S. Atos Technologies - Bull, Rue Jean Jaures, B.P.68, 78340, Les Clayes-sous-Bois, France.
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+#
+
+metadata:
+  template_name: org.ystia.alien.docker
+  template_version: 1.0.0-SNAPSHOT
+  template_author: yorc
+
+imports:
+  - tosca-normative-types:1.0.0-ALIEN20
+  - docker-types:2.2.0
+  - org.ystia.yorc.docker:1.0.0-SNAPSHOT
+
+description: Alien4cloud container provided by Ystia to be deployed to K8S together with a Yorc container
+
+repositories:
+  docker:
+    url: https://hub.docker.com/
+    type: a4c_ignore
+
+node_types:
+  org.ystia.alien.docker.nodes.Alien:
+    derived_from: tosca.nodes.Container.Application.DockerContainer
+    properties:
+      nb_retry:
+        description: number tentatives to connect to Yorc orchestrator
+        type: integer
+        required: false
+        default: 25
+    requirements:
+      - yorc_server:
+          capability: org.ystia.yorc.docker.capabilities.YorcRestAPI
+          relationship: tosca.relationships.ConnectsTo
+          occurrences: [1, 1]
+    capabilities:
+      alien_console:
+        type: org.ystia.alien.docker.capabilities.AlienUI
+    interfaces:
+      Standard:
+        create:
+          inputs:
+            ENV_NB_RETRY: { get_property: [SELF, nb_retry] }
+            ENV_YORC_HOST: { get_attribute: [TARGET, yorc_server, service_name] }
+            ENV_YORC_PORT: { get_attribute: [TARGET, yorc_server, port] }
+          implementation:
+            file: ystia/alien4cloud
+            repository: docker
+            type: tosca.artifacts.Deployment.Image.Container.Docker
+
+capability_types:
+  org.ystia.alien.docker.capabilities.AlienUI:
+    derived_from: tosca.capabilities.Endpoint
+    properties:
+      docker_bridge_port_mapping:
+        type: integer
+        description: Port used to bridge to the container's endpoint.
+        default: 8088
+      port:
+        type: integer
+        default: 8088

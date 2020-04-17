@@ -1,29 +1,10 @@
 ################################################################
-# Global configuration
+# File provider configuration
 ################################################################
 
-# Enable debug mode
-#
-# Optional
-# Default: false
-#
-# debug = true
-
-# Log level
-#
-# Optional
-# Default: "ERROR"
-#
-# logLevel = "DEBUG"
-
-# Entrypoints to be used by frontends that do not specify any entrypoint.
-# Each frontend can specify its own entrypoints.
-#
-# Optional
-# Default: ["http"]
-#
-defaultEntryPoints = ["{{ENTRYPOINT_PROTOCOL}}"]
-
+[providers.file]
+  directory = "{{CONFIG_DIR}}/traefik.d"
+  watch = true
 ################################################################
 # Entrypoints configuration
 ################################################################
@@ -33,104 +14,17 @@ defaultEntryPoints = ["{{ENTRYPOINT_PROTOCOL}}"]
 # Optional
 # Default:
 [entryPoints]
-    [entryPoints.{{ENTRYPOINT_PROTOCOL}}]
+  [entryPoints.main]
     address = ":{{ENTRYPOINT_PORT}}"
-
-################################################################
-# File provider configuration 
-################################################################
-
-[file]
-    directory = "{{CONFIG_DIR}}/traefik.d"
-    watch = true
-
-################################################################
-# Traefik logs configuration
-################################################################
-
-# Traefik logs
-# Enabled by default and log to stdout
-#
-# Optional
-#
-# [traefikLog]
-
-# Sets the filepath for the traefik log. If not specified, stdout will be used.
-# Intermediate directories are created if necessary.
-#
-# Optional
-# Default: os.Stdout
-#
-# filePath = "log/traefik.log"
-
-# Format is either "json" or "common".
-#
-# Optional
-# Default: "common"
-#
-# format = "common"
-
-################################################################
-# Access logs configuration
-################################################################
-
-# Enable access logs
-# By default it will write to stdout and produce logs in the textual
-# Common Log Format (CLF), extended with additional fields.
-#
-# Optional
-#
-# [accessLog]
-
-# Sets the file path for the access log. If not specified, stdout will be used.
-# Intermediate directories are created if necessary.
-#
-# Optional
-# Default: os.Stdout
-#
-# filePath = "/path/to/log/log.txt"
-
-# Format is either "json" or "common".
-#
-# Optional
-# Default: "common"
-#
-# format = "common"
 
 {% if ENABLE_DASHBOARD|default("false") == "true" %}
 ################################################################
 # API and dashboard configuration
 ################################################################
-
 # Enable API and dashboard
 [api]
-
-  # Name of the related entry point
-  #
-  # Optional
-  # Default: "traefik"
-  #
-  entryPoint = "{{ENTRYPOINT_PROTOCOL}}"
-
-  # Enabled Dashboard
-  #
-  # Optional
-  # Default: true
-  #
   dashboard = true
+  # TODO(loicalbertin) deal with https://docs.traefik.io/operations/dashboard/#secure-mode
+  insecure = true
 
 {% endif %}
-################################################################
-# Ping configuration
-################################################################
-
-# Enable ping
-[ping]
-
-  # Name of the related entry point
-  #
-  # Optional
-  # Default: "traefik"
-  #
-  # entryPoint = "traefik"
-

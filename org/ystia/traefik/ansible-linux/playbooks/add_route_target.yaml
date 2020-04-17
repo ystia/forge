@@ -10,13 +10,15 @@
   strategy: free
   become: true
   tasks:
-        
-    - name: Create traefik config file
-      blockinfile:
-        path: "{{CONFIG_DIR}}/traefik.d/{{SOURCE_NODE}}-rules.toml"
-        marker: "# {mark} ANSIBLE MANAGED BLOCK {{TARGET_INSTANCE}}"
-        block: |
-              [backends.{{SOURCE_NODE}}-backend.servers.{{TARGET_INSTANCE}}]
-              url = "http://{{IP_ADDRESS}}:{{TARGET_CAPABILITY_PROPERTY_port}}"    
 
-    
+    - name: Create traefik route config file
+      blockinfile:
+        block: |
+          # Routing to server {{TARGET_INSTANCE}}
+              [[http.services.{{SOURCE_NODE}}.loadBalancer.servers]]
+                url = "{{TARGET_CAPABILITY_PROPERTY_protocol}}://{{IP_ADDRESS}}:{{TARGET_CAPABILITY_PROPERTY_port}}"
+        marker: "# {mark} ANSIBLE MANAGED BLOCK {{TARGET_INSTANCE}}"
+        dest: "{{CONFIG_DIR}}/traefik.d/{{SOURCE_NODE}}-route.toml"
+        insertafter: "# Servers Anchor"
+
+

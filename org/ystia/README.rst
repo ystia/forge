@@ -60,7 +60,7 @@ To simplify topology creation, Ystia Forge provides **topology templates** that 
 .. _Træfik: https://traefik.io/
 
 
-The current version of **Ystia Forge** is **develop**. The last stable release is **1.4.0**.
+The current version of **Ystia Forge** is **develop**. The last stable release is **2.1.0**.
 
 
 .. *********************************************************************************************************************
@@ -100,7 +100,7 @@ Ystia contains the following products:
   It allows them to define application architectures and to deploy those applications on pre-configured locations.
 - Ystia_Orchestrator_ is an engine allowing to orchestrate application deployment.
 
-.. _Ystia_Orchestrator: http://TODO_TO_BE_COMPLETED/
+.. _Ystia_Orchestrator: https://yorc.readthedocs.io/en/stable/
 .. _Alien4Cloud: http://alien4cloud.github.io/
 
 
@@ -133,7 +133,7 @@ For the second method:
 
   - Repository URL: https://github.com/alien4cloud/csar-public-library.git
   - Credentials: *none*
-  - Branch: **v2.1.0**
+  - Branch: **v2.2.0**
   - Archives to import:
 
     - **org/alien4cloud/consul**
@@ -184,11 +184,11 @@ Moreover, some basic Ystia Forge TOSCA types have to be available in the catalog
 Suppose that none of the necessary components, nor topology template are imported to the Alien4CLoud catalog.
 You have to generate CSARs for *common* and *welcome* components, and *welcome_basic* topology.::
 
-  $ cd YOUR_SANDBOX/csar-public-library/org/ystia/common
+  $ cd YOUR_SANDBOX/forge/org/ystia/common
   $ zip -r common-csar.zip *
-  $ cd YOUR_SANDBOX/csar-public-library/org/ystia/samples/welcome/linux/bash
+  $ cd YOUR_SANDBOX/forge/org/ystia/samples/welcome/linux/bash
   $ zip -r welcome-csar.zip *
-  $ cd YOUR_SANDBOX/csar-public-library/org/ystia/samples/topologies/welcome
+  $ cd YOUR_SANDBOX/forge/org/ystia/samples/topologies/welcome
   $ zip -r welcome_basic-csar.zip *
 
 

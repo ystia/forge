@@ -15,12 +15,96 @@
 #
 
 
-- name: Setup AWS config
+- name: Setup AWS location config
   hosts: all
   strategy: free
   become_user: yorc
   become: true
+  vars:
+    lock_file: "{{ CONFIG_DIR }}//config.lock"
+  pre_tasks:
+    - name: check for lock file
+      wait_for:
+        path: "{{ lock_file }}"
+        state: absent
+    - name: create lock file
+      file:
+        path: "{{ lock_file }}"
+        state: touch
   tasks:
+    - name: Creation locations file
+      file:
+        path: "{{ CONFIG_DIR }}/locations.yorc.yaml"
+        state: touch
+        modification_time: preserve
+        access_time: preserve
+
+    - name: "get current locations"
+      shell: "cat {{ CONFIG_DIR }}/locations.yorc.yaml"
+      register: result
+
+    - set_fact:
+        yorcLocationsConfig: "{{ result.stdout | from_yaml }}"
+
+    - set_fact:
+        locationsDefined: []
+      when: yorcLocationsConfig|length == 0
+
+    - set_fact:
+        locationsDefined: "{{ yorcLocationsConfig.locations }}"
+      when: yorcLocationsConfig|length > 0
+
+    - set_fact:
+        locationProperties: >
+          { "access_key": "ACCESS_KEY_YORC_SUBSTITUTION",
+            "secret_key": "SECRET_KEY_YORC_SUBSTITUTION",
+            "region": "{{ REGION }}"
+          }
+  
+    - set_fact:
+        tmpLocation: >
+          { "name" :  "{{ LOCATION_NAME }}",
+            "type" : "aws",
+            "properties": {{ locationProperties }}
+          }
+
+    - set_fact:
+        locationsDefined: "{{ locationsDefined + [ tmpLocation  ] }}"
+
+    - set_fact:
+        yorcLocationsConfig:  {"locations": "{{ locationsDefined }}"}
+
+    - name: "Output config to file {{ CONFIG_DIR }}/locations.yorc.yaml"
+      copy:
+        content: "{{ yorcLocationsConfig | to_yaml }}"
+        dest: "{{ CONFIG_DIR }}/locations.yorc.yaml"
+
+    - name: Set AWS secret access key
+      replace:
+        path: "{{ CONFIG_DIR }}/locations.yorc.yaml"
+        regexp: 'ACCESS_KEY_YORC_SUBSTITUTION'
+        replace: "'{{ '{{' }} secret \"/secret/yorc/{{ LOCATION_NAME }}\" \"data=access_key\" | print {{ '}}' }}'"
+      when: USE_VAULT == "true"
+    - name: Set AWS access key
+      replace:
+        path: "{{ CONFIG_DIR }}/locations.yorc.yaml"
+        regexp: 'ACCESS_KEY_YORC_SUBSTITUTION'
+        replace: "{{ ACCESS_KEY }}"
+      when: USE_VAULT == "false"
+
+    - name: Set AWS secret key from vault
+      replace:
+        path: "{{ CONFIG_DIR }}/conlocationsfig.yorc.yaml"
+        regexp: 'SECRET_KEY_YORC_SUBSTITUTION'
+        replace: "'{{ '{{' }} secret \"/secret/yorc/{{ LOCATION_NAME }}\" \"data=secret_key\" | print {{ '}}' }}'"
+      when: USE_VAULT == "true"
+    - name: Set AWS secret key
+      replace:
+        path: "{{ CONFIG_DIR }}/locations.yorc.yaml"
+        regexp: 'SECRET_KEY_YORC_SUBSTITUTION'
+        replace: "{{ SECRET_KEY }}"
+      when: USE_VAULT == "false"
+  
     - name: "get current config of Yorc"
       shell: "cat {{ CONFIG_DIR }}/config.yorc.yaml"
       register: result
@@ -29,7 +113,9 @@
         yorcConfig: "{{ result.stdout | from_yaml }}"
 
     - set_fact:
-        tmp: '{ "infrastructures": { "aws": { "access_key": "{{ ACCESS_KEY }}", "secret_key": "{{ SECRET_KEY }}", "region": "{{ REGION }}" } } }'
+        tmp: >
+          { "locations_file_path": "{{ CONFIG_DIR }}/locations.yorc.yaml"
+          }
     - set_fact:
         yorcConfig: "{{ yorcConfig | combine(tmp, recursive=True) }}"
 
@@ -37,3 +123,9 @@
       copy:
         content: "{{ yorcConfig | to_yaml }}"
         dest: "{{ CONFIG_DIR }}/config.yorc.yaml"
+
+  post_tasks:
+    - name: remove lock file
+      file:
+        path: "{{ lock_file }}"
+        state: absent

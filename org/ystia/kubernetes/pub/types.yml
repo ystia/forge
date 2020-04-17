@@ -8,7 +8,7 @@ tosca_definitions_version: alien_dsl_2_0_0
 
 metadata:
   template_name: org.ystia.kubernetes.pub
-  template_version: 2.1.0
+  template_version: 2.2.0
   template_author: Ystia
 
 description: Public interface types for Kubernetes support.
@@ -19,18 +19,11 @@ imports:
 node_types:
   org.ystia.kubernetes.pub.nodes.KubernetesMaster:
     abstract: true
-    derived_from: tosca.nodes.SoftwareComponent
+    derived_from: tosca.nodes.Root
     tags:
       icon: /images/kubernetes-master-icon.png
     description: >
       A KubernetesMaster contains Kubernetes services like the API server, the podmaster and so on.
-    properties:
-      component_version:
-        type: version
-        required: false
-        default: "1.10"
-        constraints:
-          - greater_or_equal: "1.10"
     capabilities:
       api_server: org.ystia.kubernetes.pub.capabilities.KubernetesAPIServer
       app_host: org.ystia.kubernetes.pub.capabilities.AppHosting
@@ -38,20 +31,13 @@ node_types:
 
   org.ystia.kubernetes.pub.nodes.KubernetesWorker:
     abstract: true
-    derived_from: tosca.nodes.SoftwareComponent
+    derived_from: tosca.nodes.Root
     tags:
       icon: /images/kubernetes-worker-icon.png
     description: >
       A KubernetesWorker contains Kubernetes services used to run pods.
-    properties:
-      component_version:
-        type: version
-        required: false
-        default: "1.10"
-        constraints:
-          - greater_or_equal: "1.10"
     requirements:
-      - api_server:   
+      - api_server:
           capability: org.ystia.kubernetes.pub.capabilities.KubernetesAPIServer
           node: org.ystia.kubernetes.pub.nodes.KubernetesMaster
           occurrences: [ 1, 1 ]
@@ -79,7 +65,7 @@ capability_types:
   org.ystia.kubernetes.pub.capabilities.KubernetesAPIServer:
     derived_from: tosca.capabilities.Endpoint
     description: >
-      A KubernetesAPIServer capability allows to binds to the Kuberntes HTTP API.
+      A KubernetesAPIServer capability allows to binds to the Kubernetes HTTP API.
     properties:
       port:
         type: integer
@@ -88,6 +74,10 @@ capability_types:
         default: 6443
         constraints:
           - in_range: [ 1, 65535 ]
-      
+      protocol:
+        type: string
+        required: true
+        default: https
+
   org.ystia.kubernetes.pub.capabilities.AppHosting:
     derived_from: tosca.capabilities.Container

@@ -14,7 +14,7 @@
         src: kubernetes.repo.j2
         dest: "/etc/yum.repos.d/kubernetes.repo"
         mode: "u=rw,g=rw,o=r"
-    
+
     - name: Disable SELinux
       selinux:
         state: disabled
@@ -31,7 +31,7 @@
         sleep: 5
         delay: 5
         timeout: 300
-    
+
     - name: set hostname
       blockinfile:
         path: /etc/hosts
@@ -40,11 +40,11 @@
           {% for host in ansible_play_hosts %}
           {{ hostvars[host]['PRIVATE_IP'] }} {{ hostvars[host]['ansible_hostname'] }} {{ hostvars[host]['ansible_fqdn'] }}
           {% endfor %}
-    
+
     - name: Set net_mask fact
       set_fact:
         net_mask: "{{ ansible_default_ipv4.network }}/{{ ansible_default_ipv4.netmask }}"
-    
+
     - name: Set net cidr fact
       set_fact:
         net_cidr:  "{{ net_mask | ipaddr('net') }}"
@@ -56,40 +56,49 @@
         block: |
           export NO_PROXY="{{net_cidr}},{% for host in ansible_play_hosts %}{{ hostvars[host]['PRIVATE_IP'] }},{{ hostvars[host]['ansible_hostname'] }},{{ hostvars[host]['ansible_fqdn'] }},{% endfor %}${NO_PROXY}"
           export no_proxy="{{net_cidr}},{% for host in ansible_play_hosts %}{{ hostvars[host]['PRIVATE_IP'] }},{{ hostvars[host]['ansible_hostname'] }},{{ hostvars[host]['ansible_fqdn'] }},{% endfor %}${no_proxy}"
-    
+      when: ansible_env['HTTP_PROXY'] is defined or ansible_env['HTTPS_PROXY'] is defined or ansible_env['http_proxy'] is defined or ansible_env['https_proxy'] is defined
+
     - name: Import GPG keys
       rpm_key:
         state: present
         key: "{{item}}"
-      with_items: "{{KUBE_YUM_REPO_GPG_KEYS.split(' ')}}"
+      with_items: "{{ KUBE_YUM_REPO_GPG_KEYS.split(' ') }}"
       when: KUBE_YUM_REPO_GPG_KEYS != ""
-      register: setup_repo
 
     - name: run make cache to actually import gpg key
       command: "yum -q makecache -y --disablerepo='*' --enablerepo='kubernetes'"
-      when: setup_repo.changed
 
     - name: list available matching Kubernetes versions
       yum:
         list: "kubelet-{{KUBE_VERSION}}*"
         update_cache: yes
-        enablerepo: kubernetes 
+        enablerepo: kubernetes
       register: available_kube_versions
-    
+
     - name: Determine the latest version matching requirements
       set_fact:
         KUBERNETES_SELECTED_VERSION: "{{ available_kube_versions.results | json_query('[*].version') | max }}"
 
     - name: Install Kube packages
       yum:
-        name: "{{item}}-{{KUBERNETES_SELECTED_VERSION}}"
+        name:
+          - "kubelet-{{KUBERNETES_SELECTED_VERSION}}"
+          - "kubeadm-{{KUBERNETES_SELECTED_VERSION}}"
+          - "kubectl-{{KUBERNETES_SELECTED_VERSION}}"
+          # # Next version of kubernetes-cni is 0.7.5 and has a dependency to kubernetes 1.12+
+          # # So it wont work with the default version we use
+          # - kubernetes-cni-0.6.0
         state: present
         update_cache: yes
-        enablerepo: kubernetes 
-      with_items:
-        - kubelet
-        - kubeadm
-        - kubectl
+        enablerepo: kubernetes
+
+    - name: Create Systemd droplet config dir for kubeadm
+      file:
+        path: "/etc/systemd/system/kubelet.service.d"
+        state: directory
+        owner: root
+        group: root
+        mode: "u=rwx,g=rx,o=rx"
 
     - name: Extra config for Kubelet
       template:
@@ -97,21 +106,20 @@
         dest: "/etc/systemd/system/kubelet.service.d/01-kubeadm-extra-args.conf"
         mode: "u=rw,g=rw,o=r"
 
-    - name: Get docker cgroup driver
-      shell: "docker info | grep -i cgroup | awk -F': ' '{print $2}'"
-      register: docker_cgroups
-    
-    - name: setup kubelet cgroup config
-      lineinfile:
-        path: /etc/systemd/system/kubelet.service.d/10-kubeadm.conf
-        line: "Environment=\"KUBELET_CGROUP_ARGS=--cgroup-driver={{docker_cgroups['stdout_lines'][0]}} --runtime-cgroups=/systemd/system.slice --kubelet-cgroups=/systemd/system.slice\""
-        regexp: "KUBELET_CGROUP_ARGS=--cgroup-driver"
-        
+    # - name: Get docker cgroup driver
+    #   shell: "docker info | grep -i cgroup | awk -F': ' '{print $2}'"
+    #   register: docker_cgroups
+
+    # - name: setup kubelet cgroup config
+    #   lineinfile:
+    #     path: /etc/systemd/system/kubelet.service.d/10-kubeadm.conf
+    #     line: "Environment=\"KUBELET_CGROUP_ARGS=--cgroup-driver={{docker_cgroups['stdout_lines'][0]}} --runtime-cgroups=/systemd/system.slice --kubelet-cgroups=/systemd/system.slice\""
+    #     regexp: "KUBELET_CGROUP_ARGS=--cgroup-driver"
+
     - name: Start Kubelet
       systemd:
         name: kubelet
-        state: restarted
         enabled: yes
         daemon_reload: yes
-  
+
 

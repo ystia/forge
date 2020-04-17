@@ -8,14 +8,14 @@ tosca_definitions_version: alien_dsl_2_0_0
 
 metadata:
   template_name: org.ystia.samples.topologies.welcome_basic
-  template_version: 2.1.0
+  template_version: 2.2.0
   template_author: Ystia
 
 
 imports:
   - tosca-normative-types:1.0.0-ALIEN20
-  - org.ystia.common:2.1.0
-  - org.ystia.samples.welcome.linux.bash:2.1.0
+  - org.ystia.common:2.2.0
+  - org.ystia.samples.welcome.linux.bash:2.2.0
 
 topology_template:
   description: A basic topology template for the Welcome sample
@@ -50,4 +50,48 @@ topology_template:
     url:
       description: The URL to access the Welcome page
       value: { get_attribute: [ Welcome, url ] }
+
+  workflows:
+    killWebServer:
+      steps:
+        Welcome_stop:
+          target: Welcome
+          activities:
+            - call_operation: Standard.stop
+    stopWebServer:
+      steps:
+        Welcome_stopping:
+          target: Welcome
+          activities:
+            - set_state: stopping
+          on_success:
+            - Welcome_stop
+        Welcome_stopped:
+          target: Welcome
+          activities:
+            - set_state: stopped
+        Welcome_stop:
+          target: Welcome
+          activities:
+            - call_operation: Standard.stop
+          on_success:
+            - Welcome_stopped
+    startWebServer:
+      steps:
+        Welcome_started:
+          target: Welcome
+          activities:
+            - set_state: started
+        Welcome_start:
+          target: Welcome
+          activities:
+            - call_operation: Standard.start
+          on_success:
+            - Welcome_started
+        Welcome_starting:
+          target: Welcome
+          activities:
+            - set_state: starting
+          on_success:
+            - Welcome_start
 

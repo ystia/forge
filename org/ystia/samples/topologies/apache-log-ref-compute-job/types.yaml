@@ -1,0 +1,61 @@
+tosca_definitions_version: alien_dsl_2_0_0
+
+metadata:
+  template_name: org.ystia.samples.topologies.ApacheLogsRefComputeJob
+  template_version: 2.2.0
+  template_author: ystia
+
+description: "Topology that will compute the cost of our web server sponsored links."
+
+imports:
+- tosca-normative-types:1.0.0-ALIEN20
+- org.ystia.java.pub:2.2.0-SNAPSHOT
+- org.ystia.samples.hybrid-demo.cost-computing-job:2.2.0-SNAPSHOT
+- org.ystia.kibana.linux.bash:2.2.0-SNAPSHOT
+- yorc-slurm-types:2.2.0
+- org.ystia.kibana.pub:2.2.0-SNAPSHOT
+- org.ystia.common:2.2.0-SNAPSHOT
+- org.ystia.consul.pub:2.2.0-SNAPSHOT
+- org.ystia.elasticsearch.pub:2.2.0-SNAPSHOT
+- yorc-types:1.1.0
+
+topology_template:
+  node_templates:
+    CostComputingJob:
+      type: org.ystia.samples.hybrid-demo.cost-computing-job.nodes.CostComputingSingularityJob
+      requirements:
+      - connectsToAbstractElasticSearchSearch_resource:
+          type_requirement: elasticsearch
+          node: AbstractElasticSearch
+          capability: org.ystia.elasticsearch.pub.capabilities.SearchEndpoint
+          relationship: tosca.relationships.ConnectsTo
+    AbstractElasticSearch:
+      type: org.ystia.elasticsearch.pub.nodes.AbstractElasticSearch
+      capabilities:
+        search_resource:
+          properties:
+            port: 9200
+            cluster_name: ystia
+            protocol: http
+            secure: false
+            network_name: PUBLIC
+            initiator: source
+  workflows:
+    Job:
+      steps:
+        CostComputingJob_started:
+          target: CostComputingJob
+          activities:
+          - set_state: started
+        CostComputingJob_run:
+          target: CostComputingJob
+          activities:
+          - call_operation: tosca.interfaces.node.lifecycle.Runnable.run
+          on_success:
+          - CostComputingJob_started
+        CostComputingJob_starting:
+          target: CostComputingJob
+          activities:
+          - set_state: starting
+          on_success:
+          - CostComputingJob_run

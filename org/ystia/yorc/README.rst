@@ -92,7 +92,13 @@ Properties
 
 - **password** : The OpenStack password to use.
 
-- **tenant_name** : The OpenStack tenant name to use.
+- **tenant_name** : The OpenStack tenant name to use (Identity v2).
+
+- **project_name** : The OpenStack project name to use (Identity v3).
+
+- **project_id** : The OpenStack project ID to use (Identity v3)
+
+- **user_domain_name** : The OpenStack domain name where the user is located (Identity v3).
 
 - **private_network_name** : The name of private network to use as primary adminstration network between Yorc and Compute instances. It should be a private network accessible by this instance of Yorc.
 

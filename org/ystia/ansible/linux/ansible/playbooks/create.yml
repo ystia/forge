@@ -21,7 +21,7 @@
   become_method: sudo
   tasks:
     - name: Load a variable file based on the OS type, or a default if not found. Using free-form to specify the file.
-      include_vars: 
+      include_vars:
         file: "{{ item }}"
       with_first_found:
         - "vars/{{ ansible_distribution }}.yml"
@@ -33,20 +33,37 @@
         state: present
       with_items: "{{install_packages}}"
 
-    - name: Install pip
+    - name: Check if distribution has easy_install or needs a pip3 installation
+      set_fact:
+        easy_install_available: "{{ ansible_distribution != 'Ubuntu' or ansible_distribution_major_version is version(18, '<') }}"
+
+    - name: Ensure pip is installed using easy_install when availabe
       easy_install:
         name: pip
         state: latest
+      when: easy_install_available
+
+    - name: Install python3-pip when easy_install in not available
+      apt:
+        name:
+          - python3-pip
+        state: present
+        update_cache: yes
+      when: not easy_install_available
 
     - name: install using pip
       pip:
-        name: ansible
-        version: "{{ANSIBLE_VERSION}}"
+        name:
+          - "ansible=={{ANSIBLE_VERSION}}"
+          - "jmespath==0.9.4"
+          - "netaddr==0.7.19"
       when: ANSIBLE_EXTRA_PACKAGE_REPOSITORY == ""
 
     - name: install using pip package repository "{{ANSIBLE_EXTRA_PACKAGE_REPOSITORY}}"
       pip:
-        name: ansible
-        version: "{{ANSIBLE_VERSION}}"
+        name:
+          - "ansible=={{ANSIBLE_VERSION}}"
+          - "jmespath==0.9.4"
+          - "netaddr==0.7.19"
         extra_args: --extra-index-url "{{ANSIBLE_EXTRA_PACKAGE_REPOSITORY}}"
       when: ANSIBLE_EXTRA_PACKAGE_REPOSITORY != ""

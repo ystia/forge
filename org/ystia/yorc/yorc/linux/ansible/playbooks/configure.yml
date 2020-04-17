@@ -30,12 +30,12 @@
       register: result
     - set_fact:
         server_id: "{{ result.stdout }}"
-    - name: Yorc config
-      template: 
+    - name: Yorc Server config
+      template:
         src: config.yorc.yaml.j2
         dest: "/tmp/yorc.d/01.config.yorc.yaml"
         mode: "u=rw,g=rw,o=r"
-    - name: Assemble config file
+    - name: Assemble Yorc Server config file
       assemble:
         src: /tmp/yorc.d/
         dest: '{{CONFIG_DIR}}/config.yorc.yaml'
@@ -46,6 +46,13 @@
       file:
         path: /tmp/yorc.d/
         state: absent
+    - name: Yorc Client config file
+      template:
+        src: yorc-client.yaml.j2
+        dest:  '{{CONFIG_DIR}}/yorc-client.yaml'
+        owner: yorc
+        group: yorc
+        mode: "u=rw,g=rw,o=r"
 
     - name: "Ensures {{ DATA_DIR }}/.ssh dir exists"
       file:
@@ -61,3 +68,86 @@
         owner: yorc
         group: yorc
         mode: 0400
+
+    - name: "Copy certificate authority"
+      copy:
+        content: "{{ CA_PEM }}"
+        dest: "{{ CONFIG_DIR }}/yorc_ca.pem"
+        owner: yorc
+        group: yorc
+        mode: 0400
+      when: REST_API_PROTOCOL == "https"
+
+    - name: "Copy certificate authority private key"
+      copy:
+        content: "{{ CA_KEY }}"
+        dest: "{{ CONFIG_DIR }}/yorc_ca.key"
+        owner: yorc
+        group: yorc
+        mode: 0400
+      when: REST_API_PROTOCOL == "https"
+
+- name: Generate keys and certificates
+  hosts: all
+  strategy: free
+  become: true
+  become_user: yorc
+  become_method: sudo
+  tasks:
+    - name: Generate an OpenSSL private key for the server
+      openssl_privatekey:
+        path: "{{ CONFIG_DIR }}/yorc_server.key"
+      when: REST_API_PROTOCOL == "https"
+
+    - name: Get Host private IP address and DNS hostname for which TLS connections are accepted
+      set_fact:
+        subjectAltName: "IP:{{ IP_ADDRESS }},IP:127.0.0.1,DNS:localhost,DNS:yorc.service.consul"
+      when: REST_API_PROTOCOL == "https"
+
+    - name: Add Host public IP address to subjectAltName
+      set_fact:
+        subjectAltName: "IP:{{ PUBLIC_ADDRESS }},{{ subjectAltName }}"
+      when: REST_API_PROTOCOL == "https" and PUBLIC_ADDRESS is defined and PUBLIC_ADDRESS != ''
+
+    - name: Generate an OpenSSL CSR with subjectAltName for the server
+      openssl_csr:
+        path: "{{ CONFIG_DIR }}/yorc_server.csr"
+        privatekey_path: "{{ CONFIG_DIR }}/yorc_server.key"
+        common_name: "yorcServer"
+        subjectAltName: '{{ subjectAltName }}'
+      when: REST_API_PROTOCOL == "https"
+
+    - name: Generate a OpenSSL certificate for the server
+      openssl_certificate:
+        path: "{{ CONFIG_DIR }}/yorc_server.pem"
+        csr_path: "{{ CONFIG_DIR }}/yorc_server.csr"
+        ownca_path: "{{ CONFIG_DIR }}/yorc_ca.pem"
+        ownca_privatekey_path: "{{ CONFIG_DIR }}/yorc_ca.key"
+        ownca_privatekey_passphrase: "{{ CA_PASSPHRASE }}"
+        provider: ownca
+        subjectAltName: '{{ subjectAltName }}'
+        extended_key_usage:
+          - serverAuth
+      when: REST_API_PROTOCOL == "https"
+
+    - name: Generate an OpenSSL private key for the client
+      openssl_privatekey:
+        path: "{{ CONFIG_DIR }}/yorc_client.key"
+      when: REST_API_PROTOCOL == "https"
+
+    - name: Generate an OpenSSL CSR for the client
+      openssl_csr:
+        path: "{{ CONFIG_DIR }}/yorc_client.csr"
+        privatekey_path: "{{ CONFIG_DIR }}/yorc_client.key"
+        common_name: "yorcClient"
+      when: REST_API_PROTOCOL == "https"
+
+    - name: Generate a OpenSSL certificate for the client
+      openssl_certificate:
+        path: "{{ CONFIG_DIR }}/yorc_client.pem"
+        csr_path: "{{ CONFIG_DIR }}/yorc_client.csr"
+        ownca_path: "{{ CONFIG_DIR }}/yorc_ca.pem"
+        ownca_privatekey_path: "{{ CONFIG_DIR }}/yorc_ca.key"
+        ownca_privatekey_passphrase: "{{ CA_PASSPHRASE }}"
+        provider: ownca
+      when: REST_API_PROTOCOL == "https"

@@ -20,5 +20,5 @@
   become_user: yorc
   become: true
   tasks:
-    - name: Apply {{ CONFIG_DIR }}/hostspool.yaml definition
-      command: {{INSTALL_DIR}}/yorc hostspool apply {{ CONFIG_DIR }}/hostspool.yaml --auto-approve 
+    - name: "Apply {{ YORC_CONFIG_DIR }}/hostspool.yaml definition"
+      command: "{{ YORC_INSTALL_DIR }}/yorc hostspool apply -l {{ LOCATION_NAME }} {{ YORC_CONFIG_DIR }}/hostspool.yaml --auto-approve"

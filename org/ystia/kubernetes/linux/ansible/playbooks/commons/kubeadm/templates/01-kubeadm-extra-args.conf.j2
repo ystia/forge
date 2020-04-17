@@ -6,4 +6,4 @@
 #
 #}
 [Service]
-Environment="KUBELET_EXTRA_ARGS=--hostname-override={{ansible_hostname}}"
+Environment="KUBELET_EXTRA_ARGS=--hostname-override={{PRIVATE_IP}}"

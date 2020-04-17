@@ -8,7 +8,7 @@ tosca_definitions_version: alien_dsl_2_0_0
 
 metadata:
   template_name: org.ystia.ntp.ansible
-  template_version: 2.1.0
+  template_version: 2.2.0
   template_author: Ystia
 
 description: ansible implementation for NTP support.
@@ -16,8 +16,8 @@ description: ansible implementation for NTP support.
 
 imports:
   - tosca-normative-types:1.0.0-ALIEN20
-  - yorc-types:1.0.0
-  - org.ystia.ntp.pub:2.1.0
+  - yorc-types:1.1.0
+  - org.ystia.ntp.pub:2.2.0
 
 node_types:
   org.ystia.ntp.ansible.nodes.NtpServer:

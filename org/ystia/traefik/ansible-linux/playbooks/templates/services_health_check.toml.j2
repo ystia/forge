@@ -1,0 +1,25 @@
+
+    [http.services.{{TARGET_NODE}}.loadBalancer.healthCheck]
+{% if health_check_config is defined %}
+{% if health_check_config.path is defined %}
+      path = "{{health_check_config.path}}"
+{%- endif -%}
+{%- if health_check_config.port is defined %}
+      port = {{health_check_config.port}}
+{%- endif -%}
+{%- if health_check_config.scheme is defined %}
+      scheme = "{{health_check_config.scheme}}"
+{%- endif -%}
+{%- if health_check_config.interval is defined %}
+      interval = "{{health_check_config.interval}}"
+{%- endif -%}
+{%- if health_check_config.timeout is defined %}
+      timeout = "{{health_check_config.timeout}}"
+{%- endif -%}
+{%- if health_check_config.headers is defined %}
+      [http.services.{{TARGET_NODE}}.loadBalancer.healthCheck.headers]
+{%- for key, value in health_check_config.headers.items() %}
+        {{key}} = "{{value}}"
+{%- endfor %}
+{%- endif -%}
+{%- endif -%}

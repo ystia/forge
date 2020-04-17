@@ -2,40 +2,51 @@ tosca_definitions_version: alien_dsl_2_0_0
 
 metadata:
   template_name: org.ystia.topologies.a4c_yorc_basic
-  template_version: 2.1.0
+  template_version: 2.2.0
   template_author: Ystia
 
-description: ""
+description: "Full stack setup on a single node"
 
 imports:
-- tosca-normative-types:1.0.0-ALIEN20
-
-- org.alien4cloud.alien4cloud.pub:2.1.0
-- org.alien4cloud.alien4cloud.webapp:2.1.0
-- org.alien4cloud.java.jdk.linux:2.1.0
-
-- org.ystia.terraform.linux.terraform:2.1.0-SNAPSHOT
-- org.ystia.yorc.alien4cloud:2.1.0-SNAPSHOT
-- org.ystia.ansible.linux.ansible:2.1.0-SNAPSHOT
-- org.ystia.terraform.pub:2.1.0-SNAPSHOT
-- org.ystia.yorc.linux.ansible:2.1.0-SNAPSHOT
-- org.ystia.yorc.experimental.consul.linux.ansible:2.1.0-SNAPSHOT
-- org.ystia.yorc.pub:2.1.0-SNAPSHOT
-- org.ystia.ansible.pub:2.1.0-SNAPSHOT
-- org.ystia.yorc.experimental.consul.pub:2.1.0-SNAPSHOT
+  - tosca-normative-types:1.0.0-ALIEN20
+  - org.alien4cloud.alien4cloud.pub:2.2.0
+  - org.alien4cloud.alien4cloud.webapp:2.2.0
+  - org.alien4cloud.java.jdk.linux:2.2.0
+  - org.ystia.terraform.linux.terraform:2.2.0
+  - org.ystia.yorc.alien4cloud:2.2.0
+  - org.ystia.ansible.linux.ansible:2.2.0
+  - org.ystia.terraform.pub:2.2.0
+  - org.ystia.yorc.linux.ansible:2.2.0
+  - org.ystia.yorc.experimental.consul.linux.ansible:2.2.0
+  - org.ystia.yorc.pub:2.2.0
+  - org.ystia.ansible.pub:2.2.0
+  - org.ystia.yorc.experimental.consul.pub:2.2.0
+  - org.ystia.yorc.alien4cloud_yorc_provider:2.2.0
 
 
 repositories:
   fastconnect_nexus:
-    url: https://fastconnect.org/maven/service/local/repositories/opensource/content/alien4cloud/alien4cloud-dist/2.1.0
+    url: https://fastconnect.org/maven/service/local/repositories/opensource/content/alien4cloud/alien4cloud-dist/2.2.0
     type: http
 
 topology_template:
   inputs:
     os_tenant_name:
       type: string
-      required: true
-      description: "The OpenStack tenant name to use."
+      required: false
+      description: "The OpenStack tenant name to use (Identity v2)"
+    os_project_name:
+      type: string
+      required: false
+      description: "The OpenStack project name to use (Identity v3)"
+    os_project_id:
+      type: string
+      required: false
+      description: "The OpenStack project ID to use (Identity v3)"
+    os_user_domain_name:
+      type: string
+      required: false
+      description: "The OpenStack domain name where the user is located (Identity v3)"
     os_password:
       type: string
       required: true
@@ -121,7 +132,7 @@ topology_template:
             initiator: source
       artifacts:
         alien_dist:
-          file: alien4cloud-dist-2.1.0-dist.tar.gz
+          file: alien4cloud-dist-2.2.0-dist.tar.gz
           type: tosca.artifacts.File
           repository: fastconnect_nexus
     AnsibleRuntime:
@@ -135,12 +146,11 @@ topology_template:
           capability: tosca.capabilities.Container
           relationship: tosca.relationships.HostedOn
     YorcPlugin:
-      type: org.ystia.yorc.alien4cloud.nodes.YorcPlugin
+      type: org.ystia.yorc.alien4cloud.nodes.YorcProvider
       properties:
-        download_url: "https://github.com/ystia/yorc-a4c-plugin/releases/download/v3.1.0-M5/alien4cloud-yorc-plugin-3.1.0-M5.zip"
         name: Yorc
         discriminator: yorc
-        pluginId: "alien4cloud-yorc-plugin"
+        pluginId: "alien4cloud-yorc-provider"
         pluginBean: "yorc-orchestrator-factory"
       requirements:
       - alienConfiguratorHostedOnAlienAlien4CloudConfig:
@@ -156,7 +166,7 @@ topology_template:
     YorcServer:
       type: org.ystia.yorc.linux.ansible.nodes.YorcServer
       properties:
-        download_url: "https://github.com/ystia/yorc/releases/download/v3.1.0-M5/yorc-3.1.0-M5.tgz"
+        download_url: "https://dl.bintray.com/ystia/yorc-engine/releases/yorc-3.1.0.tgz"
         install_dir: "/usr/local/bin"
         config_dir: "/etc/yorc"
         data_dir: "/var/yorc"
@@ -253,10 +263,13 @@ topology_template:
             network_name: PRIVATE
             initiator: source
     OpenStackConfig:
-      type: org.ystia.yorc.infrastructure.OpenStackConfig
+      type: org.ystia.yorc.location.OpenStackConfig
       properties:
         auth_url: { get_input: os_auth_url }
         tenant_name: { get_input: os_tenant_name }
+        project_name: { get_input: os_project_name }
+        project_id: { get_input: os_project_id }
+        user_domain_name: { get_input: os_user_domain_name }
         user_name: { get_input: os_user_name }
         password: { get_input: os_password }
         private_network_name: { get_input: os_private_network_name }

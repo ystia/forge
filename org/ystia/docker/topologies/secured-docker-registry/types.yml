@@ -1,0 +1,146 @@
+tosca_definitions_version: alien_dsl_2_0_0
+
+metadata:
+  template_name: org.ystia.docker.topologies.registry.SecuredDockerRegistry
+  template_version: 0.1.0-SNAPSHOT
+  template_author: admin
+
+description: ""
+
+imports:
+  - org.ystia.docker.containers.docker.generic:2.2.0
+  - tosca-normative-types:1.0.0-ALIEN20
+  - org.ystia.ssl.ansible.certificates:2.2.0
+  - alien-extended-storage-types:2.2.0
+  - docker-types:2.2.0
+  - org.ystia.docker.ansible:2.2.0
+  - org.ystia.docker.containers.docker.registry:2.2.0
+  - yorc-types:1.1.0
+
+topology_template:
+  inputs:
+    ca_certificate:
+      type: string
+      required: true
+      description: "Certificate Authority certificate"
+    ca_passphrase:
+      type: string
+      required: false
+      default: ""
+      description: "Pass pharse for the Certificate Authority private key"
+    ca_key:
+      type: string
+      required: true
+      description: "Private key of the Certificate Authority"
+  node_templates:
+    Compute:
+      type: tosca.nodes.Compute
+      requirements:
+        - networkNetworkConnection:
+            type_requirement: network
+            node: Network
+            capability: tosca.capabilities.Connectivity
+            relationship: tosca.relationships.Network
+      capabilities:
+        os:
+          properties:
+            type: linux
+    DockerRegistryCertificateGenerator:
+      type: org.ystia.ssl.ansible.certificates.nodes.SSLCertificateGenerator
+      properties:
+        common_name: DockerRegistry
+        key_path: "/etc/docker/registry/certificates"
+        certificate_path: "/etc/docker/registry/certificates"
+        linux_owner: "root"
+        key_name: "docker-registry.key"
+        certificate_name: "docker-registry.pem"
+        ca_key: { get_input: ca_key }
+        ca_certificate: { get_input: ca_certificate }
+        ca_passphrase: { get_input: ca_passphrase }
+      requirements:
+        - hostedOnComputeHost:
+            type_requirement: host
+            node: Compute
+            capability: tosca.capabilities.Container
+            relationship: tosca.relationships.HostedOn
+    Docker:
+      type: org.ystia.docker.ansible.nodes.Docker
+      properties:
+        docker_version: ""
+      requirements:
+        - hostedOnComputeHost:
+            type_requirement: host
+            node: Compute
+            capability: tosca.capabilities.Container
+            relationship: tosca.relationships.HostedOn
+    Network:
+      type: tosca.nodes.Network
+    Registry:
+      type: org.ystia.docker.containers.docker.registry.nodes.Registry
+      properties:
+        image: "registry:2"
+        restart_policy: always
+        published_ports:
+          - "443:5000"
+        volumes:
+          - "/etc/docker/registry/certificates:/certs"
+          - "/var/docker/registry:/var/lib/registry"
+        docker_env_vars:
+          REGISTRY_HTTP_TLS_KEY: "/certs/docker-registry.key"
+          REGISTRY_HTTP_TLS_CERTIFICATE: "/certs/docker-registry.pem"
+      requirements:
+        - hostedOnContainerRuntimeDockerHost:
+            type_requirement: host
+            node: Docker
+            capability: org.alien4cloud.extended.container.capabilities.ApplicationHost
+            relationship: org.alien4cloud.extended.container.relationships.HostedOnContainerRuntime
+        - dependsOnDockerRegistryCertificateGeneratorFeature:
+            type_requirement: dependency
+            node: DockerRegistryCertificateGenerator
+            capability: tosca.capabilities.Node
+            relationship: tosca.relationships.DependsOn
+        - dependsOnLinuxFileSystemFeature:
+            type_requirement: dependency
+            node: LinuxFileSystem
+            capability: tosca.capabilities.Node
+            relationship: tosca.relationships.DependsOn
+      capabilities:
+        api:
+          properties:
+            protocol: https
+            port: 443
+            secure: true
+            network_name: PRIVATE
+            initiator: source
+        scalable:
+          properties:
+            min_instances: 1
+            max_instances: 1
+            default_instances: 1
+    BlockStorage:
+      type: tosca.nodes.BlockStorage
+      requirements:
+        - attachToComputeAttach:
+            type_requirement: attachment
+            node: Compute
+            capability: tosca.capabilities.Attachment
+            relationship: tosca.relationships.AttachTo
+    LinuxFileSystem:
+      type: alien.nodes.LinuxFileSystem
+      properties:
+        fs_type: ext4
+        location: "/var/docker/registry"
+      requirements:
+        - hostedOnComputeHost:
+            type_requirement: host
+            node: Compute
+            capability: tosca.capabilities.Container
+            relationship: tosca.relationships.HostedOn
+        - linuxPartitionBlockStorageFeature:
+            type_requirement: partition
+            node: BlockStorage
+            capability: tosca.capabilities.Node
+            relationship: alien.relationships.LinuxPartition
+  outputs:
+    Compute_public_address:
+      value: { get_attribute: [ Compute, public_address ] }

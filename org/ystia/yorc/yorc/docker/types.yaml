@@ -1,0 +1,95 @@
+tosca_definitions_version: alien_dsl_2_0_0
+#
+# Copyright 2020 Bull S.A.S. Atos Technologies - Bull, Rue Jean Jaures, B.P.68, 78340, Les Clayes-sous-Bois, France.
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+#
+
+metadata:
+  template_name: org.ystia.yorc.docker
+  template_version: 1.0.0-SNAPSHOT
+  template_author: yorc
+
+imports:
+  - tosca-normative-types:1.0.0-ALIEN20
+  - docker-types:2.2.0
+
+description: Yorc&Consul Docker Component
+
+repositories:
+  docker:
+    url: https://hub.docker.com/
+    type: a4c_ignore
+
+node_types:
+  org.ystia.yorc.docker.nodes.Yorc:
+    metadata:
+      icon: "yorcicon.png"
+    derived_from: tosca.nodes.Container.Application.DockerContainer
+    capabilities:
+      consul_ui:
+        type: org.ystia.yorc.docker.capabilities.ConsulUI
+        description: Endpoint to acess consul UI
+      yorc_server:
+        type: org.ystia.yorc.docker.capabilities.YorcRestAPI
+        description: Endpoint to communicate with yorc API
+    properties:
+      yorc_debug:
+        description: Enable or not Yorc's log debuging
+        type: string
+        required: true
+        default: "NO_DEBUG"
+        constraints:
+        - valid_values: [ "DEBUG", "NO_DEBUG" ]
+      consul_ui:
+        description: Enable consul UI available on port 8500
+        type: boolean
+        required: true
+        default: true
+    interfaces:
+      Standard:
+        create:
+          inputs:
+            ENV_YORC_LOG: { get_property: [SELF, yorc_debug] }
+            ENV_CONSUL_ENV_ui: { get_property: [SELF, consul_ui] }
+            ENV_CONSUL_ENV_client_addr: '"0.0.0.0"'
+          implementation:
+            file: ystia-docker.jfrog.io/ystia/yorc
+            repository: docker
+            type: tosca.artifacts.Deployment.Image.Container.Docker
+
+capability_types:
+  org.ystia.yorc.docker.capabilities.ConsulUI:
+    derived_from: tosca.capabilities.Endpoint
+    properties:
+      docker_bridge_port_mapping:
+        type: integer
+        description: Port used to bridge to the container's endpoint.
+        default: 8500
+      port:
+        type: integer
+        default: 8500
+  org.ystia.yorc.docker.capabilities.YorcRestAPI:
+    derived_from: tosca.capabilities.Endpoint
+    properties:
+      docker_bridge_port_mapping:
+        type: integer
+        description: Port used to bridge to the container's endpoint.
+        default: 8800
+      port:
+        type: integer
+        default: 8800
+      service_name:
+        type: string
+        description: The name of the endpoint exposed to some other service
+        default: Yorc_YorcDeployment_Service
