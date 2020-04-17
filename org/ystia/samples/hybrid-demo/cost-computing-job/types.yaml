@@ -18,7 +18,7 @@ tosca_definitions_version: alien_dsl_2_0_0
 
 metadata:
   template_name: org.ystia.samples.hybrid-demo.cost-computing-job
-  template_version: 2.2.0-SNAPSHOT
+  template_version: 2.3.0-SNAPSHOT
   template_author: ystia
 
 description: "Singularity job to run Apache log generaetor cost computing job."
@@ -26,7 +26,7 @@ description: "Singularity job to run Apache log generaetor cost computing job."
 imports:
   - tosca-normative-types:1.0.0-ALIEN20
   - yorc-slurm-types:2.2.0
-  - org.ystia.elasticsearch.pub:2.2.0-SNAPSHOT
+  - org.ystia.elasticsearch.pub:2.3.0-SNAPSHOT
 
 repositories:
   docker:
