@@ -18,7 +18,7 @@ tosca_definitions_version: alien_dsl_2_0_0
 
 metadata:
   template_name: org.ystia.yorc.experimental.consul.topologies.client_template
-  template_version: 2.1.0-SNAPSHOT
+  template_version: 2.2.0-SNAPSHOT
   template_author: admin
 
 description: "Consul Agent using the service exposed by a Consul Server"
@@ -72,12 +72,12 @@ topology_template:
           properties:
             port: 8500
     # Using a service that is not defined in this Topology.
-    # This is done by specifying an Abstract Node Type that will be matched 
+    # This is done by specifying an Abstract Node Type that will be matched
     # at deployment time against the service implementation.
     # This service can be :
     # - either an external service manually declared,
     # - or a service exposed by a deployed application, that specifies a
     #   a substitution mapping betwen the abstract node type referenced below
-    #   and the application.   
+    #   and the application.
     ConsulServerService:
       type: org.ystia.yorc.experimental.consul.pub.nodes.ConsulServer
