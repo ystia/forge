@@ -43,7 +43,7 @@
     - name: "Set Ansible configuration"
       set_fact:
         tmp: >
-          { "ansible": { "use_openssh": {{ USE_OPENSSH }} } }
+          { "ansible": { "use_openssh": {{ USE_OPENSSH }}, "hosted_operations": { "unsandboxed_operations_allowed": {{ HOST_OPERATIONS_ALLOWED }} } } }
       when: INVENTORY == ''
 
     - name: "Set Ansible configuration with inventory {{ INVENTORY }}"
@@ -51,6 +51,7 @@
         tmp: >
           { "ansible": {
             "use_openssh": {{ USE_OPENSSH }},
+            "hosted_operations": { "unsandboxed_operations_allowed": {{ HOST_OPERATIONS_ALLOWED }} },
             "inventory": {{ INVENTORY }}
           } }
       when: INVENTORY != ''
