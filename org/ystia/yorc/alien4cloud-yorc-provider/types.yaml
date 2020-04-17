@@ -14,6 +14,7 @@ imports:
   - tosca-normative-types:1.0.0-ALIEN20
   - yorc-types:1.1.0
   - org.ystia.yorc.pub:2.2.0-SNAPSHOT
+  - org.ystia.yorc.alien4cloud_yorc_provider:2.2.0-SNAPSHOT
 
 node_types:
 
