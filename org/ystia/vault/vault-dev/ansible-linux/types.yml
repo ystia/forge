@@ -1,3 +1,4 @@
+tosca_definitions_version: alien_dsl_2_0_0
 
 metadata:
   template_name: org.ystia.vault.ansible-linux

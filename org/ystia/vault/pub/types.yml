@@ -12,7 +12,7 @@ imports:
   - tosca-normative-types:1.0.0-ALIEN20
 
 node_types:
-  org.alien4cloud.vault.pub.nodes.VaultServer:
+  org.ystia.vault.pub.nodes.VaultServer:
     derived_from: tosca.nodes.SoftwareComponent
     abstract: true
     description: Vault server
