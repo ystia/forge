@@ -1,0 +1,52 @@
+
+metadata:
+  template_name: org.ystia.vault.ansible-linux
+  template_version: 2.2.0-SNAPSHOT
+  template_author: Ystia
+
+description: Vault server implementation using Ansible on Linux
+
+imports:
+  - tosca-normative-types:1.0.0-ALIEN20
+  - yorc-types:1.1.0
+  - org.ystia.vault.pub:2.2.0-SNAPSHOT
+
+node_types:
+  org.ystia.vault.vault-dev.ansible-linux.nodes.VaultServer:
+    derived_from: org.ystia.vault.pub.nodes.VaultServer
+    description: >
+      Vault server in development mode. Warning, do not use for production as it starts unsealed and runs in-memory.
+    properties:
+      dev_root_token:
+        description: Initial root token.
+        type: string
+        required: false
+      dev_listen_address:
+        description: >
+          Address to bind (default "127.0.0.1:8200")
+        type: string
+        required: false
+      dev_no_store_token:
+        description: >
+          Do not persist the dev root token to the token helper. The token will only be displayed in the command output.
+        type: boolean
+        required: false
+      dev_plugin_dir:
+        description: >
+          Directory from which plugins are allowed to be loaded. It will automatically register all the plugins in the provided directory.
+        type: string
+        required: false
+    interfaces:
+      Standard:
+        create:
+          inputs:
+            INSTALL_DIR: { get_property: [SELF, install_dir] }
+            VERSION: { get_property: [SELF, version] }
+            DEV_ROOT_TOKEN: { get_property: [SELF, dev_root_token] }
+            DEV_LISTEN_ADDRESS: { get_property: [SELF, dev_listen_address] }
+            DEV_NO_STORE_TOKEN: { get_property: [SELF, dev_no_store_token] }
+            DEV_PLUGIN_DIR: { get_property: [SELF, dev_plugin_dir] }
+          implementation: playbooks/create.yaml
+        start: playbooks/start.yaml
+        stop: playbooks/stop.yaml
+        delete: playbooks/delete.yaml

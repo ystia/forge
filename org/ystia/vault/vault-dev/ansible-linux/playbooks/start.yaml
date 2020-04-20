@@ -1,0 +1,9 @@
+- name: Start Vault
+  hosts: all
+  strategy: free
+  become: true
+  tasks:
+    - name: Ensure Vault service is started
+      service:
+        name: vault
+        state: started

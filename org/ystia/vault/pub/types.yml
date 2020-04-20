@@ -24,6 +24,11 @@ node_types:
         type: version
         required: true
         default: 1.2.3
+      install_dir:
+        description: Path on the filesystem to install Vault binary
+        type: string
+        required: true
+        default: /usr/local/bin
     capabilities:
       vault_server:
         type: org.ystia.vault.pub.capabilities.VaultServer

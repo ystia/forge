@@ -1,0 +1,15 @@
+[Unit]
+Description=Vault dev server
+
+[Service]
+ExecStart={{INSTALL_DIR}}/vault server -dev $OPTIONS
+Restart=on-failure
+KillSignal=SIGINT
+TimeoutStopSec=360
+
+Environment="OPTIONS={% if DEV_PLUGIN_DIR is defined %}-dev-plugin-dir {{ DEV_PLUGIN_DIR }}{%- endif -%}"
+Environment="VAULT_DEV_ROOT_TOKEN_ID={{ DEV_ROOT_TOKEN }}"
+Environment="VAULT_DEV_LISTEN_ADDRESS={{ DEV_LISTEN_ADDRESS }}"
+
+[Install]
+WantedBy=multi-user.target
