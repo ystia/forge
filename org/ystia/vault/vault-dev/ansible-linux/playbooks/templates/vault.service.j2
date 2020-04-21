@@ -2,12 +2,13 @@
 Description=Vault dev server
 
 [Service]
-ExecStart={{INSTALL_DIR}}/vault server -dev $OPTIONS
+ExecStart={{INSTALL_DIR}}/vault server -dev $PLUGIN_DIR $NO_STORE_TOKEN
 Restart=on-failure
 KillSignal=SIGINT
 TimeoutStopSec=360
 
-Environment="OPTIONS={% if DEV_PLUGIN_DIR != "" %}-dev-plugin-dir {{ DEV_PLUGIN_DIR }}{%- endif -%}"
+Environment="NO_STORE_TOKEN={% if DEV_NO_STORE_TOKEN %}-dev-no-store-token{%- endif -%}"
+Environment="PLUGIN_DIR={% if DEV_PLUGIN_DIR != "" %}-dev-plugin-dir {{ DEV_PLUGIN_DIR }}{%- endif -%}"
 Environment="VAULT_DEV_ROOT_TOKEN_ID={% if DEV_ROOT_TOKEN != "" %}{{ DEV_ROOT_TOKEN }}{%- endif -%}"
 Environment="VAULT_DEV_LISTEN_ADDRESS={% if DEV_LISTEN_ADDRESS != "" %}{{ DEV_LISTEN_ADDRESS }}{%- endif -%}"
 

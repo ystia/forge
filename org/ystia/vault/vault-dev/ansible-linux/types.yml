@@ -1,7 +1,7 @@
 tosca_definitions_version: alien_dsl_2_0_0
 
 metadata:
-  template_name: org.ystia.vault.ansible-linux
+  template_name: org.ystia.vault.dev.ansible-linux
   template_version: 2.2.0-SNAPSHOT
   template_author: Ystia
 
@@ -13,11 +13,20 @@ imports:
   - org.ystia.vault.pub:2.2.0-SNAPSHOT
 
 node_types:
-  org.ystia.vault.vault-dev.ansible-linux.nodes.VaultServer:
+  org.ystia.vault.dev.ansible-linux.nodes.VaultServer:
     derived_from: org.ystia.vault.pub.nodes.VaultServer
     description: >
       Vault server in development mode. Warning, do not use for production as it starts unsealed and runs in-memory.
     properties:
+      component_version:
+        type: version
+        required: false
+        default: 1.2.3
+      install_dir:
+        description: Path on the filesystem to install Vault binary
+        type: string
+        required: false
+        default: /usr/local/bin
       dev_root_token:
         description: Initial root token.
         type: string
@@ -42,7 +51,7 @@ node_types:
         create:
           inputs:
             INSTALL_DIR: { get_property: [SELF, install_dir] }
-            VERSION: { get_property: [SELF, version] }
+            VERSION: { get_property: [SELF, component_version] }
             DEV_ROOT_TOKEN: { get_property: [SELF, dev_root_token] }
             DEV_LISTEN_ADDRESS: { get_property: [SELF, dev_listen_address] }
             DEV_NO_STORE_TOKEN: { get_property: [SELF, dev_no_store_token] }
@@ -50,4 +59,7 @@ node_types:
           implementation: playbooks/create.yaml
         start: playbooks/start.yaml
         stop: playbooks/stop.yaml
-        delete: playbooks/delete.yaml
+        delete:
+          inputs:
+            INSTALL_DIR: { get_property: [SELF, install_dir] }
+          implementation: playbooks/delete.yaml

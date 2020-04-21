@@ -17,18 +17,7 @@ node_types:
     abstract: true
     description: Vault server
     tags:
-      icon: /images/vault.png
-    properties:
-      version:
-        description: Vault version to install
-        type: version
-        required: true
-        default: 1.2.3
-      install_dir:
-        description: Path on the filesystem to install Vault binary
-        type: string
-        required: true
-        default: /usr/local/bin
+      icon: /images/vault.png      
     capabilities:
       vault_server:
         type: org.ystia.vault.pub.capabilities.VaultServer
