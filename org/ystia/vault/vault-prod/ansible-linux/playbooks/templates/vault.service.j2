@@ -1,0 +1,15 @@
+[Unit]
+Description=Vault server
+
+[Service]
+ExecStart={{INSTALL_DIR}}/vault server -config {{ CONFIG_DIR }}/config.vault.hcl
+Restart=on-failure
+KillSignal=SIGINT
+TimeoutStopSec=360
+
+# Env 
+Environment="VAULT_LOG_FORMAT={% if LOG_FORMAT != "" %}{{ LOG_FORMAT }}{%- endif -%}"
+Environment="VAULT_LOG_LEVEL={% if LOG_LEVEL != "" %}{{ LOG_LEVEL }}{%- endif -%}"
+
+[Install]
+WantedBy=multi-user.target

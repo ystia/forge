@@ -1,0 +1,9 @@
+- name: Stop Vault
+  hosts: all
+  strategy: free
+  become: true
+  tasks:
+    - name: Ensure Vault service is stopped
+      service:
+        name: vault
+        state: stopped

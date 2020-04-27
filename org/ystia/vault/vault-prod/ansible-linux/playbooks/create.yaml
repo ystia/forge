@@ -1,0 +1,40 @@
+
+- name: Install Vault
+  hosts: all
+  strategy: free
+  become: true
+  tasks:
+    - name: RedHat - install prerequisites
+      yum:
+        name: ["zip", "unzip"]
+        state: present
+        update_cache: yes
+      when: ansible_os_family == 'RedHat'
+
+    - name: Debian - install prerequisites
+      apt:
+        name: ["zip", "unzip"]
+        state: present
+        update_cache: yes
+      when: ansible_os_family == 'Debian'
+
+    - name: Download and extract Vault binary
+      unarchive:
+        src: "https://releases.hashicorp.com/vault/{{ VERSION }}/vault_{{ VERSION }}_linux_amd64.zip"
+        dest: "{{ INSTALL_DIR }}"
+        remote_src: yes
+
+    - name: Create Vault systemd unit
+      template:
+        src: "vault.service.j2"
+        dest: "/etc/systemd/system/vault.service"
+        owner: root
+        group: root
+        mode: 0600
+
+    - name: Ensure Vault service is enabled and stopped
+      service:
+        name: vault
+        state: stopped
+        enabled: yes
+        daemon_reload: yes

@@ -1,0 +1,19 @@
+
+- name: Configure Vault
+  hosts: all
+  strategy: free
+  become: true
+  tasks:
+    - name: Create Vault configuration folder
+      file:
+        path: "{{ CONFIG_DIR }}"
+        state: directory
+        mode: '0600'
+
+    - name: Create Vault configuration file
+      template:
+        src: "config.vault.hcl.j2"
+        dest: "{{ CONFIG_DIR }}/config.vault.hcl"
+        owner: root
+        group: root
+        mode: 0600

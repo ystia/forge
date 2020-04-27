@@ -1,0 +1,13 @@
+- name: Uninstall Vault
+  hosts: all
+  strategy: free
+  become: true
+  tasks:
+    - name: Delete Vault files
+      file:
+        path: "{{ item }}"
+        state: absent
+      with_items:
+        - "{{ INSTALL_DIR }}/vault"
+        - "/etc/systemd/system/vault.service"
+        - "{{ CONFIG_DIR }}"

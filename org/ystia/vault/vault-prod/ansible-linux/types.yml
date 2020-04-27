@@ -1,0 +1,104 @@
+tosca_definitions_version: alien_dsl_2_0_0
+
+metadata:
+  template_name: org.ystia.vault.prod.ansible-linux
+  template_version: 2.2.0-SNAPSHOT
+  template_author: Ystia
+
+description: Vault server implementation using Ansible on Linux
+
+imports:
+  - tosca-normative-types:1.0.0-ALIEN20
+  - yorc-types:1.1.0
+  - org.ystia.vault.pub:2.2.0-SNAPSHOT
+  - org.ystia.yorc.experimental.consul.pub:2.2.0-SNAPSHOT
+
+node_types:
+  org.ystia.vault.prod.ansible-linux.nodes.VaultServer:
+    derived_from: org.ystia.vault.pub.nodes.VaultServer
+    description: >
+      Vault server.
+    requirements:
+      - consul:
+          capability: org.ystia.yorc.experimental.consul.pub.capabilities.ConsulServer
+          relationship: org.ystia.vault.prod.relationships.ConnectToConsulAgent
+          occurrences: [ 0, 1 ]
+    properties:
+      component_version:
+        type: version
+        required: true
+        default: 1.2.3
+      install_dir:
+        description: Path on the filesystem to install Vault binary
+        type: string
+        required: true
+        default: /usr/local/bin
+      config_dir:
+        description: Path on the filesystem to store Vault configuration
+        type: string
+        required: true
+        default: /etc/vault
+      port:
+        description: The port of Vault.
+        type: integer
+        required: true
+        default: 8200
+      log_level:
+        description: Log verbosity level.
+        type: string
+        required: true
+        default: info
+        constraints:
+          - valid_values: [trace, debug, info, warn, err]
+      log_format:
+        type: string
+        required: true
+        default: standard
+        constraints:
+          - valid_values: [standard, json]
+      auto_unsealed:
+        description: If true, Vault will be unsealed automatically and the tokens will be found in the config_dir/unsealKeys
+        type: boolean
+        required: true
+        default: false
+    #attributes:
+      #vault_addr: { get_operation_output: [ SELF, Standard, start, VAULT_ADDR ] }
+      #unsealed_keys_file: { get_operation_output: [ SELF, Standard, start, UNSEALED_KEYS_FILE ] }
+      #vault_token_encrypted: { get_operation_output: [ SELF, Standard, start, VAULT_TOKEN_ENCRYPTED ] }
+    interfaces:
+      Standard:
+        create:
+          inputs:
+            INSTALL_DIR: { get_property: [SELF, install_dir] }
+            CONFIG_DIR: { get_property: [SELF, config_dir] }
+            VERSION: { get_property: [SELF, component_version] }
+            LOG_LEVEL: { get_property: [SELF, log_level] }
+            LOG_FORMAT: { get_property: [SELF, log_format] }
+          implementation: playbooks/create.yaml
+        start: 
+          inputs:
+            VAULT_IP: { get_attribute: [SELF, private_address] }
+            VAULT_PORT: { get_property: [SELF, port] }
+            AUTO_UNSEALED: { get_property: [SELF, auto_unsealed] }
+          implementation: playbooks/start.yaml
+        stop: playbooks/stop.yaml
+        delete:
+          inputs:
+            CONFIG_DIR: { get_property: [SELF, config_dir] }
+            INSTALL_DIR: { get_property: [SELF, install_dir] }
+          implementation: playbooks/delete.yaml
+
+relationship_types:
+  org.ystia.vault.prod.relationships.ConnectToConsulAgent:
+    derived_from: org.ystia.yorc.experimental.consul.pub.relationships.JoinConsulAgent
+    interfaces:
+      Configure:
+        pre_configure_source:
+          inputs:
+            VAULT_IP: { get_attribute: [SOURCE, private_address] }
+            VAULT_PORT: { get_property: [SOURCE, port] }
+            AGENT_IP: { get_attribute: [TARGET, private_address] }
+            AGENT_API_PORT: { get_property: [TARGET, consul_agent, port] }
+            AGENT_TLS_ENABLED: { get_property: [TARGET, tls_enabled] }
+            CONFIG_DIR: { get_property: [SOURCE, config_dir] }
+          implementation:  playbooks/configure.yaml 

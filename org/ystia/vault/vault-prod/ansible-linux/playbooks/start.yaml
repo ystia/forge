@@ -1,0 +1,13 @@
+- name: Start Vault
+  hosts: all
+  strategy: free
+  become: true
+  tasks:
+    - name: Ensure Vault service is started
+      service:
+        name: vault
+        state: started
+    - name: Check status of alertmanager service
+      service_facts:
+      register: service_status
+      failed_when: ansible_facts.services["vault.service"].state != "running"
