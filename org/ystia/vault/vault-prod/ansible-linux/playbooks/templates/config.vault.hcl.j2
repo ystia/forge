@@ -1,32 +1,21 @@
-storage "inmem" {}
-
 listener "tcp" {
   address                            = "{{ VAULT_IP }}:{{ VAULT_PORT }}"
-  tls_disable                        = true
-  //tls_cert_file                      = ""
-  //tls_key_file                       = ""
-  //tls_require_and_verify_client_cert = ""
-  //tls_disable_client_certs           = ""
-  //tls_client_ca_file                 = ""
+  tls_disable                        = "{{ VAULT_TLS_DISABLE }}"
+  tls_cert_file                      = ""
+  tls_key_file                       = ""
+  tls_require_and_verify_client_cert = ""
+  tls_disable_client_certs           = ""
+  tls_client_ca_file                 = ""
 }
 
-/*
+
 storage "consul" {
-  address         = ":"
+  address         = "{{ AGENT_IP }}:{{ AGENT_API_PORT }}"
   path            = "vault/"
-  scheme          = "https"
-  //token           = ""
+  scheme          = "{% if AGENT_TLS_ENABLED | bool %}https{% else %}http{% endif %}"
+  token           = ""
   tls_ca_file     = ""
   tls_cert_file   = ""
   tls_key_file    = ""
-  tls_skip_verify = ""
+  tls_skip_verify = "{{ (not AGENT_TLS_ENABLED | bool) | lower }}"
 }
-
-ui = ""
-
-log_level = ""
-
-log_format = ""
-
-pid_file = ""
-*/

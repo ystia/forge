@@ -22,7 +22,7 @@ node_types:
       - consul:
           capability: org.ystia.yorc.experimental.consul.pub.capabilities.ConsulServer
           relationship: org.ystia.vault.prod.relationships.ConnectToConsulAgent
-          occurrences: [ 0, 1 ]
+          occurrences: [ 1, 1 ]
     properties:
       component_version:
         type: version
@@ -43,6 +43,11 @@ node_types:
         type: integer
         required: true
         default: 8200
+      tls_disable:
+        description: If true, Vault will not use tls for http.
+        type: boolean
+        required: true
+        default: false
       log_level:
         description: Log verbosity level.
         type: string
@@ -97,6 +102,7 @@ relationship_types:
           inputs:
             VAULT_IP: { get_attribute: [SOURCE, private_address] }
             VAULT_PORT: { get_property: [SOURCE, port] }
+            VAULT_TLS_DISABLE: { get_property: [SOURCE, tls_disable] }
             AGENT_IP: { get_attribute: [TARGET, private_address] }
             AGENT_API_PORT: { get_property: [TARGET, consul_agent, port] }
             AGENT_TLS_ENABLED: { get_property: [TARGET, tls_enabled] }
