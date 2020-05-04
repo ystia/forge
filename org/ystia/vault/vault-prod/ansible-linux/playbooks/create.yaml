@@ -13,7 +13,7 @@
 
     - name: Debian - install prerequisites
       apt:
-        name: ["zip", "unzip"]
+        name: ["zip", "unzip", "acl"]
         state: present
         update_cache: yes
       when: ansible_os_family == 'Debian'
@@ -23,13 +23,29 @@
         src: "https://releases.hashicorp.com/vault/{{ VERSION }}/vault_{{ VERSION }}_linux_amd64.zip"
         dest: "{{ INSTALL_DIR }}"
         remote_src: yes
+    
+    - name: create Vault group
+      group: 
+        name: vault
+
+    - name: create Vault user
+      user:
+        name: vault
+        system: true
+        group: vault
+
+    - name: Create Vault config dir
+      file:
+        path: "{{ CONFIG_DIR }}"
+        state: directory
+        owner: vault
+        group: vault
+        mode: 0750
 
     - name: Create Vault systemd unit
       template:
         src: "vault.service.j2"
         dest: "/etc/systemd/system/vault.service"
-        owner: root
-        group: root
         mode: 0600
 
     - name: Ensure Vault service is enabled and stopped

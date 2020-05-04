@@ -2,6 +2,8 @@
 Description=Vault server
 
 [Service]
+USER=vault
+GROUP=vault
 ExecStart={{INSTALL_DIR}}/vault server -config {{ CONFIG_DIR }}/config.vault.hcl
 Restart=on-failure
 KillSignal=SIGINT
