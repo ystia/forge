@@ -2,6 +2,8 @@
 Description=Vault dev server
 
 [Service]
+User=vault
+Group=vault
 ExecStart={{INSTALL_DIR}}/vault server -dev $PLUGIN_DIR $NO_STORE_TOKEN
 Restart=on-failure
 KillSignal=SIGINT

@@ -13,7 +13,7 @@
 
     - name: Debian - install prerequisites
       apt:
-        name: ["zip", "unzip"]
+        name: ["zip", "unzip", "acl"]
         state: present
         update_cache: yes
       when: ansible_os_family == 'Debian'
@@ -23,6 +23,16 @@
         src: "https://releases.hashicorp.com/vault/{{ VERSION }}/vault_{{ VERSION }}_linux_amd64.zip"
         dest: "{{ INSTALL_DIR }}"
         remote_src: yes
+        
+    - name: create Vault group
+      group: 
+        name: vault
+
+    - name: create Vault user
+      user:
+        name: vault
+        system: true
+        group: vault
 
     - name: Create Vault systemd unit
       template:
