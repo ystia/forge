@@ -2,6 +2,7 @@
 Description=Vault server
 
 [Service]
+LimitMEMLOCK=infinity
 User=vault
 Group=vault
 ExecStart={{INSTALL_DIR}}/vault server -config {{ CONFIG_DIR }}/config.vault.hcl
