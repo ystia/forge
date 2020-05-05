@@ -1,11 +1,13 @@
 listener "tcp" {
   address                            = "{{ VAULT_IP }}:{{ VAULT_PORT }}"
-  tls_disable                        = "{{ VAULT_TLS_DISABLE }}"
-  tls_cert_file                      = ""
-  tls_key_file                       = ""
+  tls_disable                        = "{{ VAULT_TLS_DISABLED }}"
+  {% if vault_secured -%}
+  tls_cert_file                      = "{{ CONFIG_DIR }}/vault.pem"
+  tls_key_file                       = "{{ CONFIG_DIR }}/vault.key"
+  tls_client_ca_file                 = "{{ CONFIG_DIR }}/ca.pem"
+  {% endif -%}
   tls_require_and_verify_client_cert = ""
   tls_disable_client_certs           = ""
-  tls_client_ca_file                 = ""
 }
 
 

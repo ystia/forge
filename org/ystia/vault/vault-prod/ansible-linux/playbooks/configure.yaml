@@ -5,7 +5,81 @@
   become: yes
   become_user: vault
   become_method: sudo
+  vars:
+    ca_conf_ok: false
+    vault_secured: false
   tasks:
+    - name: Check if CA provided
+      set_fact:
+        ca_conf_ok: true
+      when: (VAULT_CA_KEY is defined) and (VAULT_CA_PEM is defined)
+            and not ((VAULT_CA_KEY is none) or (VAULT_CA_PEM is none)
+            or (VAULT_CA_KEY | trim == '') or (VAULT_CA_PEM | trim == ''))
+
+    - name: Check security requirement
+      set_fact:
+        vault_secured: true
+      when: not (VAULT_TLS_DISABLED | bool) and ca_conf_ok
+    
+    # TODO: Should we debug or fail ?
+    - debug:
+        msg: "WARN : TLS wanted but missing CA requirements. Vault will be setup insecured"
+      when:
+        - not (VAULT_TLS_DISABLED | bool) 
+        - not ca_conf_ok  
+    
+    ##
+    # Certificate management for vault secured
+    ##
+    - name: Get CA key
+      copy:
+        dest: "{{ CONFIG_DIR }}/ca.key"
+        content: "{{ VAULT_CA_KEY }}"
+        mode: 0600
+      when: vault_secured
+
+    - name: Get CA certificate
+      copy:
+        dest: "{{ CONFIG_DIR }}/ca.pem"
+        content: "{{ VAULT_CA_PEM }}"
+      when: vault_secured
+
+    - name: Generate a private key for vault server
+      openssl_privatekey:
+        path: "{{ CONFIG_DIR }}/vault.key"
+      when: vault_secured
+
+    - name: Set subject altName IP
+      set_fact:
+        subjectAltName: "IP:{{ VAULT_IP }}"
+      when: vault_secured
+
+    - name: Generate vault CSR with subjectAltName
+      openssl_csr:
+        path: "{{ CONFIG_DIR }}/vault.csr"
+        privatekey_path: "{{ CONFIG_DIR }}/vault.key"
+        country_name: "FR"
+        organization_name: "Atos"
+        common_name: "127.0.0.1"
+        subjectAltName: '{{ subjectAltName }},IP:127.0.0.1,DNS:localhost'
+      when: vault_secured
+
+    - name: Sign vault certificate with CA
+      openssl_certificate:
+        path: "{{ CONFIG_DIR }}/vault.pem"
+        csr_path: "{{ CONFIG_DIR }}/vault.csr"
+        ownca_path: "{{ CONFIG_DIR }}/ca.pem"
+        ownca_privatekey_path: "{{ CONFIG_DIR }}/ca.key"
+        ownca_privatekey_passphrase: "{{ VAULT_CA_PASSPHRASE }}"
+        provider: ownca
+        subjectAltName: '{{ subjectAltName }},IP:127.0.0.1,DNS:localhost'
+        extended_key_usage:
+          - serverAuth
+      when: vault_secured
+    ##
+    # End. TODO: try inlcude directive
+    ##
+
     - name: Create Vault configuration file
       template:
         src: "config.vault.hcl.j2"

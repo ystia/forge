@@ -6,17 +6,22 @@
   tasks:
     - name: RedHat - install prerequisites
       yum:
-        name: ["zip", "unzip"]
+        name: ["zip", "unzip", "python34-pip"]
         state: present
         update_cache: yes
       when: ansible_os_family == 'RedHat'
 
     - name: Debian - install prerequisites
       apt:
-        name: ["zip", "unzip", "acl"]
+        name: ["zip", "unzip", "python3-pip", "acl"]
         state: present
         update_cache: yes
       when: ansible_os_family == 'Debian'
+
+    - name: Ensure python OpenSSL dependencies are installed.
+      pip:
+        name: pyOpenSSL>18.0.0
+        state: present
 
     - name: Download and extract Vault binary
       unarchive:

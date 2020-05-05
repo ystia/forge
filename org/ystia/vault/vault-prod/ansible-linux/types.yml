@@ -43,11 +43,23 @@ node_types:
         type: integer
         required: true
         default: 8200
-      tls_disable:
-        description: If true, Vault will not use tls for http.
+      tls_disabled:
+        description: If true, Vault will not use tls for http. Else, you should specify ca_key, ca_pem and ca_passphrase properties.
         type: boolean
         required: true
         default: false
+      ca_pem:
+        description: The provided CA certificate content
+        type: string
+        required: false
+      ca_key:
+        description: The provided CA key content
+        type: string
+        required: false
+      ca_passphrase:
+        description: The CA key passphrase
+        type: string
+        required: false
       log_level:
         description: Log verbosity level.
         type: string
@@ -82,8 +94,6 @@ node_types:
           implementation: playbooks/create.yaml
         start: 
           inputs:
-            VAULT_IP: { get_attribute: [SELF, private_address] }
-            VAULT_PORT: { get_property: [SELF, port] }
             AUTO_UNSEALED: { get_property: [SELF, auto_unsealed] }
           implementation: playbooks/start.yaml
         stop: playbooks/stop.yaml
@@ -102,7 +112,10 @@ relationship_types:
           inputs:
             VAULT_IP: { get_attribute: [SOURCE, private_address] }
             VAULT_PORT: { get_property: [SOURCE, port] }
-            VAULT_TLS_DISABLE: { get_property: [SOURCE, tls_disable] }
+            VAULT_TLS_DISABLED: { get_property: [SOURCE, tls_disabled] }
+            VAULT_CA_KEY: { get_property: [SOURCE, ca_key] }
+            VAULT_CA_PEM: { get_property: [SOURCE, ca_pem] }
+            VAULT_CA_PASSPHRASE: { get_property: [SOURCE, ca_passphrase] }
             AGENT_IP: { get_attribute: [TARGET, private_address] }
             AGENT_API_PORT: { get_property: [TARGET, consul_agent, port] }
             AGENT_TLS_ENABLED: { get_property: [TARGET, tls_enabled] }
