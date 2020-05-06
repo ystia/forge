@@ -4,10 +4,12 @@ listener "tcp" {
   {% if vault_secured -%}
   tls_cert_file                      = "{{ CONFIG_DIR }}/vault.pem"
   tls_key_file                       = "{{ CONFIG_DIR }}/vault.key"
+  {% if  VAULT_TLS_VERIFY | bool -%}
+  tls_require_and_verify_client_cert = "true"
   tls_client_ca_file                 = "{{ CONFIG_DIR }}/ca.pem"
-  {% endif -%}
-  tls_require_and_verify_client_cert = ""
-  tls_disable_client_certs           = ""
+  {%- endif %}
+  {%- endif %}
+
 }
 
 
