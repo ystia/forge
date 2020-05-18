@@ -11,3 +11,16 @@
       service_facts:
       register: service_status
       failed_when: ansible_facts.services["vault.service"].state != "running"
+    - name: Check vault server health over HTTPS
+      uri:
+        url: "https://{{ VAULT_IP }}:{{ VAULT_PORT }}/v1/sys/health"
+        status_code: 501 #should return 501 when unititialized
+        client_cert: "{{ CONFIG_DIR }}/vault.pem"
+        client_key: "{{ CONFIG_DIR }}/vault.key"
+        validate_certs: no
+      when: not (VAULT_TLS_DISABLED | bool)
+    - name: Check vault server health over HTTP
+      uri:
+        url: "http://{{ VAULT_IP }}:{{ VAULT_PORT }}/v1/sys/health"
+        status_code: 501 #should return 501 when unititialized
+      when: VAULT_TLS_DISABLED | bool

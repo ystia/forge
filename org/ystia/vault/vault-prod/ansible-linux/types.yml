@@ -19,8 +19,8 @@ node_types:
     description: >
       Vault server.
     requirements:
-      - consul:
-          capability: org.ystia.yorc.experimental.consul.pub.capabilities.ConsulServer
+      - consul_agent:
+          capability: org.alien4cloud.consul.pub.capabilities.ConsulAgent
           relationship: org.ystia.vault.prod.relationships.ConnectToConsulAgent
           occurrences: [ 1, 1 ]
     properties:
@@ -38,11 +38,6 @@ node_types:
         type: string
         required: true
         default: /etc/vault
-      port:
-        description: The port of Vault.
-        type: integer
-        required: true
-        default: 8200
       tls_disabled:
         description: If true, Vault will not use tls for http. Else, you should specify ca_key, ca_pem and ca_passphrase properties.
         type: boolean
@@ -89,24 +84,24 @@ node_types:
       #vault_token_encrypted: { get_operation_output: [ SELF, Standard, start, VAULT_TOKEN_ENCRYPTED ] }
     interfaces:
       Standard:
+        inputs:
+          INSTALL_DIR: { get_property: [SELF, install_dir] }
+          CONFIG_DIR: { get_property: [SELF, config_dir] }
+          VAULT_TLS_DISABLED: { get_property: [SELF, tls_disabled] }
         create:
           inputs:
-            INSTALL_DIR: { get_property: [SELF, install_dir] }
-            CONFIG_DIR: { get_property: [SELF, config_dir] }
             VERSION: { get_property: [SELF, component_version] }
             LOG_LEVEL: { get_property: [SELF, log_level] }
             LOG_FORMAT: { get_property: [SELF, log_format] }
           implementation: playbooks/create.yaml
         start: 
           inputs:
+            VAULT_IP: { get_attribute: [SELF, private_address] }
+            VAULT_PORT: { get_property: [SELF, vault_server, port] }
             AUTO_UNSEALED: { get_property: [SELF, auto_unsealed] }
           implementation: playbooks/start.yaml
         stop: playbooks/stop.yaml
-        delete:
-          inputs:
-            CONFIG_DIR: { get_property: [SELF, config_dir] }
-            INSTALL_DIR: { get_property: [SELF, install_dir] }
-          implementation: playbooks/delete.yaml
+        delete: playbooks/delete.yaml
 
 relationship_types:
   org.ystia.vault.prod.relationships.ConnectToConsulAgent:
@@ -116,7 +111,7 @@ relationship_types:
         pre_configure_source:
           inputs:
             VAULT_IP: { get_attribute: [SOURCE, private_address] }
-            VAULT_PORT: { get_property: [SOURCE, port] }
+            VAULT_PORT: { get_property: [SOURCE, vault_server, port] }
             VAULT_TLS_DISABLED: { get_property: [SOURCE, tls_disabled] }
             VAULT_TLS_VERIFY: { get_property: [SOURCE, tls_verify] }
             VAULT_CA_KEY: { get_property: [SOURCE, ca_key] }

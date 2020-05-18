@@ -24,4 +24,12 @@ node_types:
 
 capability_types:
   org.ystia.vault.pub.capabilities.VaultServer:
-    derived_from: tosca.capabilities.Root
+    derived_from: tosca.capabilities.Endpoint
+    description: >
+      A vault server exposes this capability.
+    properties:
+      port:
+        type: integer
+        description: Port for http/https API.
+        required: true
+        default: 8200
