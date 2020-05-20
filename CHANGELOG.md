@@ -2,6 +2,10 @@
 
 ## UNRELEASED
 
+### ENHANCEMENTS
+
+* Add docker container property to set the shared memory size ([GH-129](https://github.com/ystia/forge/issues/129))
+
 ## 2.2.0 (April 17, 2020)
 
 ### NEW COMPONENTS
