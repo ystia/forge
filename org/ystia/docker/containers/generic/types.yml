@@ -74,6 +74,14 @@ node_types:
         constraints:
           - valid_values: ["no", "on-failure", "always", "unless-stopped"]
         default: "no"
+      shm_size:
+        type: scalar-unit.size
+        description: |
+          Size of /dev/shm, shared memory used by the container.
+          If omitted, the system uses 64 MB.
+        constraints:
+          - greater_or_equal: 0 B
+        required: false
       user:
         type: string
         description: "Username or UID (format: <name|uid>[:<group|gid>])"
@@ -111,6 +119,7 @@ node_types:
           MEM_SHARE_LIMIT: { get_property: [SELF, mem_share_limit] }
           PUBLISHED_PORTS: { get_property: [SELF, published_ports] }
           RESTART_POLICY: { get_property: [SELF, restart_policy] }
+          SHM_SIZE: { get_property: [SELF, shm_size] }
           USER: { get_property: [SELF, user] }
           VOLUMES: { get_property: [SELF, volumes] }
           WORKDIR: { get_property: [SELF, workdir] }
