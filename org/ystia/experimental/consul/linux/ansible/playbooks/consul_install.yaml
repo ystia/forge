@@ -98,7 +98,13 @@
         update_cache: yes
       when: ansible_os_family == 'Debian'
 
-    - name: Install requirements
+    - name: Install latest Pip version
+      pip:
+        name: "pip"
+        state: latest
+        executable: "{{pip_cmd}}"
+
+    - name: Copy python requirements
       copy:
         src: requirements.txt
         dest: "{{ INSTALL_DIR }}"
