@@ -8,7 +8,7 @@
 
 ### BUG FIXES
 
-* Installation of Consul fails on recent Centos for GCP images ([GH-131](https://github.com/ystia/forge/issues/131))
+* Installation of Consul and Ansible fails on recent Centos for GCP images ([GH-131](https://github.com/ystia/forge/issues/131))
 
 ## 2.2.0 (April 17, 2020)
 
