@@ -63,4 +63,4 @@
           - "jmespath==0.9.4"
           - "netaddr==0.7.19"
         executable: "{{pip_cmd}}"
-        extra_args: "{{ '--extra-index-url {}'.format(ANSIBLE_EXTRA_PACKAGE_REPOSITORY) if ANSIBLE_EXTRA_PACKAGE_REPOSITORY != ''}}"
+        extra_args: "{{ '--extra-index-url {}'.format(ANSIBLE_EXTRA_PACKAGE_REPOSITORY) if ANSIBLE_EXTRA_PACKAGE_REPOSITORY != ''  else ''}}"
