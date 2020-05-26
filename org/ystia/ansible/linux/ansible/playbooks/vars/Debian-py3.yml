@@ -17,6 +17,8 @@
 install_packages:
   - gcc
   - make
-  - python2
-  - python2-dev
-  - virtualenv
+  - python3
+  - python3-dev
+  - python3-pip
+
+pip_cmd: "pip3"
