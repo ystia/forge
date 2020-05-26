@@ -6,6 +6,10 @@
 
 * Add docker container property to set the shared memory size ([GH-129](https://github.com/ystia/forge/issues/129))
 
+### BUG FIXES
+
+* Installation of Consul fails on recent Centos for GCP images ([GH-131](https://github.com/ystia/forge/issues/131))
+
 ## 2.2.0 (April 17, 2020)
 
 ### NEW COMPONENTS

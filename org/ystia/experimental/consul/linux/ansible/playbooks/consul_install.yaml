@@ -39,7 +39,7 @@
       register: apt_res
       retries: 3
       until: apt_res is success
-      when: ansible_distribution == 'Ubuntu'
+      when: ansible_os_family == 'Debian'
 
     - name: Backup original resolve.conf
       copy:
@@ -60,11 +60,30 @@
         dnsmasq_conf_log: "DAEMON"
       when: INSTALL_DNSMASQ == "true"
 
+    - name: Get python version
+      # This will be deprecated in Ansible 2.9 in favor of python_requirements_info but
+      # it is not yet available in Ansible 2.7.9
+      python_requirements_facts:
+      register: pri
+      failed_when: "pri == None or pri.python_version == None or pri.python_version == ''"
+
+    - name: Set python version for pip
+      set_fact:
+        python_pip_pkg: "python3-pip"
+        pip_cmd: "pip3"
+
+    - name: Set python 2 version for pip
+      set_fact:
+        python_pip_pkg: "python-pip"
+        pip_cmd: "pip"
+      when: pri.python_version is version('3', '<')
+
     - name: RedHat - install prerequisites
       yum:
         name:
           - zip
           - unzip
+          - "{{ python_pip_pkg }}"
         state: present
         update_cache: yes
       when: ansible_os_family == 'RedHat'
@@ -74,9 +93,20 @@
         name:
           - zip
           - unzip
+          - "{{ python_pip_pkg }}"
         state: present
         update_cache: yes
       when: ansible_os_family == 'Debian'
+
+    - name: Install requirements
+      copy:
+        src: requirements.txt
+        dest: "{{ INSTALL_DIR }}"
+
+    - name: Install python requirements
+      pip:
+        requirements: "{{ INSTALL_DIR }}/requirements.txt"
+        executable: "{{pip_cmd}}"
 
     - name: create Consul group
       group: name=consul
@@ -124,7 +154,7 @@
         mode: "u=rx,g=rx,o=rx"
 
     - name: Install consul systemd unit
-      template: 
+      template:
         src: consul.service.j2
         dest: "/etc/systemd/system/consul.service"
         mode: "u=rw,g=rw,o=r"
@@ -137,34 +167,7 @@
         state: stopped
 
     - name: Install consul maintenance script
-      template: 
+      template:
         src: consul_maintenance.sh.j2
         dest: "{{INSTALL_DIR}}/consul_maintenance.sh"
         mode: "u=rwx,g=rx,o=rx"
-
-    - name: Check if distribution has easy_install or needs a pip3 installation
-      set_fact:
-        easy_install_available: "{{ ansible_distribution != 'Ubuntu' or ansible_distribution_major_version is version(18, '<') }}"
-
-    - name: Ensure pip is installed using easy_install when availabe
-      easy_install:
-        name: pip
-        state: latest
-      when: easy_install_available
-
-    - name: Install python3-pip when easy_install in not available
-      apt:
-        name:
-          - python3-pip
-        state: present
-        update_cache: yes
-      when: not easy_install_available
-
-    - name: Install requirements
-      copy:
-        src: requirements.txt
-        dest: "{{ INSTALL_DIR }}"
-
-    - name: Install python requirements
-      pip:
-        requirements: "{{ INSTALL_DIR }}/requirements.txt"
