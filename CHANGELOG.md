@@ -2,6 +2,10 @@
 
 ## UNRELEASED
 
+### NEW COMPONENTS
+
+* Python VirtualEnv component ([GH-74](https://github.com/ystia/forge/issues/74))
+
 ### ENHANCEMENTS
 
 * Add docker container property to set the shared memory size ([GH-129](https://github.com/ystia/forge/issues/129))
