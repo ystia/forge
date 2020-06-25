@@ -1,0 +1,94 @@
+tosca_definitions_version: alien_dsl_2_0_0
+
+metadata:
+  template_name:  org.ystia.vault.vault_consul_single_node
+  template_version: 2.2.0-SNAPSHOT
+  template_author: Ystia
+
+description: "Deployment of an unsecure vault server insecurely connected to a local consul server"
+
+imports:
+  - tosca-normative-types:1.0.0-ALIEN20
+  - org.alien4cloud.consul.pub:2.2.0-SNAPSHOT
+  - org.ystia.yorc.experimental.consul.pub:2.2.0-SNAPSHOT
+  - org.ystia.vault.prod.ansible-linux:2.2.0-SNAPSHOT
+  - org.ystia.vault.pub:2.2.0-SNAPSHOT
+  - org.ystia.yorc.experimental.consul.linux.ansible:2.2.0-SNAPSHOT
+
+topology_template:
+  node_templates:
+    Compute:
+      type: tosca.nodes.Compute
+      capabilities:
+        os:
+          properties:
+            type: linux
+        scalable:
+          properties:
+            min_instances: 1
+            max_instances: 1
+            default_instances: 1
+        endpoint:
+          properties:
+            secure: true
+            protocol: tcp
+            network_name: PRIVATE
+            initiator: source
+
+    VaultServer:
+      type: org.ystia.vault.prod.ansible-linux.nodes.VaultServer
+      properties:
+        component_version: "1.2.3"
+        install_dir: "/usr/local/bin"
+        config_dir: "/etc/vault"
+        tls_disabled: true
+        tls_verify: false
+        log_level: info
+        log_format: standard
+        auto_unsealed: true
+      requirements:
+        - hostedOnComputeHost:
+            type_requirement: host
+            node: Compute
+            capability: tosca.capabilities.Container
+            relationship: tosca.relationships.HostedOn
+        - connectToConsulAgentConsulServerConsul_server:
+            type_requirement: consul_agent
+            node: ConsulServer
+            capability: org.ystia.yorc.experimental.consul.pub.capabilities.ConsulServer
+            relationship: org.ystia.vault.prod.relationships.ConnectToConsulAgent
+      capabilities:
+        vault_server:
+          properties:
+            port: 8200
+            protocol: tcp
+
+    ConsulServer:
+      type: org.ystia.yorc.experimental.consul.linux.ansible.nodes.ConsulServer
+      properties:
+        install_dnsmasq: true
+        mode: server
+        tls_enabled: false
+        tls_for_checks_enabled: false
+        download_url: "https://releases.hashicorp.com/consul/1.2.3/consul_1.2.3_linux_amd64.zip"
+        install_dir: "/usr/local/bin"
+        config_dir: "/etc/consul.d"
+        datacenter: dc1
+        domain: consul
+        web_ui: false
+        data_dir: "/var/consul"
+      requirements:
+        - hostedOnComputeHost:
+            type_requirement: host
+            node: Compute
+            capability: tosca.capabilities.Container
+            relationship: tosca.relationships.HostedOn
+      capabilities:
+        consul_server:
+          properties:
+            port: 8500
+            protocol: tcp
+        consul_agent:
+          properties:
+            port: 8500
+            protocol: tcp
