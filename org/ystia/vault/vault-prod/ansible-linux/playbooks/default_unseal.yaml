@@ -1,0 +1,56 @@
+- name: Unseal Vault by API calls
+  hosts: all
+  strategy: free
+  become: true
+  tasks:
+    - name: Init Vault over HTTPS
+      uri:
+        url: "https://{{ VAULT_IP }}:{{ VAULT_PORT }}/v1/sys/init"
+        method: PUT
+        body_format: json
+        body: 
+          secret_shares: 5
+          secret_threshold: 3
+        client_cert: "{{ CONFIG_DIR }}/vault.pem"
+        client_key: "{{ CONFIG_DIR }}/vault.key"
+        validate_certs: no
+      register: resp
+      when: not (VAULT_TLS_DISABLED | bool)
+
+    - name: Init Vault over HTTP
+      uri:
+        url: "http://{{ VAULT_IP }}:{{ VAULT_PORT }}/v1/sys/init"
+        method: PUT
+        body_format: json
+        body:
+          secret_shares: 5
+          secret_threshold: 3
+      register: resp
+      when: VAULT_TLS_DISABLED | bool
+
+    - name: Unseal Vault over HTTPS
+      uri:
+        url: "https://{{ VAULT_IP }}:{{ VAULT_PORT }}/v1/sys/unseal"
+        method: PUT
+        body_format: json
+        body:
+          key: "{{ item }}"
+        client_cert: "{{ CONFIG_DIR }}/vault.pem"
+        client_key: "{{ CONFIG_DIR }}/vault.key"
+        validate_certs: no
+      when: not (VAULT_TLS_DISABLED | bool) and index < 3
+      loop: "{{ resp.json['keys'] }}"
+      loop_control:
+        index_var: index
+
+    - name: Unseal Vault over HTTP
+      uri:
+        url: "http://{{ VAULT_IP }}:{{ VAULT_PORT }}/v1/sys/unseal"
+        method: PUT
+        body_format: json
+        body:
+          key: "{{ item }}"
+      when: VAULT_TLS_DISABLED | bool and index < 3
+      loop: "{{ resp.json['keys'] }}"
+      loop_control:
+        index_var: index

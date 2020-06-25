@@ -21,6 +21,31 @@ node_types:
     capabilities:
       vault_server:
         type: org.ystia.vault.pub.capabilities.VaultServer
+    requirement:
+      auto_unseal:
+        capability: org.ystia.vault.pub.capabilities.AutoUnseal
+        occurrences: [ 0, 1 ]
+
+  org.ystia.vault.pub.nodes.VaultAutoUnseal:
+    derived_from: tosca.nodes.Root
+    abstract: true
+    description: Vault Auto-Unseal
+    capabilities:
+      auto_unseal:
+        type: org.ystia.vault.pub.capabilities.AutoUnseal
+
+  org.ystia.vault.pub.nodes.VaultAutoUnseal.Default:
+    derived_from: org.ystia.vault.pub.nodes.VaultAutoUnseal
+    description: >
+      A auto-unseal scriptely made
+    properties:
+      key_share:
+        type: integer
+      key_threshold:
+        type: integer   
+
+  org.ystia.vault.pub.nodes.VaultAutoUnseal.GoogleKMS:
+    derived_from: org.ystia.vault.pub.nodes.VaultAutoUnseal
 
 capability_types:
   org.ystia.vault.pub.capabilities.VaultServer:
@@ -33,3 +58,8 @@ capability_types:
         description: Port for http/https API.
         required: true
         default: 8200
+
+  org.ystia.vault.pub.capabilities.AutoUnseal:
+    derived_from: tosca.capabilities.Root
+    description: >
+      An Auto-Unseal method exposes this capability.
