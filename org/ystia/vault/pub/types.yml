@@ -21,30 +21,42 @@ node_types:
     capabilities:
       vault_server:
         type: org.ystia.vault.pub.capabilities.VaultServer
-    requirement:
-      auto_unseal:
-        capability: org.ystia.vault.pub.capabilities.AutoUnseal
-        occurrences: [ 0, 1 ]
+      auto_unseal_cfg_host:
+        type: org.ystia.vault.pub.capabilities.AutoUnsealConfigHost
 
   org.ystia.vault.pub.nodes.VaultAutoUnseal:
     derived_from: tosca.nodes.Root
     abstract: true
     description: Vault Auto-Unseal
-    capabilities:
-      auto_unseal:
-        type: org.ystia.vault.pub.capabilities.AutoUnseal
+    requirements:
+      - cfg_host:
+          capability: org.ystia.vault.pub.capabilities.AutoUnsealConfigHost
+          node: org.ystia.vault.pub.nodes.VaultServer
+          relationship: tosca.relationships.HostedOn
+          occurrences: [0, 1]
 
   org.ystia.vault.pub.nodes.VaultAutoUnseal.Default:
     derived_from: org.ystia.vault.pub.nodes.VaultAutoUnseal
+    abstract: true
     description: >
       A auto-unseal scriptely made
+    tags:
+      icon: /images/default_unseal.png
     properties:
       key_share:
         type: integer
+        description: Number of unseal keys to be generated 
+        required: true
+        default: 5
       key_threshold:
-        type: integer   
+        type: integer
+        description: >
+          Minimum number of keys necessary to unseal Vault. Should be less or equal key_share property
+        required: true
+        default: 3
 
   org.ystia.vault.pub.nodes.VaultAutoUnseal.GoogleKMS:
+    abstract: true
     derived_from: org.ystia.vault.pub.nodes.VaultAutoUnseal
 
 capability_types:
@@ -59,7 +71,10 @@ capability_types:
         required: true
         default: 8200
 
-  org.ystia.vault.pub.capabilities.AutoUnseal:
-    derived_from: tosca.capabilities.Root
-    description: >
-      An Auto-Unseal method exposes this capability.
+  org.ystia.vault.pub.capabilities.AutoUnsealConfigHost:
+    derived_from: tosca.capabilities.Container
+
+  # org.ystia.vault.pub.capabilities.AutoUnseal:
+  #   derived_from: tosca.capabilities.Root
+  #   description: >
+  #     An Auto-Unseal method exposes this capability.

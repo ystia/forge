@@ -73,11 +73,6 @@ node_types:
         default: standard
         constraints:
           - valid_values: [standard, json]
-      auto_unsealed:
-        description: If true, Vault will be unsealed automatically and the tokens will be found in the config_dir/unsealKeys
-        type: boolean
-        required: true
-        default: false
     #attributes:
       #vault_addr: { get_operation_output: [ SELF, Standard, start, VAULT_ADDR ] }
       #unsealed_keys_file: { get_operation_output: [ SELF, Standard, start, UNSEALED_KEYS_FILE ] }
@@ -102,6 +97,16 @@ node_types:
           implementation: playbooks/start.yaml
         stop: playbooks/stop.yaml
         delete: playbooks/delete.yaml
+  
+  org.ystia.vault.prod.ansible-linux.nodes.VaultAutoUnseal.Default:
+    derived_from: org.ystia.vault.pub.nodes.VaultAutoUnseal.Default
+    interfaces:
+      Standard:
+        start: 
+          inputs:
+            KEY_SHARE: { get_property: [SELF, key_share] }
+            KEY_THRESHOLD: { get_property: [SELF, key_threshold] }
+          implementation: playbooks/default_unseal.yaml
 
 relationship_types:
   org.ystia.vault.prod.relationships.ConnectToConsulAgent:

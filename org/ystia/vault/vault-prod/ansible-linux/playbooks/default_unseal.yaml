@@ -9,8 +9,8 @@
         method: PUT
         body_format: json
         body: 
-          secret_shares: 5
-          secret_threshold: 3
+          secret_shares: "{{ KEY_SHARE }}"
+          secret_threshold: "{{ KEY_THRESHOLD }}"
         client_cert: "{{ CONFIG_DIR }}/vault.pem"
         client_key: "{{ CONFIG_DIR }}/vault.key"
         validate_certs: no
@@ -23,8 +23,8 @@
         method: PUT
         body_format: json
         body:
-          secret_shares: 5
-          secret_threshold: 3
+          secret_shares: "{{ KEY_SHARE }}"
+          secret_threshold: "{{ KEY_THRESHOLD }}"
       register: resp
       when: VAULT_TLS_DISABLED | bool
 
@@ -38,7 +38,7 @@
         client_cert: "{{ CONFIG_DIR }}/vault.pem"
         client_key: "{{ CONFIG_DIR }}/vault.key"
         validate_certs: no
-      when: not (VAULT_TLS_DISABLED | bool) and index < 3
+      when: not (VAULT_TLS_DISABLED | bool) and index < KEY_THRESHOLD
       loop: "{{ resp.json['keys'] }}"
       loop_control:
         index_var: index
@@ -50,7 +50,7 @@
         body_format: json
         body:
           key: "{{ item }}"
-      when: VAULT_TLS_DISABLED | bool and index < 3
+      when: VAULT_TLS_DISABLED | bool and index < KEY_THRESHOLD
       loop: "{{ resp.json['keys'] }}"
       loop_control:
         index_var: index
