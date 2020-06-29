@@ -8,7 +8,7 @@ tosca_definitions_version: alien_dsl_2_0_0
 
 metadata:
   template_name: org.ystia.docker.containers.docker.generic
-  template_version: 2.2.0-SNAPSHOT
+  template_version: 2.3.0-SNAPSHOT
   template_author: Ystia
 
 
@@ -16,7 +16,7 @@ metadata:
 imports:
   - tosca-normative-types:1.0.0-ALIEN20
   - yorc-types:1.1.0
-  - docker-types:2.2.0-SM10
+  - docker-types:2.2.0
 
 node_types:
   org.ystia.docker.containers.docker.generic.nodes.GenericContainer:
@@ -36,7 +36,7 @@ node_types:
       detach:
         type: boolean
         description: >
-          Enable detached mode to leave the container running in background. 
+          Enable detached mode to leave the container running in background.
           If disabled, the task will reflect the status of the container run (failed if the command failed).
         default: true
       exposed_ports:
@@ -74,6 +74,14 @@ node_types:
         constraints:
           - valid_values: ["no", "on-failure", "always", "unless-stopped"]
         default: "no"
+      shm_size:
+        type: scalar-unit.size
+        description: |
+          Size of /dev/shm, shared memory used by the container.
+          If omitted, the system uses 64 MB.
+        constraints:
+          - greater_or_equal: 0 B
+        required: false
       user:
         type: string
         description: "Username or UID (format: <name|uid>[:<group|gid>])"
@@ -111,6 +119,7 @@ node_types:
           MEM_SHARE_LIMIT: { get_property: [SELF, mem_share_limit] }
           PUBLISHED_PORTS: { get_property: [SELF, published_ports] }
           RESTART_POLICY: { get_property: [SELF, restart_policy] }
+          SHM_SIZE: { get_property: [SELF, shm_size] }
           USER: { get_property: [SELF, user] }
           VOLUMES: { get_property: [SELF, volumes] }
           WORKDIR: { get_property: [SELF, workdir] }

@@ -2,18 +2,18 @@ tosca_definitions_version: alien_dsl_2_0_0
 
 metadata:
   template_name: org.ystia.yorc.alien4cloud_yorc_provider
-  template_version: 2.2.0-SNAPSHOT
+  template_version: 2.3.0-SNAPSHOT
   template_author: alien4cloud
 
 imports:
-  - org.alien4cloud.alien4cloud.pub:2.2.0-SNAPSHOT
-  - org.alien4cloud.alien4cloud.config.pub:2.2.0-SNAPSHOT
-  - org.alien4cloud.alien4cloud.config.location:2.2.0-SNAPSHOT
-  - org.alien4cloud.alien4cloud.config.location_resources.on_demand:2.2.0-SNAPSHOT
-  - org.alien4cloud.alien4cloud.config.location_resources.autoconfig:2.2.0-SNAPSHOT
+  - org.alien4cloud.alien4cloud.pub:2.2.0
+  - org.alien4cloud.alien4cloud.config.pub:2.2.0
+  - org.alien4cloud.alien4cloud.config.location:2.2.0
+  - org.alien4cloud.alien4cloud.config.location_resources.on_demand:2.2.0
+  - org.alien4cloud.alien4cloud.config.location_resources.autoconfig:2.2.0
   - tosca-normative-types:1.0.0-ALIEN20
   - yorc-types:1.1.0
-  - org.ystia.yorc.pub:2.2.0-SNAPSHOT
+  - org.ystia.yorc.pub:2.3.0-SNAPSHOT
 
 node_types:
 
@@ -102,7 +102,6 @@ capability_types:
     derived_from: tosca.capabilities.Endpoint
 
 relationship_types:
-
   org.ystia.yorc.alien4cloud.relationships.ConnectsToYorc:
     derived_from: tosca.relationships.ConnectsTo
     valid_target_types: [ org.ystia.yorc.pub.capabilities.YorcRestAPI ]

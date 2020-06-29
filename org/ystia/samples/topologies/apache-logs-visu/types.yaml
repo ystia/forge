@@ -2,7 +2,7 @@ tosca_definitions_version: alien_dsl_2_0_0
 
 metadata:
   template_name: org.ystia.samples.topologies.ApacheGeneratorVisu
-  template_version: 2.2.0-SNAPSHOT
+  template_version: 2.3.0-SNAPSHOT
   template_author: admin
 
 description: ""
@@ -17,7 +17,7 @@ imports:
 - org.ystia.java.pub:2.2.0-SNAPSHOT
 - org.ystia.samples.hybrid-demo.cost-computing-dashboard:2.2.0-SNAPSHOT
 - org.ystia.kibana.linux.bash:2.2.0-SNAPSHOT
-- yorc-slurm-types:1.2.0
+- yorc-slurm-types:2.2.0
 - org.ystia.common:2.2.0-SNAPSHOT
 - org.ystia.consul.pub:2.2.0-SNAPSHOT
 - yorc-types:1.1.0

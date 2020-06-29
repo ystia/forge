@@ -20,50 +20,47 @@
   become: true
   become_method: sudo
   tasks:
-    - name: Load a variable file based on the OS type, or a default if not found. Using free-form to specify the file.
+
+    - name: Get python version
+      # This will be deprecated in Ansible 2.9 in favor of python_requirements_info but
+      # it is not yet available in Ansible 2.7.9
+      python_requirements_facts:
+      register: pri
+      failed_when: "pri == None or pri.python_version == None or pri.python_version == ''"
+
+    - name: Load a variable file based on the OS type.
       include_vars:
         file: "{{ item }}"
       with_first_found:
-        - "vars/{{ ansible_distribution }}.yml"
-        - "vars/{{ ansible_os_family }}.yml"
+        - "vars/{{ ansible_os_family }}-py{{pri.python_version | replace('\n', '') | regex_replace('^(\\d+).*', '\\1') }}.yml"
+        - "vars/{{ ansible_os_family }}-py{{pri.python_version | replace('\n', '') | regex_replace('^(\\d+).*', '\\1') }}.yml"
 
-    - name: install prerequirements
-      package:
-        name: "{{item}}"
-        state: present
-      with_items: "{{install_packages}}"
-
-    - name: Check if distribution has easy_install or needs a pip3 installation
-      set_fact:
-        easy_install_available: "{{ ansible_distribution != 'Ubuntu' or ansible_distribution_major_version is version(18, '<') }}"
-
-    - name: Ensure pip is installed using easy_install when availabe
-      easy_install:
-        name: pip
-        state: latest
-      when: easy_install_available
-
-    - name: Install python3-pip when easy_install in not available
-      apt:
-        name:
-          - python3-pip
+    - name: RedHat - install prerequisites
+      yum:
+        name: "{{install_packages}}"
         state: present
         update_cache: yes
-      when: not easy_install_available
+      when: ansible_os_family == 'RedHat'
 
-    - name: install using pip
+
+    - name: Debian - install prerequisites
+      apt:
+        name: "{{ install_packages }}"
+        state: present
+        update_cache: yes
+      when: ansible_os_family == 'Debian'
+
+    - name: Install latest Pip version
+      pip:
+        name: "pip"
+        state: latest
+        executable: "{{pip_cmd}}"
+
+    - name: install Ansible using Pip
       pip:
         name:
           - "ansible=={{ANSIBLE_VERSION}}"
           - "jmespath==0.9.4"
           - "netaddr==0.7.19"
-      when: ANSIBLE_EXTRA_PACKAGE_REPOSITORY == ""
-
-    - name: install using pip package repository "{{ANSIBLE_EXTRA_PACKAGE_REPOSITORY}}"
-      pip:
-        name:
-          - "ansible=={{ANSIBLE_VERSION}}"
-          - "jmespath==0.9.4"
-          - "netaddr==0.7.19"
-        extra_args: --extra-index-url "{{ANSIBLE_EXTRA_PACKAGE_REPOSITORY}}"
-      when: ANSIBLE_EXTRA_PACKAGE_REPOSITORY != ""
+        executable: "{{pip_cmd}}"
+        extra_args: "{{ '--extra-index-url {}'.format(ANSIBLE_EXTRA_PACKAGE_REPOSITORY) if ANSIBLE_EXTRA_PACKAGE_REPOSITORY != ''  else ''}}"

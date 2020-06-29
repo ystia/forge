@@ -1,7 +1,7 @@
 # Simple Yorc stack application template
 
 Defines an application template that alows to deploy a Yorc stack composed by Yorc&Consul + Alien4Cloud.
-The **A4C** used to deploy the application has version 2.2.0-SM10
+The **A4C** used to deploy the application has version 2.2.0
 
 ## Prerequisits
 
@@ -13,7 +13,7 @@ A ConfigMap created using --from-file option equal to the path of a directory th
 
 ### Update A4C Catalog
 
-Check used versions in this template and in components types, and if necessary modify them correspondingly to your needs. 
+Check used versions in this template and in components types, and if necessary modify them correspondingly to your needs.
 Create a zip file with the types.yaml and upload it to the A4C's Catalog.
 
 ### Create an application using this template.
@@ -32,7 +32,7 @@ yorc-yorcdeployment-service--1179116320   NodePort       10.3.255.250   <none>  
 
 ### Application configuration
 
-Connect to the deployed Alien Console : http://35.240.85.70:8088. 
+Connect to the deployed Alien Console : http://35.240.85.70:8088.
 A Yorc orchestrator should be created with Yorc URL set to http:// yorc-yorcdeployment-service--1179116320:8800, and enabled.
 A K8S location should be created and configured with onDemand resources.
 
