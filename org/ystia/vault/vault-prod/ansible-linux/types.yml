@@ -11,7 +11,7 @@ imports:
   - tosca-normative-types:1.0.0-ALIEN20
   - yorc-types:1.1.0
   - org.ystia.vault.pub:2.2.0-SNAPSHOT
-  - org.ystia.yorc.experimental.consul.pub:2.2.0-SNAPSHOT
+  - org.ystia.yorc.experimental.consul.pub:2.3.0-SNAPSHOT
 
 node_types:
   org.ystia.vault.prod.ansible-linux.nodes.VaultServer:
@@ -93,17 +93,23 @@ node_types:
           inputs:
             VAULT_IP: { get_attribute: [SELF, private_address] }
             VAULT_PORT: { get_property: [SELF, vault_server, port] }
-            AUTO_UNSEALED: { get_property: [SELF, auto_unsealed] }
           implementation: playbooks/start.yaml
         stop: playbooks/stop.yaml
         delete: playbooks/delete.yaml
   
   org.ystia.vault.prod.ansible-linux.nodes.VaultAutoUnseal.Default:
     derived_from: org.ystia.vault.pub.nodes.VaultAutoUnseal.Default
+    attributes:
+      root_token: { get_operation_output: [ SELF, Standard, start, ROOT_TOKEN ] }
+      unseal_keys: { get_operation_output: [ SELF, Standard, start, UNSEAL_KEYS ] }
     interfaces:
       Standard:
         start: 
           inputs:
+            VAULT_TLS_DISABLED: { get_property: [HOST, tls_disabled] }
+            VAULT_IP: { get_attribute: [HOST, private_address] }
+            VAULT_PORT: { get_property: [HOST, vault_server, port] }
+            CONFIG_DIR: { get_property: [HOST, config_dir] }
             KEY_SHARE: { get_property: [SELF, key_share] }
             KEY_THRESHOLD: { get_property: [SELF, key_threshold] }
           implementation: playbooks/default_unseal.yaml
