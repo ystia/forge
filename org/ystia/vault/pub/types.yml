@@ -33,7 +33,7 @@ node_types:
           capability: org.ystia.vault.pub.capabilities.AutoUnsealConfigHost
           node: org.ystia.vault.pub.nodes.VaultServer
           relationship: tosca.relationships.HostedOn
-          occurrences: [0, 1]
+          occurrences: [1, 1]
 
   org.ystia.vault.pub.nodes.VaultAutoUnseal.Default:
     derived_from: org.ystia.vault.pub.nodes.VaultAutoUnseal

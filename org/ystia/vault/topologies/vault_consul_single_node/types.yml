@@ -10,10 +10,10 @@ description: "Deployment of an unsecure vault server insecurely connected to a l
 imports:
   - tosca-normative-types:1.0.0-ALIEN20
   - org.alien4cloud.consul.pub:2.2.0-SNAPSHOT
-  - org.ystia.yorc.experimental.consul.pub:2.2.0-SNAPSHOT
+  - org.ystia.yorc.experimental.consul.pub:2.3.0-SNAPSHOT
   - org.ystia.vault.prod.ansible-linux:2.2.0-SNAPSHOT
   - org.ystia.vault.pub:2.2.0-SNAPSHOT
-  - org.ystia.yorc.experimental.consul.linux.ansible:2.2.0-SNAPSHOT
+  - org.ystia.yorc.experimental.consul.linux.ansible:2.3.0-SNAPSHOT
 
 topology_template:
   node_templates:
@@ -45,23 +45,34 @@ topology_template:
         tls_verify: false
         log_level: info
         log_format: standard
-        auto_unsealed: true
       requirements:
         - hostedOnComputeHost:
             type_requirement: host
             node: Compute
             capability: tosca.capabilities.Container
             relationship: tosca.relationships.HostedOn
-        - connectToConsulAgentConsulServerConsul_server:
+        - connectToConsulAgentConsulServerConsul_agent:
             type_requirement: consul_agent
             node: ConsulServer
-            capability: org.ystia.yorc.experimental.consul.pub.capabilities.ConsulServer
+            capability: org.alien4cloud.consul.pub.capabilities.ConsulAgent
             relationship: org.ystia.vault.prod.relationships.ConnectToConsulAgent
       capabilities:
         vault_server:
           properties:
             port: 8200
             protocol: tcp
+
+    DefaultUnseal:
+      type: org.ystia.vault.prod.ansible-linux.nodes.VaultAutoUnseal.Default
+      properties:
+        key_share: 5
+        key_threshold: 3
+      requirements:
+        - hostedOnVaultServer:
+            type_requirement: cfg_host
+            node: VaultServer
+            capability: org.ystia.vault.pub.capabilities.AutoUnsealConfigHost
+            relationship: tosca.relationships.HostedOn
 
     ConsulServer:
       type: org.ystia.yorc.experimental.consul.linux.ansible.nodes.ConsulServer
@@ -92,3 +103,9 @@ topology_template:
           properties:
             port: 8500
             protocol: tcp
+  outputs:
+    Vault_root_token:
+      value: { get_attribute: [ DefaultUnseal, root_token ] }
+    Vault_unseal_keys:
+      value: { get_attribute: [ DefaultUnseal, unseal_keys] }
+
