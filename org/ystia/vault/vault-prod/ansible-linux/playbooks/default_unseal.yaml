@@ -3,9 +3,18 @@
   strategy: free
   become: true
   tasks:
-    - name: Init Vault over HTTPS
+    - name: Set API url HTTPS
+      set_fact:
+        vault_api_url: "https://{{ VAULT_IP }}:{{ VAULT_PORT }}"
+      when: not (VAULT_TLS_DISABLED | bool)
+    - name: Set API url HTTP
+      set_fact:
+        vault_api_url: "http://{{ VAULT_IP }}:{{ VAULT_PORT }}"
+      when: VAULT_TLS_DISABLED | bool
+
+    - name: Init Vault
       uri:
-        url: "https://{{ VAULT_IP }}:{{ VAULT_PORT }}/v1/sys/init"
+        url: "{{ vault_api_url }}/v1/sys/init"
         method: PUT
         body_format: json
         body: >
@@ -17,29 +26,15 @@
         client_key: "{{ CONFIG_DIR }}/vault.key"
         validate_certs: no
       register: resp
-      when: not (VAULT_TLS_DISABLED | bool)
-
-    - name: Init Vault over HTTP
-      uri:
-        url: "http://{{ VAULT_IP }}:{{ VAULT_PORT }}/v1/sys/init"
-        method: PUT
-        body_format: json
-        body: >
-          {
-            "secret_shares": {{ KEY_SHARE | int }},
-            "secret_threshold": {{ KEY_THRESHOLD | int }}
-          }
-      register: resp
-      when: VAULT_TLS_DISABLED | bool
 
     - name: Register attributes
       set_fact:
         ROOT_TOKEN: "{{ resp.json.root_token }}"
         UNSEAL_KEYS: "{{ resp.json['keys'] | join(' ; ') }}"
 
-    - name: Unseal Vault over HTTPS
+    - name: Unseal Vault
       uri:
-        url: "https://{{ VAULT_IP }}:{{ VAULT_PORT }}/v1/sys/unseal"
+        url: "{{ vault_api_url }}/v1/sys/unseal"
         method: PUT
         body_format: json
         body:
@@ -47,19 +42,7 @@
         client_cert: "{{ CONFIG_DIR }}/vault.pem"
         client_key: "{{ CONFIG_DIR }}/vault.key"
         validate_certs: no
-      when: not (VAULT_TLS_DISABLED | bool) and index < (KEY_THRESHOLD | int)
-      loop: "{{ resp.json['keys'] }}"
-      loop_control:
-        index_var: index
-
-    - name: Unseal Vault over HTTP
-      uri:
-        url: "http://{{ VAULT_IP }}:{{ VAULT_PORT }}/v1/sys/unseal"
-        method: PUT
-        body_format: json
-        body:
-          key: "{{ item }}"
-      when: VAULT_TLS_DISABLED | bool and index < (KEY_THRESHOLD | int)
+      when: index < (KEY_THRESHOLD | int)
       loop: "{{ resp.json['keys'] }}"
       loop_control:
         index_var: index
