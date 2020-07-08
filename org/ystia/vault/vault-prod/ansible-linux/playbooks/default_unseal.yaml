@@ -12,6 +12,11 @@
         vault_api_url: "http://{{ VAULT_IP }}:{{ VAULT_PORT }}"
       when: VAULT_TLS_DISABLED | bool
 
+    # Unseal only from the first instance
+    - name: Set instance first name
+      set_fact:
+        first_instance_name: "{{ NODE + '_0' }}"
+
     - name: Init Vault
       uri:
         url: "{{ vault_api_url }}/v1/sys/init"
@@ -26,11 +31,19 @@
         client_key: "{{ CONFIG_DIR }}/vault.key"
         validate_certs: no
       register: resp
+      when: INSTANCE == first_instance_name
 
     - name: Register attributes
       set_fact:
         ROOT_TOKEN: "{{ resp.json.root_token }}"
         UNSEAL_KEYS: "{{ resp.json['keys'] | join(' ; ') }}"
+      when: INSTANCE == first_instance_name
+    
+    - name: Register attributes when not unseal instance
+      set_fact:
+        ROOT_TOKEN: "{{ 'Refer to ' + first_instance_name + 'root_token'}}"
+        UNSEAL_KEYS: "{{ 'Refer to ' + first_instance_name + 'unseal_keys'}}"
+      when: INSTANCE != first_instance_name
 
     - name: Unseal Vault
       uri:
@@ -42,7 +55,9 @@
         client_cert: "{{ CONFIG_DIR }}/vault.pem"
         client_key: "{{ CONFIG_DIR }}/vault.key"
         validate_certs: no
-      when: index < (KEY_THRESHOLD | int)
+      when:
+        - INSTANCE == first_instance_name
+        - index < (KEY_THRESHOLD | int)
       loop: "{{ resp.json['keys'] }}"
       loop_control:
         index_var: index
