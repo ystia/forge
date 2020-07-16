@@ -11,16 +11,3 @@ listener "tcp" {
   {%- endif %}
 
 }
-
-
-storage "consul" {
-  address         = "{{ AGENT_IP }}:{{ AGENT_API_PORT }}"
-  path            = "vault/"
-  scheme          = "{% if AGENT_TLS_ENABLED | bool %}https{% else %}http{% endif %}"
-  {% if AGENT_TLS_ENABLED | bool -%}
-  tls_ca_file     = "{{ CONFIG_DIR }}/ca.pem"
-  tls_cert_file   = "{{ CONFIG_DIR }}/vault.pem"
-  tls_key_file    = "{{ CONFIG_DIR }}/vault.key"
-  {% endif %}
-  tls_skip_verify = "{{ (not AGENT_TLS_ENABLED | bool) | lower }}"
-}

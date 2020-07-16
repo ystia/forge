@@ -80,10 +80,18 @@
     # End. TODO: try inlcude directive
     ##
 
-    - name: Create Vault configuration file
+    - name: Create Vault main configuration file
       template:
-        src: "config.vault.hcl.j2"
-        dest: "{{ CONFIG_DIR }}/config.vault.hcl"
+        src: "mainConfig.vault.hcl.j2"
+        dest: "{{ CONFIG_DIR }}/mainConfig.vault.hcl"
+        owner: vault
+        group: vault
+        mode: 0770
+
+    - name: Create Vault storage configuration file
+      template:
+        src: "storageConfig.vault.hcl.j2"
+        dest: "{{ CONFIG_DIR }}/storageConfig.vault.hcl"
         owner: vault
         group: vault
         mode: 0770
