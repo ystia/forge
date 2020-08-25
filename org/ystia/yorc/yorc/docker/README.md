@@ -8,7 +8,7 @@ The deployment to Kubernetes can be done using Alien4Cloud and Yorc.
 
 ## About versions
 
-1. Used Alien version: 2.2.0 (docker-types:2.2.0)
+1. Used Alien version: 3.0.0 (docker-types:3.0.0)
 2. Deployed Yorc version: last available in jfrog (file: ystia-docker.jfrog.io/ystia/yorc)
 
 ## Usage

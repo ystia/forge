@@ -12,7 +12,7 @@ imports:
 - org.ystia.java.pub:3.0.0-SNAPSHOT
 - org.ystia.samples.hybrid-demo.cost-computing-job:3.0.0-SNAPSHOT
 - org.ystia.kibana.linux.bash:3.0.0-SNAPSHOT
-- yorc-slurm-types:2.2.0
+- yorc-slurm-types:3.0.0
 - org.ystia.kibana.pub:3.0.0-SNAPSHOT
 - org.ystia.common:3.0.0-SNAPSHOT
 - org.ystia.consul.pub:3.0.0-SNAPSHOT

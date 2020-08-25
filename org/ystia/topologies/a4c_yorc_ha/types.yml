@@ -9,12 +9,12 @@ description: ""
 
 imports:
   - tosca-normative-types:1.0.0-ALIEN20
-  - alien-extended-storage-types:2.2.0
-  - org.alien4cloud.java.pub:2.2.0
-  - org.alien4cloud.alien4cloud.pub:2.2.0
-  - org.alien4cloud.alien4cloud.webapp:2.2.0
-  - org.alien4cloud.java.jdk.linux:2.2.0
-  - org.alien4cloud.alien4cloud.config.pub:2.2.0
+  - alien-extended-storage-types:3.0.0
+  - org.alien4cloud.java.pub:3.0.0-SNAPSHOT
+  - org.alien4cloud.alien4cloud.pub:3.0.0-SNAPSHOT
+  - org.alien4cloud.alien4cloud.webapp:3.0.0-SNAPSHOT
+  - org.alien4cloud.java.jdk.linux:3.0.0-SNAPSHOT
+  - org.alien4cloud.alien4cloud.config.pub:3.0.0-SNAPSHOT
   - org.ystia.terraform.linux.terraform:3.0.0-SNAPSHOT
   - org.ystia.yorc.alien4cloud:3.0.0-SNAPSHOT
   - org.ystia.ansible.linux.ansible:3.0.0-SNAPSHOT
@@ -30,7 +30,7 @@ imports:
 
 repositories:
   fastconnect_nexus:
-    url: https://fastconnect.org/maven/service/local/repositories/opensource/content/alien4cloud/alien4cloud-dist/2.2.0
+    url: https://fastconnect.org/maven/service/local/repositories/opensource/content/alien4cloud/alien4cloud-dist/3.0.0-SNAPSHOT
     type: http
 
 topology_template:
@@ -244,7 +244,7 @@ topology_template:
             initiator: source
       artifacts:
         alien_dist:
-          file: alien4cloud-dist-2.2.0-dist.tar.gz
+          file: alien4cloud-dist-3.0.0-SNAPSHOT-dist.tar.gz
           type: tosca.artifacts.File
           repository: fastconnect_nexus
     YorcPlugin:

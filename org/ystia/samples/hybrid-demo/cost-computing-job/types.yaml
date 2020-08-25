@@ -25,7 +25,7 @@ description: "Singularity job to run Apache log generaetor cost computing job."
 
 imports:
   - tosca-normative-types:1.0.0-ALIEN20
-  - yorc-slurm-types:2.2.0
+  - yorc-slurm-types:3.0.0
   - org.ystia.elasticsearch.pub:3.0.0-SNAPSHOT
 
 repositories:

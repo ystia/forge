@@ -13,7 +13,7 @@ metadata:
 
 imports:
   - tosca-normative-types:1.0.0-ALIEN20
-  - alien-extended-storage-types:2.2.0
+  - alien-extended-storage-types:3.0.0
   - org.ystia.common:3.0.0-SNAPSHOT
   - org.ystia.python.pub:3.0.0-SNAPSHOT
   - org.ystia.python.linux.bash:3.0.0-SNAPSHOT

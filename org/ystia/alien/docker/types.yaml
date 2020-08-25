@@ -22,7 +22,7 @@ metadata:
 
 imports:
   - tosca-normative-types:1.0.0-ALIEN20
-  - docker-types:2.2.0
+  - docker-types:3.0.0
   - org.ystia.yorc.docker:1.0.0-SNAPSHOT
 
 description: Alien4cloud container provided by Ystia to be deployed to K8S together with a Yorc container

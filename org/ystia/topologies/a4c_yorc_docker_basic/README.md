@@ -1,7 +1,7 @@
 # Simple Yorc stack application template
 
 Defines an application template that alows to deploy a Yorc stack composed by Yorc&Consul + Alien4Cloud.
-The **A4C** used to deploy the application has version 2.2.0
+The **A4C** used to deploy the application has version 3.0.0-SNAPSHOT
 
 ## Prerequisits
 

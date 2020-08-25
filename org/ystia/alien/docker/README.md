@@ -9,8 +9,8 @@ The deployment to Kubernetes can be done using Alien4Cloud and Yorc.
 
 ## About used versions
 
-1. Used Alien version: 2.2.0 (docker-types:2.2.0)
-2. Deployed Alien version: 2.2.0 (file: alien4cloud/alien4cloud:2.2.0)
+1. Used Alien version: 3.0.0 (docker-types:3.0.0)
+2. Deployed Alien version: 3.0.0 (file: alien4cloud/alien4cloud:3.0.0)
 
 ## Usage
 
