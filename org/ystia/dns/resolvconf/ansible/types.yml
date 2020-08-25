@@ -8,14 +8,14 @@ tosca_definitions_version: alien_dsl_2_0_0
 
 metadata:
   template_name: org.ystia.dns.resolvconf.ansible
-  template_version: 2.3.0-SNAPSHOT
+  template_version: 3.0.0-SNAPSHOT
   template_author: Ystia
 
 
 imports:
   - tosca-normative-types:1.0.0-ALIEN20
   - yorc-types:1.1.0
-  - org.ystia.dns.pub:2.3.0-SNAPSHOT
+  - org.ystia.dns.pub:3.0.0-SNAPSHOT
 
 node_types:
   org.ystia.dns.resolvconf.ansible.Resolvconf:
@@ -40,7 +40,7 @@ node_types:
         description: >
           Search list for host-name lookup (space-separated).
 
-          The search list is normally determined from the local domain name; by default, it contains only the local domain name. 
+          The search list is normally determined from the local domain name; by default, it contains only the local domain name.
           This may be changed by listing the desired domain search path following the search keyword with spaces or tabs separating
           the names. Resolver queries having fewer than ndots dots (default is 1) in them will be attempted using each component of
           the search path in turn until a match is found. For environments with multiple subdomains please read options ndots:n below
@@ -51,10 +51,10 @@ node_types:
     attributes:
       hostname: { get_operation_output: [SELF, Standard, configure, HOSTNAME] }
     requirements:
-      - dns_server: 
+      - dns_server:
           capability: org.ystia.dns.pub.capabilities.DnsEndpoint
           relationship: org.ystia.dns.resolvconf.ansible.relationships.ConnectsTo
-          occurrences: [1, UNBOUNDED] 
+          occurrences: [1, UNBOUNDED]
     interfaces:
       Standard:
         configure:
@@ -62,8 +62,8 @@ node_types:
             DOMAIN: { get_property: [SELF, domain]}
             SEARCH: { get_property: [SELF, search]}
           implementation: playbooks/configure.yaml
-          
-    
+
+
 relationship_types:
   org.ystia.dns.resolvconf.ansible.relationships.ConnectsTo:
     derived_from: tosca.relationships.ConnectsTo
@@ -83,4 +83,3 @@ relationship_types:
             HOSTNAME: {get_attribute: [SOURCE, hostname]}
             IP_ADDRESS: {get_attribute: [SOURCE, private_address]}
           implementation: playbooks/remove_host.yaml
-          

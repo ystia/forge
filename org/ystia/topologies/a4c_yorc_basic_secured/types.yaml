@@ -2,7 +2,7 @@ tosca_definitions_version: alien_dsl_2_0_0
 
 metadata:
   template_name: org.ystia.topologies.a4c_yorc_basic_secured
-  template_version: 2.3.0-SNAPSHOT
+  template_version: 3.0.0-SNAPSHOT
   template_author: Ystia
 
 description: "Full stack setup on a single node, secured"
@@ -14,16 +14,16 @@ imports:
   - org.alien4cloud.java.jdk.linux:2.2.0
   - org.alien4cloud.vault.pub:2.2.0
   - org.alien4cloud.vault.vault_sh:2.2.0
-  - org.ystia.terraform.linux.terraform:2.3.0-SNAPSHOT
-  - org.ystia.yorc.alien4cloud:2.3.0-SNAPSHOT
-  - org.ystia.ansible.linux.ansible:2.3.0-SNAPSHOT
-  - org.ystia.terraform.pub:2.3.0-SNAPSHOT
-  - org.ystia.yorc.linux.ansible:2.3.0-SNAPSHOT
-  - org.ystia.yorc.experimental.consul.linux.ansible:2.3.0-SNAPSHOT
-  - org.ystia.yorc.pub:2.3.0-SNAPSHOT
-  - org.ystia.ansible.pub:2.3.0-SNAPSHOT
-  - org.ystia.yorc.experimental.consul.pub:2.3.0-SNAPSHOT
-  - org.ystia.yorc.alien4cloud_yorc_provider:2.3.0-SNAPSHOT
+  - org.ystia.terraform.linux.terraform:3.0.0-SNAPSHOT
+  - org.ystia.yorc.alien4cloud:3.0.0-SNAPSHOT
+  - org.ystia.ansible.linux.ansible:3.0.0-SNAPSHOT
+  - org.ystia.terraform.pub:3.0.0-SNAPSHOT
+  - org.ystia.yorc.linux.ansible:3.0.0-SNAPSHOT
+  - org.ystia.yorc.experimental.consul.linux.ansible:3.0.0-SNAPSHOT
+  - org.ystia.yorc.pub:3.0.0-SNAPSHOT
+  - org.ystia.ansible.pub:3.0.0-SNAPSHOT
+  - org.ystia.yorc.experimental.consul.pub:3.0.0-SNAPSHOT
+  - org.ystia.yorc.alien4cloud_yorc_provider:3.0.0-SNAPSHOT
 
 
 repositories:

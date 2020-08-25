@@ -8,7 +8,7 @@ tosca_definitions_version: alien_dsl_2_0_0
 
 metadata:
   template_name: org.ystia.ntp.ansible
-  template_version: 2.3.0-SNAPSHOT
+  template_version: 3.0.0-SNAPSHOT
   template_author: Ystia
 
 description: ansible implementation for NTP support.
@@ -17,7 +17,7 @@ description: ansible implementation for NTP support.
 imports:
   - tosca-normative-types:1.0.0-ALIEN20
   - yorc-types:1.1.0
-  - org.ystia.ntp.pub:2.3.0-SNAPSHOT
+  - org.ystia.ntp.pub:3.0.0-SNAPSHOT
 
 node_types:
   org.ystia.ntp.ansible.nodes.NtpServer:
@@ -37,10 +37,10 @@ node_types:
     metadata:
       icon: /images/ntp-client-icon.png
     requirements:
-      - ntp_server: 
+      - ntp_server:
           capability: org.ystia.ntp.pub.capabilities.NtpEndpoint
           relationship: org.ystia.ntp.ansible.relationships.ConnectsTo
-          occurrences: [1, UNBOUNDED] 
+          occurrences: [1, UNBOUNDED]
     interfaces:
       Standard:
         create: playbooks/create.yaml
@@ -50,8 +50,8 @@ node_types:
           implementation: playbooks/configure.yaml
         start: playbooks/start.yaml
         stop: playbooks/stop.yaml
-          
-    
+
+
 relationship_types:
   org.ystia.ntp.ansible.relationships.ConnectsTo:
     derived_from: tosca.relationships.ConnectsTo
@@ -61,4 +61,4 @@ relationship_types:
           IP_ADDRESS: {get_attribute: [TARGET, private_address]}
         add_target: playbooks/add_target_ntp_server.yaml
         remove_target: playbooks/remove_target_ntp_server.yaml
-          
+
