@@ -70,7 +70,11 @@ node_types:
           implementation: playbooks/configure.yaml
         start: playbooks/start.yaml
         stop: playbooks/stop.yaml
-        delete: playbooks/delete.yaml
+        delete:
+          inputs:
+            CONFIG_DIR: {get_property: [SELF, config_dir]}
+            INSTALL_DIR: {get_property: [SELF, install_dir]}
+          implementation: playbooks/delete.yaml
 
   org.ystia.traefik.ansible-linux.nodes.TraefikRoute:
     derived_from: org.ystia.traefik.pub.nodes.TraefikRoute
