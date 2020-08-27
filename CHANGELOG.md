@@ -2,6 +2,10 @@
 
 ## UNRELEASED
 
+### DEPENDENCIES
+
+* Ystia Forge components require now Alien4Cloud 3.0.0
+
 ### ENHANCEMENTS
 
 * Add docker container property to set the shared memory size ([GH-129](https://github.com/ystia/forge/issues/129))
