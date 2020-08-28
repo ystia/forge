@@ -8,7 +8,7 @@ tosca_definitions_version: alien_dsl_2_0_0
 
 metadata:
   template_name: org.ystia.slurm.ansible
-  template_version: 2.3.0-SNAPSHOT
+  template_version: 3.0.0-SNAPSHOT
   template_author: Ystia
 
 description: public implementation for Slurm support.
@@ -17,16 +17,16 @@ description: public implementation for Slurm support.
 imports:
   - tosca-normative-types:1.0.0-ALIEN20
   - yorc-types:1.1.0
-  - org.ystia.slurm.pub:2.3.0-SNAPSHOT
+  - org.ystia.slurm.pub:3.0.0-SNAPSHOT
 
-node_types:    
+node_types:
   org.ystia.slurm.ansible.nodes.SlurmController:
     derived_from: org.ystia.slurm.pub.nodes.SlurmController
     attributes:
       hostname: { get_operation_output: [SELF, Standard, create, HOSTNAME] }
     interfaces:
       Standard:
-        create: 
+        create:
           inputs:
             DOWNLOAD_URL: {get_property: [SELF, download_url]}
           implementation: playbooks/create.yaml
@@ -38,7 +38,7 @@ node_types:
           implementation: playbooks/configure-ctld.yaml
         start: playbooks/start-ctld.yaml
         stop: playbooks/stop-ctld.yaml
-  
+
   org.ystia.slurm.ansible.nodes.SlurmDaemon:
     derived_from: org.ystia.slurm.pub.nodes.SlurmDaemon
     attributes:
@@ -49,7 +49,7 @@ node_types:
       real_memory: { get_operation_output: [SELF, Standard, configure, real_memory] }
     interfaces:
       Standard:
-        create: 
+        create:
           inputs:
             DOWNLOAD_URL: {get_property: [SELF, download_url]}
           implementation: playbooks/create.yaml
@@ -64,7 +64,7 @@ node_types:
       - slurmctl:
           capability: org.ystia.slurm.pub.capabilities.SlurmControllerEndpoint
           relationship: org.ystia.slurm.ansible.relationships.SlurmDaemonConnectsTo
-          occurrences: [1, 1] 
+          occurrences: [1, 1]
 
 relationship_types:
   org.ystia.slurm.ansible.relationships.SlurmDaemonConnectsTo:

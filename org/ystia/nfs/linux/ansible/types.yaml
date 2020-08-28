@@ -17,13 +17,13 @@ tosca_definitions_version: alien_dsl_2_0_0
 
 metadata:
   template_name: org.ystia.nfs.linux.ansible
-  template_version: 2.3.0-SNAPSHOT
+  template_version: 3.0.0-SNAPSHOT
   template_author: yorc
 
 imports:
   - tosca-normative-types:1.0.0-ALIEN20
   - yorc-types:1.1.0
-  - org.ystia.nfs.pub:2.3.0-SNAPSHOT
+  - org.ystia.nfs.pub:3.0.0-SNAPSHOT
 
 node_types:
   org.ystia.nfs.linux.ansible.nodes.NFSServer:

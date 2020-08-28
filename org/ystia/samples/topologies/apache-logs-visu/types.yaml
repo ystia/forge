@@ -2,24 +2,24 @@ tosca_definitions_version: alien_dsl_2_0_0
 
 metadata:
   template_name: org.ystia.samples.topologies.ApacheGeneratorVisu
-  template_version: 2.3.0-SNAPSHOT
+  template_version: 3.0.0-SNAPSHOT
   template_author: admin
 
 description: ""
 
 imports:
 - tosca-normative-types:1.0.0-ALIEN20
-- org.ystia.elasticsearch.linux.bash:2.2.0-SNAPSHOT
-- org.ystia.samples.apache-log-generator.linux.ansible:2.2.0-SNAPSHOT
-- org.ystia.kibana.pub:2.2.0-SNAPSHOT
-- org.ystia.elasticsearch.pub:2.2.0-SNAPSHOT
-- org.ystia.java.linux.bash:2.2.0-SNAPSHOT
-- org.ystia.java.pub:2.2.0-SNAPSHOT
-- org.ystia.samples.hybrid-demo.cost-computing-dashboard:2.2.0-SNAPSHOT
-- org.ystia.kibana.linux.bash:2.2.0-SNAPSHOT
-- yorc-slurm-types:2.2.0
-- org.ystia.common:2.2.0-SNAPSHOT
-- org.ystia.consul.pub:2.2.0-SNAPSHOT
+- org.ystia.elasticsearch.linux.bash:3.0.0-SNAPSHOT
+- org.ystia.samples.apache-log-generator.linux.ansible:3.0.0-SNAPSHOT
+- org.ystia.kibana.pub:3.0.0-SNAPSHOT
+- org.ystia.elasticsearch.pub:3.0.0-SNAPSHOT
+- org.ystia.java.linux.bash:3.0.0-SNAPSHOT
+- org.ystia.java.pub:3.0.0-SNAPSHOT
+- org.ystia.samples.hybrid-demo.cost-computing-dashboard:3.0.0-SNAPSHOT
+- org.ystia.kibana.linux.bash:3.0.0-SNAPSHOT
+- yorc-slurm-types:3.0.0
+- org.ystia.common:3.0.0-SNAPSHOT
+- org.ystia.consul.pub:3.0.0-SNAPSHOT
 - yorc-types:1.1.0
 
 topology_template:

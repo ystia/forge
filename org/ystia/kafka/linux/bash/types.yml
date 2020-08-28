@@ -8,17 +8,17 @@ tosca_definitions_version: alien_dsl_2_0_0
 
 metadata:
   template_name: org.ystia.kafka.linux.bash
-  template_version: 2.3.0-SNAPSHOT
+  template_version: 3.0.0-SNAPSHOT
   template_author: Ystia
 
 description: Kafka is a distributed, partitioned, replicated commit log service.
 
 imports:
   - tosca-normative-types:1.0.0-ALIEN20
-  - org.ystia.common:2.3.0-SNAPSHOT
-  - org.ystia.consul.pub:2.3.0-SNAPSHOT
-  - org.ystia.java.pub:2.3.0-SNAPSHOT
-  - org.ystia.kafka.pub:2.3.0-SNAPSHOT
+  - org.ystia.common:3.0.0-SNAPSHOT
+  - org.ystia.consul.pub:3.0.0-SNAPSHOT
+  - org.ystia.java.pub:3.0.0-SNAPSHOT
+  - org.ystia.kafka.pub:3.0.0-SNAPSHOT
 
 node_types:
   org.ystia.kafka.linux.bash.nodes.Kafka:
@@ -113,7 +113,7 @@ node_types:
           implementation:  scripts/kafka_start.sh
         stop:
           inputs:
-            KAFKA_HOME: { get_attribute: [SELF, kafka_home] }  
+            KAFKA_HOME: { get_attribute: [SELF, kafka_home] }
             JAVA_HOME: { get_attribute: [SELF, java_home] }
           implementation:  scripts/kafka_stop.sh
     artifacts:

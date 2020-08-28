@@ -18,16 +18,16 @@ tosca_definitions_version: alien_dsl_2_0_0
 
 metadata:
   template_name: org.ystia.yorc.experimental.consul.topologies.persistent
-  template_version: 2.3.0-SNAPSHOT
+  template_version: 3.0.0-SNAPSHOT
   template_author: admin
 
 description: "This topology illustrates how to setup block storage and partitions in order to persist data (Consul Servers' data in this use case)"
 
 imports:
   - tosca-normative-types:1.0.0-ALIEN20
-  - alien-extended-storage-types:2.2.0
-  - org.ystia.yorc.experimental.consul.linux.ansible:2.3.0-SNAPSHOT
-  - org.ystia.yorc.experimental.consul.pub:2.3.0-SNAPSHOT
+  - alien-extended-storage-types:3.0.0
+  - org.ystia.yorc.experimental.consul.linux.ansible:3.0.0-SNAPSHOT
+  - org.ystia.yorc.experimental.consul.pub:3.0.0-SNAPSHOT
 
 topology_template:
   node_templates:
