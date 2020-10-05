@@ -95,7 +95,8 @@
         method: POST
         return_content: yes
         validate_certs: no
-        HEADER_cookie: "{{ session_id }}"
+        headers:
+          Cookie: "{{ session_id }}"
         body:
           name: "{{ orchestrator_name }}"
           pluginId: "{{ pluginId }}"
@@ -140,8 +141,9 @@
         method: PUT
         return_content: yes
         validate_certs: no
-        HEADER_cookie: "{{ session_id }}"
-        HEADER_Content-Type: "application/json"
+        headers:
+          Cookie: "{{ session_id }}"
+          Content-Type: "application/json"
         body: "{{ orchestratorConfiguration }}"
         body_format: json
         status_code: 200
@@ -153,8 +155,9 @@
         method: PUT
         return_content: yes
         validate_certs: no
-        HEADER_cookie: "{{ session_id }}"
-        HEADER_Content-Type: "application/json"
+        headers:
+          Cookie: "{{ session_id }}"
+          Content-Type: "application/json"
         body:
           deploymentNamePattern: "('{{ discriminator }}-' + application.name + '-' + environment.name).replaceAll('[^\\w\\-_]', '_')"
         body_format: json
@@ -166,8 +169,9 @@
         url: "{{ alien_url }}/rest/latest/orchestrators/{{ orchestratorId }}/instance"
         method: POST
         validate_certs: no
-        HEADER_cookie: "{{ session_id }}"
-        HEADER_Content-Type: "application/json"
+        headers:
+          Cookie: "{{ session_id }}"
+          Content-Type: "application/json"
 
     - name: Wait for orchestrator to be started
       uri:
@@ -175,8 +179,9 @@
         method: GET
         validate_certs: no
         return_content: yes
-        HEADER_cookie: "{{ session_id }}"
-        HEADER_Content-Type: "application/json"
+        headers:
+          Cookie: "{{ session_id }}"
+          Content-Type: "application/json"
         status_code: 200
       register: result
       until: result.json.data.state == "CONNECTED"

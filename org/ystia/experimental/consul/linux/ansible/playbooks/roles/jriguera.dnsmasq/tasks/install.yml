@@ -95,7 +95,7 @@
 
   - name: Reload systemd
     command: systemctl daemon-reload
-    when: __dnsmasq_systemd|changed
+    when: __dnsmasq_systemd is changed
 
   when: dnsmasq_init_system == 'systemd'
   tags: ["systemd", "init"]

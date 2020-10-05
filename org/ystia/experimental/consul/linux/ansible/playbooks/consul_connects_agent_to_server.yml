@@ -27,14 +27,14 @@
       set_fact: 
         consul_servers: "{{ consul_servers }} + [ '{{ hostvars[inventory_hostname][item] }}' ]"
       with_items: "{{ hostvars[inventory_hostname]  }}"
-      when: (item | match(TARGET_NODE+'_.*_SERVER_IP')) and
+      when: (item is match(TARGET_NODE+'_.*_SERVER_IP')) and
             (SERVER_IP_CAP is not defined or SERVER_IP_CAP is none or SERVER_IP_CAP == '' )
 
     - name: compute consul servers
       set_fact:
         consul_servers: "{{ consul_servers }} + [ '{{ hostvars[inventory_hostname][item] }}' ]"
       with_items: "{{ hostvars[inventory_hostname]  }}"
-      when: (item | match(TARGET_NODE+'_.*SERVER_IP_CAP')) and
+      when: (item is match(TARGET_NODE+'_.*SERVER_IP_CAP')) and
             (SERVER_IP_CAP is defined and SERVER_IP_CAP is not none and SERVER_IP_CAP != '' )
 
     - name: Install servers config for consul
