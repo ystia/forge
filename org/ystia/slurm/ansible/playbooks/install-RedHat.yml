@@ -14,17 +14,18 @@
     name: https://dl.fedoraproject.org/pub/epel/epel-release-latest-7.noarch.rpm
   
 - name: Install rpmbuild and required tools to build Slurm packages
-  yum: 
-    name: "{{ item }}"
-  with_items:
-    - rpm-build
-    - gcc
-    - perl-devel
-    - readline-devel
-    - openssl-devel
-    - munge-devel
-    - munge-libs
-    - pam-devel
+  yum:
+    name:
+      - rpm-build
+      - gcc
+      - perl-devel
+      - readline-devel
+      - openssl-devel
+      - munge-devel
+      - munge-libs
+      - pam-devel
+    state: present
+    update_cache: yes
 
 - name: Download Slurm archive
   get_url:
@@ -61,8 +62,9 @@
 
 - name: Install Slurm
   yum: 
-    name: "{{item}}"
-  with_items: "{{slurm_rpms_paths}}"
+    name: "{{slurm_rpms_paths}}"
+    state: present
+    update_cache: yes
 
 - name: Remove Slurm installation artifacts
   file:

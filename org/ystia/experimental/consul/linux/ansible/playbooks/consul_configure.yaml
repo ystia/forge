@@ -131,7 +131,7 @@
         country_name: "FR"
         organization_name: "Atos"
         common_name: "127.0.0.1"
-        subjectAltName: '{{ subjectAltName }},IP:127.0.0.1,DNS:localhost'
+        subjectAltName: "{{ subjectAltName }},IP:127.0.0.1,DNS:localhost"
       when: consul_secured
 
     - name: Install CA key
@@ -155,7 +155,4 @@
         ownca_privatekey_path: "{{ CONFIG_DIR }}/ca.key"
         ownca_privatekey_passphrase: "{{ CA_PASSPHRASE }}"
         provider: ownca
-        subjectAltName: '{{ subjectAltName }},IP:127.0.0.1,DNS:localhost'
-        extended_key_usage:
-          - serverAuth
       when: consul_secured
