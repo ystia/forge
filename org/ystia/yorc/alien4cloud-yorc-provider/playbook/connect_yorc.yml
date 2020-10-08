@@ -54,6 +54,9 @@
     - name: Generate an OpenSSL private key for the plugin
       openssl_privatekey:
         path: "{{ file_dir }}/yorc_client.key"
+        # Using pyopenssl here or Alien4Cloud cannot deal with the
+        # generated certificate
+        select_crypto_backend: pyopenssl
       when:  ca_pem != ''
 
     - name: Generate an OpenSSL CSR for the plugin

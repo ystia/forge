@@ -8,6 +8,7 @@
 
 ### ENHANCEMENTS
 
+* Update Ansible to 2.10 ([GH-136](https://github.com/ystia/forge/issues/136))
 * Add docker container property to set the shared memory size ([GH-129](https://github.com/ystia/forge/issues/129))
 
 ### BUG FIXES

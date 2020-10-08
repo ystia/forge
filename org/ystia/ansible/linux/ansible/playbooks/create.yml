@@ -22,9 +22,7 @@
   tasks:
 
     - name: Get python version
-      # This will be deprecated in Ansible 2.9 in favor of python_requirements_info but
-      # it is not yet available in Ansible 2.7.9
-      python_requirements_facts:
+      python_requirements_info:
       register: pri
       failed_when: "pri == None or pri.python_version == None or pri.python_version == ''"
 
@@ -62,5 +60,6 @@
           - "ansible=={{ANSIBLE_VERSION}}"
           - "jmespath==0.9.4"
           - "netaddr==0.7.19"
+          - "paramiko"
         executable: "{{pip_cmd}}"
         extra_args: "{{ '--extra-index-url {}'.format(ANSIBLE_EXTRA_PACKAGE_REPOSITORY) if ANSIBLE_EXTRA_PACKAGE_REPOSITORY != ''  else ''}}"

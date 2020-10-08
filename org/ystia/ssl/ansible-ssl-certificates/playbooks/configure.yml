@@ -95,7 +95,6 @@
         ownca_privatekey_path: "{{KEY_PATH}}/{{NODE}}-ca.key"
         ownca_privatekey_passphrase: "{{ CA_PASSPHRASE }}"
         provider: ownca
-        subjectAltName: "{{ subjectAltName }}"
 
     # Now we do not need it anymore so lets remove it 
     - name: Delete CA Key

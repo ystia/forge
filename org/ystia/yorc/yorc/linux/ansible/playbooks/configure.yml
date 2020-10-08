@@ -114,7 +114,7 @@
         path: "{{ CONFIG_DIR }}/yorc_server.csr"
         privatekey_path: "{{ CONFIG_DIR }}/yorc_server.key"
         common_name: "yorcServer"
-        subjectAltName: '{{ subjectAltName }}'
+        subjectAltName: "{{ subjectAltName }}"
       when: REST_API_PROTOCOL == "https"
 
     - name: Generate a OpenSSL certificate for the server
@@ -125,9 +125,6 @@
         ownca_privatekey_path: "{{ CONFIG_DIR }}/yorc_ca.key"
         ownca_privatekey_passphrase: "{{ CA_PASSPHRASE }}"
         provider: ownca
-        subjectAltName: '{{ subjectAltName }}'
-        extended_key_usage:
-          - serverAuth
       when: REST_API_PROTOCOL == "https"
 
     - name: Generate an OpenSSL private key for the client
