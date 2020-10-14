@@ -54,6 +54,24 @@
         state: latest
         executable: "{{pip_cmd}}"
 
+    - name: uninstall Ansible older version that cannot be upgraded
+      pip:
+        name:
+          - "ansible<2.10.0"
+        state: absent
+
+    - name: check if ansible-playbook is missing
+      shell: ansible-playbook -h >/dev/null 2>&1
+      register: ansible_playbook_cmd_exists
+      ignore_errors: yes
+
+    - name: Remove ansible-base if ansible-playbook does not exist, can happen after a downgrade
+      pip:
+        name:
+          - "ansible-base>=2.10.0"
+        state: absent
+      when: ansible_playbook_cmd_exists.rc != 0
+
     - name: install Ansible using Pip
       pip:
         name:
