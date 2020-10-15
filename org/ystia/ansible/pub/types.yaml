@@ -33,7 +33,7 @@ node_types:
       component_version:
         type: version
         required: true
-        default: 2.7.9
+        default: 2.10.0
       extra_package_repository_url:
         description: "URL of package indexes where to find the ansible package, instead of the default Python Package repository"
         type: string
