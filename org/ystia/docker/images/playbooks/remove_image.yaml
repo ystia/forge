@@ -1,0 +1,4 @@
+- name: noop playbook
+  hosts: localhost
+  tasks:
+    - debug: msg="Nothing to do"

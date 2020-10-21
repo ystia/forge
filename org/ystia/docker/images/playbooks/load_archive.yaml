@@ -1,0 +1,23 @@
+#
+# Ystia Forge
+# Copyright (C) 2020 Bull S. A. S. - Bull, Rue Jean Jaures, B.P.68, 78340, Les Clayes-sous-Bois, France.
+# Use of this source code is governed by Apache 2 LICENSE that can be found in the LICENSE file.
+#
+- name: Load Docker image from tar archive
+  hosts: all
+  become: true
+  tasks:
+  - name: Load tar archive
+    docker_image:
+      name: localhost:5000/myimages/sinatra
+      tag: v1
+      push: yes
+      load_path: my_sinatra.tar
+      source: load
+    register: image
+  - name: Inspect image loaded
+    debug:
+      msg: "Image loaded: {{image}}"
+  - name: Set repo tags output
+    set_fact:
+      REPO_TAGS: "{{image.RepoTags}}"
