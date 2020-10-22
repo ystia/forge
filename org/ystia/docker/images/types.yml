@@ -31,12 +31,13 @@ node_types:
         description: >
           Image name. Name format will be one of: name, repository/name, registry_server:port/name.
           When pushing an image the name can optionally include the tag by appending ':tag_name'.
-        required: false
+        required: true
       tag:
         type: string
         description: >
           Tag added to the image when pushing.
           If name property format is name:tag, then tag value from name will take precedence.
+          If not defined, docker considers the tag value is 'latest'.
         required: false
       repository:
         type: string
@@ -49,7 +50,15 @@ node_types:
         description: Push the image to the registry. Specify the registry as part of the name or repository parameter.
         default: false
         required: false
+      force_load:
+        type: boolean
+        description: Load the archive even when the image already exists
+        default: false
+        required: false
     attributes:
+      # Array of repository name:tag in registry for the specified name.
+      # Empty if no name was specified or if the image was already loaded
+      # and force_load is set to false
       repo_tags: { get_operation_output: [SELF, Standard, start, REPO_TAGS] }
     interfaces:
       Standard:
@@ -62,8 +71,10 @@ node_types:
         create:
           implementation: playbooks/create.yaml
         start:
+          inputs:
+            FORCE_LOAD: { get_property: [SELF, force_load] }
           implementation: playbooks/load_archive.yaml
         delete:
           inputs:
-            repo_tags: { get_attribute: [SELF, repo_tags] }
+            REPO_TAGS: { get_attribute: [SELF, repo_tags] }
           implementation: playbooks/remove_image.yaml

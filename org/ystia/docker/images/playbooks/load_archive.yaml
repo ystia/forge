@@ -9,15 +9,26 @@
   tasks:
   - name: Load tar archive
     docker_image:
-      name: localhost:5000/myimages/sinatra
-      tag: v1
-      push: yes
-      load_path: my_sinatra.tar
+      name: "{{NAME}}"
+      tag: "{{TAG}}"
+      push: "{{PUSH}}"
+      repository: "{{REPOSITORY}}"
+      load_path: "{{PATH}}"
       source: load
-    register: image
-  - name: Inspect image loaded
+      force_source: "{{FORCE_LOAD}}"
+    register: result
+  - name: Fail if the image specified does not correpond to the archive specified
     debug:
-      msg: "Image loaded: {{image}}"
-  - name: Set repo tags output
+      msg: "Checking if image {{NAME}} {{TAG}} is in tar archive {{PATH}}"
+    failed_when: result.image == None
+  - name: Check if an image was loaded
+    debug:
+      msg: "Image {{NAME}} {{TAG}} already loaded"
+    when: result.image == {}
+  - name: Intialize fact used in opration output
     set_fact:
-      REPO_TAGS: "{{image.RepoTags}}"
+      REPO_TAGS: []
+  - name: Set repo tags output if returned by docker_image
+    set_fact:
+      REPO_TAGS: "{{result.image.RepoTags | to_json}}"
+    when: result.image != None and result.image != {}
