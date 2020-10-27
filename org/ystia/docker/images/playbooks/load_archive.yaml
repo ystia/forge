@@ -7,13 +7,22 @@
   hosts: all
   become: true
   tasks:
+  - name: Get archive PATH defined at runtime
+    set_fact:
+      archive_path: "{{RUNTIME_PATH}}"
+    when: RUNTIME_PATH != ""
+  - name: Get archive PATH property
+  set_fact:
+    archive_path: "{{PATH}}"
+  when: RUNTIME_PATH == ""
+  failed_when: RUNTIME_PATH == "" and PATH == ""
   - name: Load tar archive
     docker_image:
       name: "{{NAME}}"
       tag: "{{TAG}}"
       push: "{{PUSH}}"
       repository: "{{REPOSITORY}}"
-      load_path: "{{PATH}}"
+      load_path: "{{archive_path}}"
       source: load
       force_source: "{{FORCE_LOAD}}"
     register: result
