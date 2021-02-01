@@ -19,7 +19,6 @@
   - name: Install pip version compatible with python 2
     easy_install:
       name: pip<21.0
-      state: latest  
     when: python_major_version == "2"
   - name: Install pip
     easy_install:
