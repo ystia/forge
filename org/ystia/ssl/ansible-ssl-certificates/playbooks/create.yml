@@ -19,10 +19,22 @@
   strategy: free
   become: true
   tasks:
+  - name: Get python version
+    python_requirements_info:
+    register: pri
+    failed_when: pri == None or pri.python_version == None or pri.python_version == ''
+  - name: Get python major version
+    set_fact:
+      python_major_version: "{{pri.python_version | replace('\n', '') | regex_replace('^(\\d+).*', '\\1') }}"
+  - name: Install pip version compatible with python 2
+    easy_install:
+      name: pip<21.0
+    when: python_major_version == "2"
   - name: Install pip
     easy_install:
       name: pip
       state: latest  
+    when: python_major_version != "2"
 
   - name: Install python packages
     pip:

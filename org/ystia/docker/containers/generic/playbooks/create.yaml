@@ -25,6 +25,7 @@
       name: pip
       state: latest  
     when: python_major_version != "2"
+
   - name: Install 'virtualenv' package
     pip:
       name: virtualenv
