@@ -7,30 +7,44 @@
   hosts: all
   become: true
   tasks:
-  - name: check if pip is installed
-    command: "pip --version"
-    ignore_errors: true
-    changed_when: false
-    check_mode: no
-    register: pip_found
-  # No need to go further if pip is already installed
-  - meta: end_play
-    when: pip_found.rc == 0
-
   - name: Get python version
     python_requirements_info:
-    register: pyinfo
-    failed_when: "pyinfo == None or pyinfo.python_version == None or pyinfo.python_version == ''"
-  - name: Download pip
-    get_url:
-      url: https://bootstrap.pypa.io/get-pip.py
-      dest: /tmp/get-pip.py
+    register: pri
+    failed_when: pri == None or pri.python_version == None or pri.python_version == ''
+  - name: Get python major version
+    set_fact:
+      python_major_version: "{{pri.python_version | replace('\n', '') | regex_replace('^(\\d+).*', '\\1') }}"
+  - name: Install pip version compatible with python 2
+    easy_install:
+      name: pip<21.0
+      state: latest  
+    when: python_major_version == "2"
   - name: Install pip
-    command: "{{ pyinfo.python }} /tmp/get-pip.py"
-  - name: cleanup downloaded file
-    file:
-      state: absent
-      path: /tmp/get-pip.py
+    easy_install:
+      name: pip
+      state: latest  
+    when: python_major_version != "2"
+  - name: Get user defined at runtime
+    set_fact:
+      user_loading: "{{RUNTIME_USER}}"
+    when: RUNTIME_USER != ""
+  - name: Get user property
+    set_fact:
+      user_loading: "{{USER}}"
+    when: RUNTIME_USER == ""
+    failed_when: RUNTIME_USER == "" and USER == ""
+  - name: Add to docker group
+    user:
+      name: "{{user_loading}}"
+      groups: docker
+      append: yes
+    when: user_loading != "root"
   - name: Install 'docker' python package
     pip:
       name: docker
+      # In user directory to avoid potential issues with distutils
+      # see issue https://github.com/pypa/pip/issues/5247
+      extra_args: --user
+    become_user: "{{user_loading}}"
+    become_method: sudo
+  

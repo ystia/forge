@@ -5,17 +5,25 @@
 #
 - name: Load Docker image from tar archive
   hosts: all
-  become: true
   tasks:
   - name: Get archive PATH defined at runtime
     set_fact:
       archive_path: "{{RUNTIME_PATH}}"
     when: RUNTIME_PATH != ""
   - name: Get archive PATH property
-  set_fact:
-    archive_path: "{{PATH}}"
-  when: RUNTIME_PATH == ""
-  failed_when: RUNTIME_PATH == "" and PATH == ""
+    set_fact:
+      archive_path: "{{PATH}}"
+    when: RUNTIME_PATH == ""
+    failed_when: RUNTIME_PATH == "" and PATH == ""
+  - name: Get user defined at runtime
+    set_fact:
+      user_loading: "{{RUNTIME_USER}}"
+    when: RUNTIME_USER != ""
+  - name: Get user property
+    set_fact:
+      user_loading: "{{USER}}"
+    when: RUNTIME_USER == ""
+    failed_when: RUNTIME_USER == "" and USER == ""
   - name: Load tar archive
     docker_image:
       name: "{{NAME}}"
@@ -25,6 +33,9 @@
       load_path: "{{archive_path}}"
       source: load
       force_source: "{{FORCE_LOAD}}"
+    become: true
+    become_user: "{{user_loading}}"
+    become_method: sudo
     register: result
   - name: Fail if the image specified does not correpond to the archive specified
     debug:

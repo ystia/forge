@@ -60,6 +60,11 @@ node_types:
         description: Load the archive even when the image already exists
         default: false
         required: false
+      user:
+        type: string
+        description: Perform the operation as this existing user
+        default: root
+        required: false
     attributes:
       # Array of repository name:tag in registry for the specified name.
       # Empty if no name was specified or if the image was already loaded
@@ -75,6 +80,8 @@ node_types:
         inputs:
           PATH: { get_property: [SELF, path] }
           RUNTIME_PATH: {get_attribute: [REQ_TARGET, archive_provider, path]}
+          USER: { get_property: [SELF, user] }
+          RUNTIME_USER: {get_attribute: [REQ_TARGET, archive_provider, user]}
           NAME: { get_property: [SELF, name] }
           TAG: { get_property: [SELF, tag] }
           REPOSITORY: { get_property: [SELF, repository] }
@@ -101,6 +108,9 @@ capability_types:
       path:
         type: string
         description: Path to the docker image tar archive
+      user:
+        type: string
+        description: User having access to this archive
 relationship_types:
   org.ystia.docker.images.relationships.ArchiveProvider:
     derived_from: tosca.relationships.DependsOn

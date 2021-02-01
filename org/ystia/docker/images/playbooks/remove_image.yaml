@@ -12,11 +12,22 @@
   - name: "Get image {{NAME}} in regsitry"
     set_fact:
       images: "{{REPO_TAGS | from_json}}"
+  - name: Get user defined at runtime
+    set_fact:
+      user_loading: "{{RUNTIME_USER}}"
+    when: RUNTIME_USER != ""
+  - name: Get user property
+    set_fact:
+      user_loading: "{{USER}}"
+    when: RUNTIME_USER == ""
+    failed_when: RUNTIME_USER == "" and USER == ""
   - name: "Remove image {{NAME}} {{TAG}}"
     docker_image:
       name: "{{images[0]}}"
       state: absent
     when: images | length == 1
+    become_user: "{{user_loading}}"
+    become_method: sudo
   - name: "Remove image {{NAME}} {{TAG}}"
     docker_image:
       name: "{{NAME}}"
@@ -24,3 +35,5 @@
       repository: "{{REPOSITORY}}"
       state: absent
     when: images | length != 1
+    become_user: "{{user_loading}}"
+    become_method: sudo
