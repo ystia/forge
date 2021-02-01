@@ -13,6 +13,7 @@
 
 ### BUG FIXES
 
+* Components installing and using the latest pip version fail on systems using python 2.7 ([GH-141](https://github.com/ystia/forge/issues/141))
 * Upgrade of ansible to 2.10.0 fails ([GH-138](https://github.com/ystia/forge/issues/138))
 * Installation of Consul and Ansible fails on recent Centos for GCP images ([GH-131](https://github.com/ystia/forge/issues/131))
 
