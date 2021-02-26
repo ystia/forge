@@ -16,20 +16,48 @@
   - name: Get python major version
     set_fact:
       python_major_version: "{{pri.python_version | replace('\n', '') | regex_replace('^(\\d+).*', '\\1') }}"
-  - name: Install pip version compatible with python 2
-    easy_install:
-      name: pip<21.0
-    when: python_major_version == "2"
-  - name: Install pip
-    easy_install:
-      name: pip
-      state: latest  
+  - name: Set python version for pip
+    set_fact:
+      python_pip_pkg: "python3-pip"
+      pip_cmd: "pip3"
     when: python_major_version != "2"
+  - name: Set python 2 version for pip
+    set_fact:
+      python_pip_pkg: "python-pip"
+      pip_cmd: "pip"
+    when: python_major_version == "2"
+  - name: RedHat - install prerequisites
+    yum:
+      name:
+        - "{{ python_pip_pkg }}"
+      state: present
+      update_cache: yes
+    when: ansible_os_family == 'RedHat'
+  - name: Debian - install prerequisites
+    apt:
+      name:
+        - "{{ python_pip_pkg }}"
+      state: present
+      update_cache: yes
+    when: ansible_os_family == 'Debian'
+  - name: Install latest Pip version
+    pip:
+      name: "pip"
+      state: latest
+      executable: "{{pip_cmd}}"
+    when: python_major_version != "2"
+  - name: Install latest Pip version compatible with python 2
+    pip:
+      name: "pip<21.0"
+      state: latest
+      executable: "{{pip_cmd}}"
+    when: python_major_version == "2"
 
   - name: Install 'virtualenv' package
     pip:
       name: virtualenv
       state: latest
+      executable: "{{pip_cmd}}"
   
   - name: Check docker python dependencies
     shell: >
