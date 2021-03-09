@@ -18,7 +18,7 @@ imports:
   - yorc-types:1.1.0
 
 node_types:
-  org.ystia.docker.images.Loader:
+  org.ystia.docker.images.ArchiveLoader:
     derived_from: tosca.nodes.SoftwareComponent
     description: Loads a docker image from a tar archive
     properties:
@@ -26,11 +26,7 @@ node_types:
         type: string
         description: >
           Path to the tar archive (can be compressed with gzip, bzip2, or xz)).
-          Either this property 'path' should be provided, or this Loader component
-          should be in relationship with an ArchiveProvider providing in its attribute
-          'path', the path to an archive computed at runtime.
-          The ArchiveProvider 'path' attribute takes precedence over the Loader 'path' property.
-        required: false
+        required: true
       name:
         type: string
         description: >
@@ -70,18 +66,43 @@ node_types:
       # Empty if no name was specified or if the image was already loaded
       # and force_load is set to false
       repo_tags: { get_operation_output: [SELF, Standard, start, REPO_TAGS] }
-    requirements:
-      - archive_provider:
-          capability: org.ystia.docker.images.capabilities.ArchiveProvider
-          relationship: org.ystia.docker.images.relationships.ArchiveProvider
-          occurrences: [0, 1]
     interfaces:
       Standard:
         inputs:
           PATH: { get_property: [SELF, path] }
-          RUNTIME_PATH: {get_attribute: [REQ_TARGET, archive_provider, path]}
           USER: { get_property: [SELF, user] }
-          RUNTIME_USER: {get_attribute: [REQ_TARGET, archive_provider, user]}
+          NAME: { get_property: [SELF, name] }
+          TAG: { get_property: [SELF, tag] }
+          REPOSITORY: { get_property: [SELF, repository] }
+          PUSH: { get_property: [SELF, push] }
+        # Install dependencies
+        create:
+          implementation: playbooks/create.yaml
+        # load the image from the tar archive
+        start:
+          inputs:
+            FORCE_LOAD: { get_property: [SELF, force_load] }
+          implementation: playbooks/load_archive.yaml
+        # Remove the image from docker registry
+        stop:
+          inputs:
+            REPO_TAGS: { get_attribute: [SELF, repo_tags] }
+          implementation: playbooks/remove_image.yaml
+  org.ystia.docker.images.RuntimePathArchiveLoader:
+    derived_from: org.ystia.docker.images.ArchiveLoader
+    description: >
+      Loads a docker image from a tar archive whose path is provided at runtime
+      by a component implementing capability org.ystia.docker.images.relationships.ArchiveProvider
+    requirements:
+      - archive_provider:
+          capability: org.ystia.docker.images.capabilities.ArchiveProvider
+          relationship: org.ystia.docker.images.relationships.ArchiveProvider
+          occurrences: [1, 1]
+    interfaces:
+      Standard:
+        inputs:
+          PATH: {get_attribute: [REQ_TARGET, archive_provider, path]}
+          USER: {get_attribute: [REQ_TARGET, archive_provider, user]}
           NAME: { get_property: [SELF, name] }
           TAG: { get_property: [SELF, tag] }
           REPOSITORY: { get_property: [SELF, repository] }
