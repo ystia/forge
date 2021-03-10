@@ -18,15 +18,11 @@ imports:
   - yorc-types:1.1.0
 
 node_types:
-  org.ystia.docker.images.ArchiveLoader:
+  org.ystia.docker.images.pub.ArchiveLoader:
     derived_from: tosca.nodes.SoftwareComponent
-    description: Loads a docker image from a tar archive
+    abstract: true
+    description: Loads a docker image from a tar archive (abstract)
     properties:
-      path:
-        type: string
-        description: >
-          Path to the tar archive (can be compressed with gzip, bzip2, or xz)).
-        required: true
       name:
         type: string
         description: >
@@ -66,6 +62,15 @@ node_types:
       # Empty if no name was specified or if the image was already loaded
       # and force_load is set to false
       repo_tags: { get_operation_output: [SELF, Standard, start, REPO_TAGS] }
+  org.ystia.docker.images.ArchiveLoader:
+    derived_from: org.ystia.docker.images.pub.ArchiveLoader
+    description: Loads a docker image from a tar archive
+    properties:
+      path:
+        type: string
+        description: >
+          Path to the tar archive (can be compressed with gzip, bzip2, or xz)).
+        required: true
     interfaces:
       Standard:
         inputs:
@@ -89,7 +94,7 @@ node_types:
             REPO_TAGS: { get_attribute: [SELF, repo_tags] }
           implementation: playbooks/remove_image.yaml
   org.ystia.docker.images.RuntimePathArchiveLoader:
-    derived_from: org.ystia.docker.images.ArchiveLoader
+    derived_from: org.ystia.docker.images.pub.ArchiveLoader
     description: >
       Loads a docker image from a tar archive whose path is provided at runtime
       by a component implementing capability org.ystia.docker.images.relationships.ArchiveProvider
