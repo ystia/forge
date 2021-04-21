@@ -27,11 +27,11 @@ if [[ "${DISABLE_ARTIFACTORY}" == "true" ]] ; then
     exit 0
 fi
 
-ref="${GITHUB_REF#ref/*/}"
+ref="${GITHUB_REF#refs/*/}"
 
-if [[ "${GITHUB_REF}" == ref/tags/* ]] ; then
+if [[ "${GITHUB_REF}" == refs/tags/* ]] ; then
     deploy_path="forge-product-ystia-dist/ystia/forge/dist/${ref}/{1}"
-elif [[ "${GITHUB_REF}" == ref/pull/* ]] ; then
+elif [[ "${GITHUB_REF}" == refs/pull/* ]] ; then
     deploy_path="forge-bin-dev-local/ystia/forge/dist/PR-${ref}/{1}"
 else
     deploy_path="forge-bin-dev-local/ystia/forge/dist/${ref}/{1}"
