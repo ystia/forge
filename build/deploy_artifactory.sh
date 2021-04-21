@@ -38,7 +38,7 @@ else
 fi
 
 cd "${rootDir}"
-./jfrog rt u --props="artifactory.licenses=Apache-2.0" --regexp "build/csars/(.*.zip)" "${deploy_path}"
-./jfrog rt bce
-./jfrog rt bag
-./jfrog rt bp
+jfrog rt u --props="artifactory.licenses=Apache-2.0" --regexp "build/csars/(.*.zip)" "${deploy_path}"
+jfrog rt bce
+jfrog rt bag
+jfrog rt bp
