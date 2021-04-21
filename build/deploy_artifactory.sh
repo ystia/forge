@@ -17,7 +17,7 @@
 scriptDir="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 rootDir=$(readlink -f "${scriptDir}/..")
 
-if [[ "${TRAVIS}" != "true" ]] ; then
+if [[ "${GITHUB_ACTIONS}" != "true" ]] ; then
     echo "This script is designed to publish CI build artifacts"
     exit 0
 fi
@@ -27,26 +27,18 @@ if [[ "${DISABLE_ARTIFACTORY}" == "true" ]] ; then
     exit 0
 fi
 
-if [[ "${TRAVIS_PULL_REQUEST}" != "false" ]] && [[ -z "${ARTIFACTORY_API_KEY}" ]] ; then
-    echo "Building an external pull request, artifactory publication is disabled"
-    exit 0
-fi
+ref=$(echo "${GITHUB_REF}" | awk -F / '{print $3;}')
 
-if [[ -n "${TRAVIS_TAG}" ]] ; then
-    deploy_path="forge-product-ystia-dist/ystia/forge/dist/${TRAVIS_TAG}/{1}"
-elif [[ "${TRAVIS_PULL_REQUEST}" != "false" ]]; then
-    deploy_path="forge-bin-dev-local/ystia/forge/dist/PR-${TRAVIS_PULL_REQUEST}/{1}"
+if [[ "${GITHUB_REF}" == ref/tags/* ]] ; then
+    deploy_path="forge-product-ystia-dist/ystia/forge/dist/${ref}/{1}"
+elif [[ "${GITHUB_REF}" == ref/pull/* ]] ; then
+    deploy_path="forge-bin-dev-local/ystia/forge/dist/PR-${ref}/{1}"
 else
-    deploy_path="forge-bin-dev-local/ystia/forge/dist/${TRAVIS_BRANCH}/{1}"
+    deploy_path="forge-bin-dev-local/ystia/forge/dist/${ref}/{1}"
 fi
 
-curl -fL https://getcli.jfrog.io | sh
-
-build_name="forge-travis-ci"
-
-./jfrog rt c --interactive=false --apikey="${ARTIFACTORY_API_KEY}" --user=travis --url=https://ystia.jfrog.io/ystia ystia
-./jfrog rt u --build-name="${build_name}" --build-number="${TRAVIS_BUILD_NUMBER}" --props="artifactory.licenses=Apache-2.0" --regexp "build/csars/(.*.zip)" "${deploy_path}"
-# Do not publish environment variables as it may expose some secrets
-#./jfrog rt bce "${build_name}" "${TRAVIS_BUILD_NUMBER}"
-./jfrog rt bag "${build_name}" "${TRAVIS_BUILD_NUMBER}" "${rootDir}"
-./jfrog rt bp "${build_name}" "${TRAVIS_BUILD_NUMBER}"
+cd "${rootDir}"
+./jfrog rt u --props="artifactory.licenses=Apache-2.0" --regexp "build/csars/(.*.zip)" "${deploy_path}"
+./jfrog rt bce
+./jfrog rt bag
+./jfrog rt bp
