@@ -1,12 +1,12 @@
-#!/usr/bin/env bash 
+#!/usr/bin/env bash
 # Copyright 2018 Bull S.A.S. Atos Technologies - Bull, Rue Jean Jaures, B.P.68, 78340, Les Clayes-sous-Bois, France.
-# 
+#
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
 # You may obtain a copy of the License at
-# 
+#
 #      http://www.apache.org/licenses/LICENSE-2.0
-# 
+#
 # Unless required by applicable law or agreed to in writing, software
 # distributed under the License is distributed on an "AS IS" BASIS,
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -84,7 +84,7 @@ fi
 branch=$(echo ${branch} | sed -e "s@^.*/\(release/.*\)@\1@")
 echo "Switching to branch ${branch}..."
 releaseBranch=${branch}
-git checkout ${branch} 
+git checkout ${branch}
 
 # Check that current version is lower than the release version
 currentVersion=$(grep  "${componentVersionName}:" versions.yaml | head -1 | sed -e 's/^[^:]\+:\s*\(.*\)\s*$/\1/')
@@ -111,7 +111,7 @@ if [[ "develop" == "${branch}" ]] && [[ -z "${prerelease}" ]]; then
     releaseBranch="release/${major}.${minor}"
     git checkout -b "${releaseBranch}"
     sed -i -e "s@svg?branch=[^)]*@svg?branch=${releaseBranch}@g" README.md
-    git commit -m "Update travis links in readme for release ${version}" README.md
+    git commit -m "Update CI links in readme for release ${version}" README.md
 fi
 
 # Now checks are passed then update version, tag and cleanup :)
@@ -119,7 +119,8 @@ cherries=()
 # Update changelog Release date
 sed -i -e "s/^## UNRELEASED.*$/## ${version} ($(LC_ALL=C date +'%B %d, %Y'))/g" CHANGELOG.md
 # Update readme for Release number
-sed -i -e "s@download.svg?version=[^)]*@download.svg?version=${version}@g" -e "s@distributions/[^/]*/link@distributions/${version}/link@g" README.md
+sed -i -e "s@https://img.shields.io/badge/download-[^-]*-blue@https://img.shields.io/badge/download-v${version}-blue@g" \
+    -e "s@releases/tag/.*@releases/tag/v${version}@g" README.md
 git commit -m "Update changelog and readme for release ${version}" CHANGELOG.md README.md
 cherries+=("$(git log -1 --pretty=format:"%h")")
 
@@ -127,7 +128,7 @@ cherries+=("$(git log -1 --pretty=format:"%h")")
 sed -i -e "/${componentVersionName}: /c${componentVersionName}: ${version}" versions.yaml
 git add versions.yaml
 
-# Update current version 
+# Update current version
 update_types "${currentVersion}" "${version}"
 
 git commit -m "Prepare release ${version}"
@@ -142,7 +143,7 @@ cherries+=("$(git log -1 --pretty=format:"%h")")
 
 # Update version
 nextDevelopmentVersion=""
-if [[ -z "${prerelease}" ]]; then 
+if [[ -z "${prerelease}" ]]; then
     # We are releasing a final version
     nextDevelopmentVersion=$(python -c "import semantic_version; v=semantic_version.Version('${version}'); print v.next_patch()" )
     nextDevelopmentVersion="${nextDevelopmentVersion}-SNAPSHOT"
@@ -165,7 +166,7 @@ if [[ "develop" == "${branch}" ]] && [[ -z "${prerelease}" ]]; then
     if [[ ${#cherries[@]} -gt 0 ]] ; then
         git cherry-pick ${cherries[@]}
     fi
-    
+
     if [[ ! -e versions.yaml ]]; then
         # Force creation of versions.yaml
         echo "${componentVersionName}: 0.0.0" > versions.yaml
@@ -175,10 +176,10 @@ if [[ "develop" == "${branch}" ]] && [[ -z "${prerelease}" ]]; then
     nextDevelopmentVersion="${nextDevelopmentVersion}-SNAPSHOT"
     sed -i -e "/${componentVersionName}: /c${componentVersionName}: ${nextDevelopmentVersion}" versions.yaml
     git add versions.yaml
-    
+
     update_types "${currentVersion}" "${nextDevelopmentVersion}"
 
-    git commit -m "Prepare for next development cycle ${nextDevelopmentVersion}" 
+    git commit -m "Prepare for next development cycle ${nextDevelopmentVersion}"
 
 fi
 
