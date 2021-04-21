@@ -27,7 +27,7 @@ if [[ "${DISABLE_ARTIFACTORY}" == "true" ]] ; then
     exit 0
 fi
 
-ref=$(echo "${GITHUB_REF}" | awk -F / '{print $3;}')
+ref="${GITHUB_REF#ref/*/}"
 
 if [[ "${GITHUB_REF}" == ref/tags/* ]] ; then
     deploy_path="forge-product-ystia-dist/ystia/forge/dist/${ref}/{1}"

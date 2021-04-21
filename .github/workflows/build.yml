@@ -1,4 +1,4 @@
-name: Build
+name: "Forge GH Actions Build"
 
 on: [push, pull_request]
 
