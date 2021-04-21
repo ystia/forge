@@ -32,6 +32,8 @@ ref="${GITHUB_REF#refs/*/}"
 if [[ "${GITHUB_REF}" == refs/tags/* ]] ; then
     deploy_path="forge-product-ystia-dist/ystia/forge/dist/${ref}/{1}"
 elif [[ "${GITHUB_REF}" == refs/pull/* ]] ; then
+    # For PRs ref is different
+    ref=$(echo "${GITHUB_REF}" | awk -F / '{print $3;}')
     deploy_path="forge-bin-dev-local/ystia/forge/dist/PR-${ref}/{1}"
 else
     deploy_path="forge-bin-dev-local/ystia/forge/dist/${ref}/{1}"
