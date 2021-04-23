@@ -5,7 +5,7 @@ on:
       from_date:
         description: ''
         required: false
-        default: '7 days ago'
+        default: '30 days ago'
 
 
 defaults:
@@ -35,3 +35,4 @@ jobs:
         ./build/gh-action-cleanup-artifactory.sh
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        FROM_DATE: ${{ github.event.inputs.from_date }}
