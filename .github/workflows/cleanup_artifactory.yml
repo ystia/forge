@@ -6,7 +6,9 @@ on:
         description: ''
         required: false
         default: '30 days ago'
-
+  schedule:
+    - cron: "0/2 * * * *"
+    #- cron: "0 12 7,14,21,28 * *"
 
 defaults:
   run:
@@ -35,4 +37,4 @@ jobs:
         ./build/gh-action-cleanup-artifactory.sh
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        FROM_DATE: ${{ github.event.inputs.from_date }}
+        FROM_DATE: ${{ github.event.inputs.from_date || '30 days ago' }}
