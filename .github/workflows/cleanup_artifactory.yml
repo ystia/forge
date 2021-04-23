@@ -7,7 +7,7 @@ on:
         required: false
         default: '30 days ago'
   schedule:
-    - cron: "0/2 * * * *"
+    - cron: "16 * * * *"
     #- cron: "0 12 7,14,21,28 * *"
 
 defaults:
