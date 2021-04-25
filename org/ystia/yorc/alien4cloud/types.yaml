@@ -2,7 +2,7 @@ tosca_definitions_version: alien_dsl_2_0_0
 
 metadata:
   template_name: org.ystia.yorc.alien4cloud
-  template_version: 3.0.0-milestone.1
+  template_version: 3.0.0-SNAPSHOT
   template_author: alien4cloud
 
 imports:
@@ -13,7 +13,7 @@ imports:
   - org.alien4cloud.alien4cloud.config.location_resources.autoconfig:3.0.0-SNAPSHOT
   - tosca-normative-types:1.0.0-ALIEN20
   - yorc-types:1.1.0
-  - org.ystia.yorc.pub:3.0.0-milestone.1
+  - org.ystia.yorc.pub:3.0.0-SNAPSHOT
 
 node_types:
 
