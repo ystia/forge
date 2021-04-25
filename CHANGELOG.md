@@ -2,8 +2,6 @@
 
 ## UNRELEASED
 
-## 3.0.0-milestone.1 (April 25, 2021)
-
 ### DEPENDENCIES
 
 * Ystia Forge components require now Alien4Cloud 3.0.0
