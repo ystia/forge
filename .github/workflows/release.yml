@@ -52,17 +52,17 @@ jobs:
 
         ./build/release.sh -v "${{ github.event.inputs.release_version }}"
 
-        read -r major minor patch prerelease build <<< $(python -c "import semantic_version; v = semantic_version.Version('${version}'); print(v.major, v.minor, v.patch, '.'.join(v.prerelease), '.'.join(v.build));")
+        read -r major minor patch prerelease build <<< $(python -c "import semantic_version; v = semantic_version.Version('${{ github.event.inputs.release_version }}'); print(v.major, v.minor, v.patch, '.'.join(v.prerelease), '.'.join(v.build));")
         if [[ -z "${prerelease}" ]] ; then
             echo "::set-output name=prerelease::false"
-            echo "::set-env name=PRERELEASE::false"
+            echo "PRERELEASE=false" >> $GITHUB_ENV
         else
             echo "::set-output name=prerelease::true"
-            echo "::set-env name=PRERELEASE:true"
+            echo "PRERELEASE=true" >> $GITHUB_ENV
         fi
         tagName="v${{ github.event.inputs.release_version }}"
         echo "::set-output name=tag::${tagName}"
-        echo "::set-env name=TAG_NAME::${tagName}"
+        echo "TAG_NAME=${tagName}" >> $GITHUB_ENV
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
