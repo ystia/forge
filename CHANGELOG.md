@@ -1,6 +1,6 @@
 # Ystia Forge Changelog
 
-## UNRELEASED
+## 3.0.0-milestone.1 (April 25, 2021)
 
 ### DEPENDENCIES
 
