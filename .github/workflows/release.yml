@@ -81,7 +81,7 @@ jobs:
       uses: loicalbertin/action-gh-release@080e2e752ac77817dcfd2e8809873bdc24817584
       with:
         tag_name: ${{ env.TAG_NAME }}
-        body_from: CHANGELOG-for-version.md
+        body_path: CHANGELOG-for-version.md
         name: ${{ env.TAG_NAME }}
         prerelease: ${{ env.PRERELEASE }}
         draft: true
