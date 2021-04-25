@@ -61,7 +61,7 @@ if [[ -z "${version}" ]]; then
     exit 1
 fi
 
-if [[ "$(python -c "import semantic_version; print semantic_version.validate('${version}')" )" != "True" ]]; then
+if [[ "$(python -c "import semantic_version; print(semantic_version.validate('${version}'))" )" != "True" ]]; then
     echo "Parameter -v should be a semver 2.0 compatible version (http://semver.org/)" >&2
     exit 1
 fi
@@ -74,7 +74,7 @@ update_types () {
 }
 
 # read version
-read -r major minor patch prerelease build <<< $(python -c "import semantic_version; v = semantic_version.Version('${version}'); print v.major, v.minor, v.patch, '.'.join(v.prerelease), '.'.join(v.build);")
+read -r major minor patch prerelease build <<< $(python -c "import semantic_version; v = semantic_version.Version('${version}'); print(v.major, v.minor, v.patch, '.'.join(v.prerelease), '.'.join(v.build));")
 
 # Detect correct supporting branch
 branch=$(git branch --list -r "*/release/${major}.${minor}")
@@ -90,7 +90,7 @@ git checkout ${branch}
 currentVersion=$(grep  "${componentVersionName}:" versions.yaml | head -1 | sed -e 's/^[^:]\+:\s*\(.*\)\s*$/\1/')
 # Change -SNAPSHOT into -0 for comparaison as a snapshot is never revelant
 checkVers=$(echo ${currentVersion} | sed -e "s/-SNAPSHOT/-0/")
-if [[ "True" != "$(python -c "import semantic_version; print  semantic_version.Version('${version}') >= semantic_version.Version('${checkVers}')" )" ]]; then
+if [[ "True" != "$(python -c "import semantic_version; print(semantic_version.Version('${version}') >= semantic_version.Version('${checkVers}'))" )" ]]; then
     echo "Can't release version ${version} on top of branch ${branch} as its current version is ${currentVersion}" >&2
     exit 1
 fi
@@ -101,7 +101,7 @@ branchTag=$(git describe --abbrev=0 --tags ${branch}) || {
 }
 branchTag=$(echo $branchTag | sed -e 's/^v\(.*\)$/\1/')
 
-if [[ "True" != "$(python -c "import semantic_version; print  semantic_version.Version('${version}') > semantic_version.Version('${branchTag}')" )" ]]; then
+if [[ "True" != "$(python -c "import semantic_version; print(semantic_version.Version('${version}') > semantic_version.Version('${branchTag}'))" )" ]]; then
     echo "Can't release version ${version} on top of branch ${branch} as it contains a newer tag: ${branchTag}" >&2
     exit 1
 fi
@@ -145,7 +145,7 @@ cherries+=("$(git log -1 --pretty=format:"%h")")
 nextDevelopmentVersion=""
 if [[ -z "${prerelease}" ]]; then
     # We are releasing a final version
-    nextDevelopmentVersion=$(python -c "import semantic_version; v=semantic_version.Version('${version}'); print v.next_patch()" )
+    nextDevelopmentVersion=$(python -c "import semantic_version; v=semantic_version.Version('${version}'); print(v.next_patch())" )
     nextDevelopmentVersion="${nextDevelopmentVersion}-SNAPSHOT"
 else
     # in prerelease revert to version minus prerelease plus -SNAPSHOT
@@ -172,7 +172,7 @@ if [[ "develop" == "${branch}" ]] && [[ -z "${prerelease}" ]]; then
         echo "${componentVersionName}: 0.0.0" > versions.yaml
     fi
     # Update version
-    nextDevelopmentVersion=$(python -c "import semantic_version; v=semantic_version.Version('${version}'); print v.next_minor()" )
+    nextDevelopmentVersion=$(python -c "import semantic_version; v=semantic_version.Version('${version}'); print(v.next_minor())" )
     nextDevelopmentVersion="${nextDevelopmentVersion}-SNAPSHOT"
     sed -i -e "/${componentVersionName}: /c${componentVersionName}: ${nextDevelopmentVersion}" versions.yaml
     git add versions.yaml
@@ -190,7 +190,7 @@ if [[ -z "${prerelease}" ]]; then
     }
     masterTag=$(echo ${masterTag} | sed -e 's/^v\(.*\)$/\1/')
 
-    if [[ "True" == "$(python -c "import semantic_version; print  semantic_version.Version('${version}') > semantic_version.Version('${masterTag}')" )" ]]; then
+    if [[ "True" == "$(python -c "import semantic_version; print(semantic_version.Version('${version}') > semantic_version.Version('${masterTag}'))" )" ]]; then
         # We should merge the tag to master as it is our highest release
         git checkout master
         git merge --no-ff "v${version}" -X theirs -m "merging latest tag v${version} into master" || {
