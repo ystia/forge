@@ -8,13 +8,13 @@ metadata:
 description: ""
 
 imports:
-  - org.ystia.docker.containers.docker.generic:3.0.0-SNAPSHOT
+  - org.ystia.docker.containers.docker.generic:3.0.0-milestone.1
   - tosca-normative-types:1.0.0-ALIEN20
-  - org.ystia.ssl.ansible.certificates:3.0.0-SNAPSHOT
+  - org.ystia.ssl.ansible.certificates:3.0.0-milestone.1
   - alien-extended-storage-types:3.0.0
   - docker-types:3.0.0
-  - org.ystia.docker.ansible:3.0.0-SNAPSHOT
-  - org.ystia.docker.containers.docker.registry:3.0.0-SNAPSHOT
+  - org.ystia.docker.ansible:3.0.0-milestone.1
+  - org.ystia.docker.containers.docker.registry:3.0.0-milestone.1
   - yorc-types:1.1.0
 
 topology_template:
