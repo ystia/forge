@@ -120,7 +120,7 @@ cherries=()
 sed -i -e "s/^## UNRELEASED.*$/## ${version} ($(LC_ALL=C date +'%B %d, %Y'))/g" CHANGELOG.md
 # Update readme for Release number
 sed -i -e "s@https://img.shields.io/badge/download-[^-]*-blue@https://img.shields.io/badge/download-v${version}-blue@g" \
-    -e "s@releases/tag/.*@releases/tag/v${version}@g" README.md
+    -e "s@releases/tag/[^)]*@releases/tag/v${version}@g" README.md
 git commit -m "Update changelog and readme for release ${version}" CHANGELOG.md README.md
 cherries+=("$(git log -1 --pretty=format:"%h")")
 
