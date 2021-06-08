@@ -30,7 +30,7 @@ imports:
 
 repositories:
   fastconnect_nexus:
-    url: https://fastconnect.org/maven/service/local/repositories/opensource/content/alien4cloud/alien4cloud-dist/3.0.0-SNAPSHOT
+    url: https://www.portaildulibre.fr/nexus/repository/opensource-releases/alien4cloud/alien4cloud-premium-dist/3.3.0
     type: http
 
 topology_template:
@@ -207,7 +207,7 @@ topology_template:
       type: org.alien4cloud.alien4cloud.webapp.nodes.Alien4Cloud
       properties:
         context_root: "/"
-        component_version: "2.0.0"
+        component_version: "3.3.0"
         data_dir: "/opt/alien4cloud/data"
       requirements:
       - javaSoftwareHostedOnJdkOracleJdkJdk:
@@ -244,7 +244,7 @@ topology_template:
             initiator: source
       artifacts:
         alien_dist:
-          file: alien4cloud-dist-3.0.0-SNAPSHOT-dist.tar.gz
+          file: alien4cloud-premium-dist-3.3.0-dist.tar.gz
           type: tosca.artifacts.File
           repository: fastconnect_nexus
     YorcPlugin:
