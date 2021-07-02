@@ -92,6 +92,17 @@ node_types:
           relationship: org.ystia.yorc.linux.ansible.relationships.HostsPoolSecretsOnVault
           occurrences: [ 0, 1 ]
 
+  org.ystia.yorc.location.MAASConfig:
+    derived_from: org.ystia.yorc.pub.location.MAASConfig
+    interfaces:
+      Standard:
+        start:
+    requirements:
+      - host:
+          capability: org.ystia.yorc.pub.capabilities.YorcConfigContainer
+          relationship: org.ystia.yorc.linux.ansible.relationships.YorcConfigMAASHostedOnYorc
+          occurrences: [ 1, 1 ]    
+
   org.ystia.yorc.ansible.Config:
     derived_from: org.ystia.yorc.pub.ansible.Config
     requirements:
@@ -339,6 +350,22 @@ relationship_types:
             HOSTS_POOL: { get_property: [SOURCE, hosts] }
             USE_VAULT: { get_property: [SOURCE, use_vault] }
           implementation: playbooks/configure_hostspool.yml
+
+  org.ystia.yorc.linux.ansible.relationships.YorcConfigMAASHostedOnYorc:
+    derived_from: org.ystia.yorc.pub.relationships.YorcConfigHostedOnYorc
+    description: >
+      Create a MAAS configuration
+    interfaces:
+      Configure:
+        post_configure_target:
+          # inputs:
+          #   CONFIG_DIR: { get_property: [TARGET, config_dir] }
+          #   DATA_DIR: { get_property: [TARGET, data_dir] }
+          #   LOCATION_NAME : { get_property: [SOURCE, location_name] }
+          #   HOSTS_POOL: { get_property: [SOURCE, hosts] }
+          #   USE_VAULT: { get_property: [SOURCE, use_vault] }
+          # implementation: playbooks/configure_hostspool.yml
+
   org.ystia.yorc.linux.ansible.relationships.HostsPoolSecretsOnVault:
     derived_from: org.ystia.yorc.pub.relationships.SaveSecretsToVault
     interfaces:
@@ -354,6 +381,8 @@ relationship_types:
             CONFIG_DIR: { get_property: [SOURCE, config_dir] }
             HOSTS_POOL: { get_property: [SOURCE, hosts] }
           implementation: playbooks/configure_hostspool_secrets.yml
+
+        
   org.ystia.yorc.linux.ansible.relationships.YorcConfigAnsible:
     description: "Configure a Yorc server Ansible settings"
     derived_from: tosca.relationships.HostedOn

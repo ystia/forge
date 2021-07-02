@@ -220,6 +220,34 @@ node_types:
           capability: org.ystia.yorc.pub.capabilities.YorcConfigContainer
           relationship: org.ystia.yorc.pub.relationships.YorcConfigHostedOnYorc
 
+  org.ystia.yorc.pub.location.MAASConfig:
+    derived_from: org.ystia.yorc.pub.location.LocationConfig
+    description: |
+      MAAS location configuration for Yorc
+    abstract: true
+    properties:
+      SQL_user:
+        type: string
+        description: "PostGreSQL username for maas"
+      SQL_password:
+        type: string
+        description: "PostGreSQL password for maas"
+        required: true
+      SQL_dbName:
+        description: "PostGreSQL database name for maas"
+        type: string
+      upstream_dns:
+        type: string
+        description: "DNS server IP that will be used by MAAS"
+      # rackController:
+      #   type: string
+      #   description: ""
+      # regionController:
+      #   type: string
+      #   description: ""
+        
+
+
   org.ystia.yorc.pub.ansible.Config:
     derived_from: tosca.nodes.Root
     description: |
