@@ -2,6 +2,10 @@
 
 ## UNRELEASED
 
+### BUG FIXES
+
+* [Yorc] Error in AWS location configuration ([GH-145](https://github.com/ystia/forge/issues/145)) | Thanks to [@tibeer](https://github.com/tibeer) for this contribution
+
 ## 3.0.0-milestone.1 (April 25, 2021)
 
 ### DEPENDENCIES
