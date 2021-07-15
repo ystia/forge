@@ -94,7 +94,7 @@
 
     - name: Set AWS secret key from vault
       replace:
-        path: "{{ CONFIG_DIR }}/conlocationsfig.yorc.yaml"
+        path: "{{ CONFIG_DIR }}/locations.yorc.yaml"
         regexp: 'SECRET_KEY_YORC_SUBSTITUTION'
         replace: "'{{ '{{' }} secret \"/secret/yorc/{{ LOCATION_NAME }}\" \"data=secret_key\" | print {{ '}}' }}'"
       when: USE_VAULT == "true"
