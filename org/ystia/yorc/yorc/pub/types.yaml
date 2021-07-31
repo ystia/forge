@@ -224,30 +224,24 @@ node_types:
     derived_from: org.ystia.yorc.pub.location.LocationConfig
     description: |
       MAAS location configuration for Yorc
-    abstract: true
     properties:
-      SQL_user:
+      api_key:
         type: string
-        description: "PostGreSQL username for maas"
-      SQL_password:
-        type: string
-        description: "PostGreSQL password for maas"
+        description: "The maas user key need to execute API call"
         required: true
-      SQL_dbName:
-        description: "PostGreSQL database name for maas"
+      api_url:
         type: string
-      upstream_dns:
+        description: "MAAS API url (like this: http://10.128.80.20:5240/MAAS/)"
+        required: true
+      delayBetweenStatusCheck:
         type: string
-        description: "DNS server IP that will be used by MAAS"
-      # rackController:
-      #   type: string
-      #   description: ""
-      # regionController:
-      #   type: string
-      #   description: ""
-        
-
-
+        description: "Delay between API calls that will check a node status. (ex: 2s)"
+        required: false
+    requirements:
+      - yorc:
+          capability: org.ystia.yorc.pub.capabilities.YorcConfigContainer
+          relationship: org.ystia.yorc.pub.relationships.YorcConfigHostedOnYorc
+      
   org.ystia.yorc.pub.ansible.Config:
     derived_from: tosca.nodes.Root
     description: |

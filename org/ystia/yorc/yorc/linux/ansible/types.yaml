@@ -94,9 +94,6 @@ node_types:
 
   org.ystia.yorc.location.MAASConfig:
     derived_from: org.ystia.yorc.pub.location.MAASConfig
-    interfaces:
-      Standard:
-        start:
     requirements:
       - host:
           capability: org.ystia.yorc.pub.capabilities.YorcConfigContainer
@@ -358,13 +355,13 @@ relationship_types:
     interfaces:
       Configure:
         post_configure_target:
-          # inputs:
-          #   CONFIG_DIR: { get_property: [TARGET, config_dir] }
-          #   DATA_DIR: { get_property: [TARGET, data_dir] }
-          #   LOCATION_NAME : { get_property: [SOURCE, location_name] }
-          #   HOSTS_POOL: { get_property: [SOURCE, hosts] }
-          #   USE_VAULT: { get_property: [SOURCE, use_vault] }
-          # implementation: playbooks/configure_hostspool.yml
+          inputs:
+            CONFIG_DIR: { get_property: [TARGET, config_dir] }
+            LOCATION_NAME : { get_property: [SOURCE, location_name] }
+            API_KEY: { get_property: [SOURCE, api_key] }
+            API_URL: { get_property: [SOURCE, api_url] }
+            DELAY_BETWEEN_STATUS_CHECK: { get_property: [SOURCE, delayBetweenStatusCheck] }
+          implementation: playbooks/configure_maas.yml
 
   org.ystia.yorc.linux.ansible.relationships.HostsPoolSecretsOnVault:
     derived_from: org.ystia.yorc.pub.relationships.SaveSecretsToVault

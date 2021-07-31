@@ -1,0 +1,105 @@
+#
+# Copyright 2018 Bull S.A.S. Atos Technologies - Bull, Rue Jean Jaures, B.P.68, 78340, Les Clayes-sous-Bois, France.
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+#
+
+
+- name: Setup MAAS config
+  hosts: all
+  strategy: free
+  become_user: yorc
+  become: true
+  vars:
+    lock_file: "{{ CONFIG_DIR }}//config.lock"
+  pre_tasks:
+    - name: check for lock file
+      wait_for:
+        path: "{{ lock_file }}"
+        state: absent
+    - name: create lock file
+      file:
+        path: "{{ lock_file }}"
+        state: touch
+  tasks:
+    - name: Creation locations file
+      file:
+        path: "{{ CONFIG_DIR }}/locations.yorc.yaml"
+        state: touch
+        modification_time: preserve
+        access_time: preserve
+
+    - name: "get current locations"
+      shell: "cat {{ CONFIG_DIR }}/locations.yorc.yaml"
+      register: result
+
+    - set_fact:
+        yorcLocationsConfig: "{{ result.stdout | from_yaml }}"
+
+    - set_fact:
+        locationsDefined: []
+      when: yorcLocationsConfig|length == 0
+
+    - set_fact:
+        locationsDefined: "{{ yorcLocationsConfig.locations }}"
+      when: yorcLocationsConfig|length > 0
+
+    - set_fact:
+        locationProperties: >
+          { "api_key": "{{ API_KEY }}",
+            "api_url": "{{ API_URL }}",
+            "delayBetweenStatusCheck": "{{ DELAY_BETWEEN_STATUS_CHECK }}",
+          }
+
+    - set_fact:
+        tmpLocation: >
+          { "name" :  "{{ LOCATION_NAME }}",
+            "type" : "maas",
+            "properties": {{ locationProperties }}
+          }
+
+    - set_fact:
+        locationsDefined: "{{ locationsDefined + [ tmpLocation  ] }}"
+
+    - set_fact:
+        yorcLocationsConfig:  {"locations": "{{ locationsDefined }}"}
+
+    - name: "Output config to file {{ CONFIG_DIR }}/locations.yorc.yaml"
+      copy:
+        content: "{{ yorcLocationsConfig | to_yaml }}"
+        dest: "{{ CONFIG_DIR }}/locations.yorc.yaml"
+
+    - name: "get current config of Yorc"
+      shell: "cat {{ CONFIG_DIR }}/config.yorc.yaml"
+      register: result
+
+    - set_fact:
+        yorcConfig: "{{ result.stdout | from_yaml }}"
+
+    - set_fact:
+        tmp: >
+          { "locations_file_path": "{{ CONFIG_DIR }}/locations.yorc.yaml"
+          }
+    - set_fact:
+        yorcConfig: "{{ yorcConfig | combine(tmp, recursive=True) }}"
+
+    - name: "Output config to file {{ CONFIG_DIR }}/config.yorc.yaml"
+      copy:
+        content: "{{ yorcConfig | to_yaml }}"
+        dest: "{{ CONFIG_DIR }}/config.yorc.yaml"
+
+  post_tasks:
+    - name: remove lock file
+      file:
+        path: "{{ lock_file }}"
+        state: absent
