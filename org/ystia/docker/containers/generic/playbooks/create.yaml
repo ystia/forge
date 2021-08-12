@@ -8,6 +8,9 @@
 - name: Install python requirements
   hosts: all
   become: true
+  environment:
+    # Adding /usr/local/bin needed by virtualenv on CentOS 8
+    PATH: "{{ ansible_env.PATH }}:/usr/local/bin"
   tasks:
   - name: Get python version
     python_requirements_info:
@@ -66,7 +69,9 @@
 
   - name: Install 'docker' python package
     pip:
-      name: docker
+      name:
+        - docker
+        - six
       virtualenv: /usr/local/docker-py-env
 
 - name: Create Docker Container

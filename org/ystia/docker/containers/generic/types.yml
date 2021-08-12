@@ -11,7 +11,7 @@ metadata:
   template_version: 3.0.0-SNAPSHOT
   template_author: Ystia
 
-
+description: Docker container types
 
 imports:
   - tosca-normative-types:1.0.0-ALIEN20
@@ -102,13 +102,16 @@ node_types:
         required: false
     attributes:
       container_id: { get_operation_output: [SELF, Standard, create, CONTAINER_ID] }
+      started_container_id: { get_operation_output: [SELF, Standard, create, STARTED_CONTAINER_ID] }
     interfaces:
       Standard:
         inputs:
           # Will be empty for create operation but not a big deal
           CONTAINER_ID: { get_attribute: [SELF, container_id] }
+          STARTED_CONTAINER_ID: { get_attribute: [SELF, started_container_id] }
           AUTO_REMOVE: { get_property: [SELF, auto_remove] }
           CLEANUP: { get_property: [SELF, cleanup] }
+          COMMAND: { get_property: [SELF, docker_run_cmd] }
           CPU_SHARE: { get_property: [SELF, cpu_share] }
           DETACH: { get_property: [SELF, detach] }
           ENV_VARS: { get_property: [SELF, docker_env_vars] }

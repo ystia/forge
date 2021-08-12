@@ -30,6 +30,7 @@
     name: "{{NODE}}-{{INSTANCE}}"
     auto_remove: "{{AUTO_REMOVE}}"
     cleanup: "{{CLEANUP}}"
+    command: "{{COMMAND}}"
     # cpus: "{{CPU_SHARE}}"
     detach: "{{DETACH}}"
     env: "{{DOCKER_ENV}}"
