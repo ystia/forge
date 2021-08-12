@@ -10,13 +10,6 @@
     set_fact:
       archive_path: "{{PATH}}"
     failed_when: PATH == ""
-  - name: Get user property
-    set_fact:
-      user_loading: "{{USER}}"
-  - name: Default user is root
-    set_fact:
-      user_loading: "root"
-    when: USER == ""
   - name: Load tar archive
     docker_image:
       name: "{{NAME}}"
@@ -27,7 +20,7 @@
       source: load
       force_source: "{{FORCE_LOAD}}"
     become: true
-    become_user: "{{user_loading}}"
+    become_user: "{{USER}}"
     become_method: sudo
     register: result
   - name: Fail if the image specified does not correpond to the archive specified

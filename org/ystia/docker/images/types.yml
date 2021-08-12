@@ -11,7 +11,7 @@ metadata:
   template_version: 3.0.0-SNAPSHOT
   template_author: Ystia
 
-
+description: Docker image types
 
 imports:
   - tosca-normative-types:1.0.0-ALIEN20
@@ -57,11 +57,6 @@ node_types:
         description: Perform the operation as this existing user
         default: root
         required: false
-    attributes:
-      # Array of repository name:tag in registry for the specified name.
-      # Empty if no name was specified or if the image was already loaded
-      # and force_load is set to false
-      repo_tags: { get_operation_output: [SELF, Standard, start, REPO_TAGS] }
   org.ystia.docker.images.ArchiveLoader:
     derived_from: org.ystia.docker.images.pub.ArchiveLoader
     description: Loads a docker image from a tar archive
@@ -71,6 +66,11 @@ node_types:
         description: >
           Path to the tar archive (can be compressed with gzip, bzip2, or xz)).
         required: true
+    attributes:
+      # Array of repository name:tag in registry for the specified name.
+      # Empty if no name was specified or if the image was already loaded
+      # and force_load is set to false
+      repo_tags: { get_operation_output: [SELF, Standard, start, REPO_TAGS] }
     interfaces:
       Standard:
         inputs:
@@ -103,6 +103,11 @@ node_types:
           capability: org.ystia.docker.images.capabilities.ArchiveProvider
           relationship: org.ystia.docker.images.relationships.ArchiveProvider
           occurrences: [1, 1]
+    attributes:
+      # Array of repository name:tag in registry for the specified name.
+      # Empty if no name was specified or if the image was already loaded
+      # and force_load is set to false
+      repo_tags: { get_operation_output: [SELF, Standard, start, REPO_TAGS] }
     interfaces:
       Standard:
         inputs:
@@ -137,6 +142,7 @@ capability_types:
       user:
         type: string
         description: User having access to this archive
+        default: root
 relationship_types:
   org.ystia.docker.images.relationships.ArchiveProvider:
     derived_from: tosca.relationships.DependsOn

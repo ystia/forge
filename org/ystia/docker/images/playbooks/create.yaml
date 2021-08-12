@@ -50,21 +50,12 @@
       state: latest
       executable: "{{pip_cmd}}"
     when: python_major_version == "2"
-  - name: Get user defined at runtime
-    set_fact:
-      user_loading: "{{RUNTIME_USER}}"
-    when: RUNTIME_USER != ""
-  - name: Get user property
-    set_fact:
-      user_loading: "{{USER}}"
-    when: RUNTIME_USER == ""
-    failed_when: RUNTIME_USER == "" and USER == ""
-  - name: Add to docker group
+  - name: Add user to docker group
     user:
-      name: "{{user_loading}}"
+      name: "{{USER}}"
       groups: docker
       append: yes
-    when: user_loading != "root"
+    when: USER != "root"
   - name: Install 'docker' python package
     pip:
       name: docker
@@ -72,6 +63,6 @@
       # see issue https://github.com/pypa/pip/issues/5247
       extra_args: --user
       executable: "{{pip_cmd}}"
-    become_user: "{{user_loading}}"
+    become_user: "{{USER}}"
     become_method: sudo
   
