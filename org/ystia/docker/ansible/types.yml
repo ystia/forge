@@ -11,6 +11,7 @@ metadata:
   template_version: 3.0.0-SNAPSHOT
   template_author: Ystia
 
+description: Docker types
 imports:
   - tosca-normative-types:1.0.0-ALIEN20
   - yorc-types:1.1.0
