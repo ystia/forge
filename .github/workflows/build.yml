@@ -1,0 +1,33 @@
+name: "Forge GH Actions Build"
+
+on: [push, pull_request]
+
+
+defaults:
+  run:
+    shell: bash
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+
+      - name: Setup jfrog CLI
+        uses: jfrog/setup-jfrog-cli@v1
+        env:
+          JF_ARTIFACTORY_1: ${{ secrets.JF_ARTIFACTORY_SERVER_1 }}
+
+      - name: Ping Artifactory with jfrog CLI
+        run: |
+          # Ping the server
+          jfrog rt ping
+
+      - name: Generate artifacts
+        run: |
+          ./build/zip_csar.sh
+
+      - name: Deploy artifacts to Artifactory
+        run: |
+          ./build/deploy_artifactory.sh
+

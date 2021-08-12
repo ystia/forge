@@ -33,9 +33,10 @@
       gpgcheck: yes
     when: ansible_os_family == 'RedHat'
 
-  - name: Ensure the APT package cache is updated
+  - name: Ensure apt-transport-https and that the APT package cache is updated
     apt:
       update_cache: yes
+      name: apt-transport-https
       cache_valid_time: 0
     when: ansible_os_family == 'Debian'
 
