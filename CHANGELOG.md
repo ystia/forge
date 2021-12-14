@@ -2,6 +2,10 @@
 
 ## UNRELEASED
 
+### ENHANCEMENTS
+
+* Add a TOSCA component to load a docker image from a tar archive ([GH-140](https://github.com/ystia/forge/issues/140))
+
 ### BUG FIXES
 
 * Docker installation requires apt-transport-https to work properly on Debian based systems ([GH-147](https://github.com/ystia/forge/issues/147))

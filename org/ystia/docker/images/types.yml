@@ -1,0 +1,151 @@
+tosca_definitions_version: alien_dsl_2_0_0
+
+#
+# Ystia Forge
+# Copyright (C) 2018 Bull S. A. S. - Bull, Rue Jean Jaures, B.P.68, 78340, Les Clayes-sous-Bois, France.
+# Use of this source code is governed by Apache 2 LICENSE that can be found in the LICENSE file.
+#
+
+metadata:
+  template_name: org.ystia.docker.images
+  template_version: 3.0.0-SNAPSHOT
+  template_author: Ystia
+
+description: Docker image types
+
+imports:
+  - tosca-normative-types:1.0.0-ALIEN20
+  - yorc-types:1.1.0
+
+node_types:
+  org.ystia.docker.images.pub.ArchiveLoader:
+    derived_from: tosca.nodes.SoftwareComponent
+    abstract: true
+    description: Loads a docker image from a tar archive (abstract)
+    properties:
+      name:
+        type: string
+        description: >
+          Image name. Name format will be one of: name, repository/name, registry_server:port/name.
+          When pushing an image the name can optionally include the tag by appending ':tag_name'.
+        required: true
+      tag:
+        type: string
+        description: >
+          Tag added to the image when pushing.
+          If name property format is name:tag, then tag value from name will take precedence.
+          If not defined, docker considers the tag value is 'latest'.
+        required: false
+      repository:
+        type: string
+        description: >
+          Full path to a repository. Expects format repository:tag.
+          If no tag is provided, will use the value of the tag parameter or latest.
+        required: false
+      push:
+        type: boolean
+        description: Push the image to the registry. Specify the registry as part of the name or repository parameter.
+        default: false
+        required: false
+      force_load:
+        type: boolean
+        description: Load the archive even when the image already exists
+        default: false
+        required: false
+      user:
+        type: string
+        description: Perform the operation as this existing user
+        default: root
+        required: false
+  org.ystia.docker.images.ArchiveLoader:
+    derived_from: org.ystia.docker.images.pub.ArchiveLoader
+    description: Loads a docker image from a tar archive
+    properties:
+      path:
+        type: string
+        description: >
+          Path to the tar archive (can be compressed with gzip, bzip2, or xz)).
+        required: true
+    attributes:
+      # Array of repository name:tag in registry for the specified name.
+      # Empty if no name was specified or if the image was already loaded
+      # and force_load is set to false
+      repo_tags: { get_operation_output: [SELF, Standard, start, REPO_TAGS] }
+    interfaces:
+      Standard:
+        inputs:
+          PATH: { get_property: [SELF, path] }
+          USER: { get_property: [SELF, user] }
+          NAME: { get_property: [SELF, name] }
+          TAG: { get_property: [SELF, tag] }
+          REPOSITORY: { get_property: [SELF, repository] }
+          PUSH: { get_property: [SELF, push] }
+        # Install dependencies
+        create:
+          implementation: playbooks/create.yaml
+        # load the image from the tar archive
+        start:
+          inputs:
+            FORCE_LOAD: { get_property: [SELF, force_load] }
+          implementation: playbooks/load_archive.yaml
+        # Remove the image from docker registry
+        stop:
+          inputs:
+            REPO_TAGS: { get_attribute: [SELF, repo_tags] }
+          implementation: playbooks/remove_image.yaml
+  org.ystia.docker.images.RuntimePathArchiveLoader:
+    derived_from: org.ystia.docker.images.pub.ArchiveLoader
+    description: >
+      Loads a docker image from a tar archive whose path is provided at runtime
+      by a component implementing capability org.ystia.docker.images.relationships.ArchiveProvider
+    requirements:
+      - archive_provider:
+          capability: org.ystia.docker.images.capabilities.ArchiveProvider
+          relationship: org.ystia.docker.images.relationships.ArchiveProvider
+          occurrences: [1, 1]
+    attributes:
+      # Array of repository name:tag in registry for the specified name.
+      # Empty if no name was specified or if the image was already loaded
+      # and force_load is set to false
+      repo_tags: { get_operation_output: [SELF, Standard, start, REPO_TAGS] }
+    interfaces:
+      Standard:
+        inputs:
+          PATH: {get_attribute: [REQ_TARGET, archive_provider, path]}
+          USER: {get_attribute: [REQ_TARGET, archive_provider, user]}
+          NAME: { get_property: [SELF, name] }
+          TAG: { get_property: [SELF, tag] }
+          REPOSITORY: { get_property: [SELF, repository] }
+          PUSH: { get_property: [SELF, push] }
+        # Install dependencies
+        create:
+          implementation: playbooks/create.yaml
+        # load the image from the tar archive
+        start:
+          inputs:
+            FORCE_LOAD: { get_property: [SELF, force_load] }
+          implementation: playbooks/load_archive.yaml
+        # Remove the image from docker registry
+        stop:
+          inputs:
+            REPO_TAGS: { get_attribute: [SELF, repo_tags] }
+          implementation: playbooks/remove_image.yaml
+capability_types:
+  org.ystia.docker.images.capabilities.ArchiveProvider:
+    derived_from: tosca.capabilities.Root
+    description: >
+      A capability provided by a component providing a docker image tar archive.
+    attributes:
+      path:
+        type: string
+        description: Path to the docker image tar archive
+      user:
+        type: string
+        description: User having access to this archive
+        default: root
+relationship_types:
+  org.ystia.docker.images.relationships.ArchiveProvider:
+    derived_from: tosca.relationships.DependsOn
+    description: >
+      Relationship with a provider of docker image tar archive
+    valid_target_types: [ org.ystia.docker.images.capabilities.ArchiveProvider ]

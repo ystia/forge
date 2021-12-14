@@ -11,8 +11,14 @@
   vars:
     ansible_python_interpreter: "/usr/local/docker-py-env/bin/python"
   tasks:
-  - name: delete docker container
+  - name: Delete docker container
     docker_container: 
       name: "{{CONTAINER_ID}}"
       state: absent
+    when: STARTED_CONTAINER_ID is not defined or STARTED_CONTAINER_ID == ""
+  - name: Delete started docker container
+    docker_container:
+      name: "{{STARTED_CONTAINER_ID}}"
+      state: absent
+    when: STARTED_CONTAINER_ID is defined and STARTED_CONTAINER_ID != ""
 

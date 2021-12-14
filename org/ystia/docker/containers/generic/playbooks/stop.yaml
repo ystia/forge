@@ -15,4 +15,10 @@
     docker_container: 
       name: "{{CONTAINER_ID}}"
       state: stopped
+    when: STARTED_CONTAINER_ID is not defined or STARTED_CONTAINER_ID == ""
+  - name: Stop started docker container
+    docker_container: 
+      name: "{{STARTED_CONTAINER_ID}}"
+      state: stopped
+    when: STARTED_CONTAINER_ID is defined and STARTED_CONTAINER_ID != ""
 
