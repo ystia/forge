@@ -2,6 +2,10 @@
 
 ## UNRELEASED
 
+### ENHANCEMENTS
+
+* Add missing hostname in yorc certificate Subject Alternative Name ([GH-151](https://github.com/ystia/forge/issues/151))
+
 ### BUG FIXES
 
 * Docker installation requires apt-transport-https to work properly on Debian based systems ([GH-147](https://github.com/ystia/forge/issues/147))

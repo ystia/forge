@@ -101,7 +101,7 @@
 
     - name: Get Host private IP address and DNS hostname for which TLS connections are accepted
       set_fact:
-        subjectAltName: "IP:{{ IP_ADDRESS }},IP:127.0.0.1,DNS:localhost,DNS:yorc.service.consul"
+        subjectAltName: "IP:{{ IP_ADDRESS }},IP:127.0.0.1,DNS:localhost,DNS:yorc.service.consul,DNS:{{ server_id }}"
       when: REST_API_PROTOCOL == "https"
 
     - name: Add Host public IP address to subjectAltName
