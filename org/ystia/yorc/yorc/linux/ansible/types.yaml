@@ -366,4 +366,5 @@ relationship_types:
             INVENTORY: { get_property: [SOURCE, inventory] }
             HOST_OPERATIONS_ALLOWED: { get_property: [SOURCE, host_operations_allowed] }
           implementation: playbooks/configure_ansible.yml
-    valid_source_types: ["org.ystia.yorc.pub.nodes.YorcServer"]
+# valid_source_types is not a relationship definition keyword
+#   valid_source_types: ["org.ystia.yorc.pub.nodes.YorcServer"]

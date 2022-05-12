@@ -100,12 +100,15 @@ topology_template:
 
     Compute_ES:
       type: tosca.nodes.Compute
-      properties:
-        mem_size: 12GB
+      capabilities:
+        host:
+          properties:
+            mem_size: 12GB # is a property of the hot capability, isn't it?
       requirements:
         - network:
             node: Network
             relationship: tosca.relationships.Network
+        - local_storage: BlockStorage_ES # Replace requirements of BlockStorage_ES
       capabilities:
         os:
           properties:
@@ -131,11 +134,13 @@ topology_template:
       type: tosca.nodes.BlockStorage
       properties:
         size: "10 GB"
-      requirements:
-        - attachment:
-            node: Compute_ES
-            capability: tosca.capabilities.Attachment
-            relationship: tosca.relationships.AttachTo
+#
+# attachment is not a requirement of BlocStorage
+#      requirements:
+#        - attachment:
+#            node: Compute_ES
+#            capability: tosca.capabilities.Attachment
+#            relationship: tosca.relationships.AttachTo
     LinuxFileSystem_ES:
       type: alien.nodes.LinuxFileSystem
       properties:
@@ -244,6 +249,7 @@ topology_template:
         - network:
             node: Network
             relationship: tosca.relationships.Network
+        - local_storage: BlockStorage_KFK # Replace requirements of BlockStorage_KFK
       capabilities:
         os:
           properties:
@@ -269,11 +275,12 @@ topology_template:
       type: tosca.nodes.BlockStorage
       properties:
         size: "10 GB"
-      requirements:
-        - attachment:
-            node: Compute_KFK
-            capability: tosca.capabilities.Attachment
-            relationship: tosca.relationships.AttachTo
+# attachment is not a requirement of BlocStorage
+#      requirements:
+#        - attachment:
+#            node: Compute_KFK
+#            capability: tosca.capabilities.Attachment
+#            relationship: tosca.relationships.AttachTo
     LinuxFileSystem_KFK:
       type: alien.nodes.LinuxFileSystem
       properties:

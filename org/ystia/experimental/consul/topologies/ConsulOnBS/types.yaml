@@ -72,6 +72,7 @@ topology_template:
             node: PublicNetwork
             capability: tosca.capabilities.Connectivity
             relationship: tosca.relationships.Network
+        - local_storage: BlockStorage # Replace requirements of BlockStorage
       capabilities:
         os:
           properties:
@@ -87,6 +88,7 @@ topology_template:
             protocol: tcp
             network_name: PRIVATE
             initiator: source
+
     ConsulAgentDC1:
       type: org.ystia.yorc.experimental.consul.linux.ansible.nodes.ConsulAgent
       properties:
@@ -154,13 +156,15 @@ topology_template:
       type: tosca.nodes.BlockStorage
       properties:
         size: "1 GIB"
-        device: "/dev/vdb"
-      requirements:
-        - attachToComputeCsdc1Attach:
-            type_requirement: attachment
-            node: ComputeCSDC1
-            capability: tosca.capabilities.Attachment
-            relationship: tosca.relationships.AttachTo
+#        device: "/dev/vdb" # not a property of tosca.nodes.BlockStorage, isn't it?
+#
+# attachment is not a requirement of BlockStorage
+#      requirements:
+#        - attachToComputeCsdc1Attach:
+#            type_requirement: attachment
+#            node: ComputeCSDC1
+#            capability: tosca.capabilities.Attachment
+#            relationship: tosca.relationships.AttachTo
     LinuxFileSystem:
       type: alien.nodes.LinuxFileSystem
       properties:

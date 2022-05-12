@@ -87,8 +87,10 @@ topology_template:
 
     Compute_ES:
       type: tosca.nodes.Compute
-      properties:
-        mem_size: 12GB
+      capabilities:
+        host:
+          properties:
+            mem_size: 12 GB # is a property of the hot capability, isn't it?
       requirements:
         - network:
             node: Network

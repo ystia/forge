@@ -41,6 +41,7 @@ topology_template:
             node: Network
             capability: tosca.capabilities.Connectivity
             relationship: tosca.relationships.Network
+        - local_storage: BlockStorage # Replace requirements of BlockStorage
       capabilities:
         os:
           properties:
@@ -119,12 +120,13 @@ topology_template:
             default_instances: 1
     BlockStorage:
       type: tosca.nodes.BlockStorage
-      requirements:
-        - attachToComputeAttach:
-            type_requirement: attachment
-            node: Compute
-            capability: tosca.capabilities.Attachment
-            relationship: tosca.relationships.AttachTo
+# attachment is not a requirement of BlockStorage
+#      requirements:
+#        - attachToComputeAttach:
+#            type_requirement: attachment
+#            node: Compute
+#            capability: tosca.capabilities.Attachment
+#            relationship: tosca.relationships.AttachTo
     LinuxFileSystem:
       type: alien.nodes.LinuxFileSystem
       properties:
